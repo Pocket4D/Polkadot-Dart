@@ -11,6 +11,13 @@ cbindgen ./src/lib.rs -c cbindgen.toml | grep -v \#include | uniq | cat > target
 
 cp "./target/universal/release/lib${LIB_NAME}.a" "../ios/lib${LIB_NAME}.a"
 
+# build for macos
+cargo build
+cp "./target/debug/lib${LIB_NAME}.dylib" "../macos/lib${LIB_NAME}.dylib"
+# build for linux
+cp "./target/debug/lib${LIB_NAME}.dylib" "../linux/lib${LIB_NAME}.dylib"
+
+
 echo "#import <Flutter/Flutter.h>
 
 @interface P4dRustBindingPlugin : NSObject<FlutterPlugin>
@@ -19,14 +26,7 @@ echo "#import <Flutter/Flutter.h>
 cat ./target/bindings.h >> ../ios/Classes/P4dRustBindingPlugin.h
 
 
-# if [ -z ${NDK_HOME+x} ];
-#   then
-#     printf 'Please install android-ndk\n\n'
-#     printf 'from https://developer.android.com/ndk/downloads or with sdkmanager'
-#     exit 1
-#   else
-#     printf "Building Andriod targets...";
-# fi
+
 
 CC_aarch64_linux_android="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${API_LEVEL}-clang" \
 CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="${ANDROID_PREBUILD_BIN}/aarch64-linux-android${API_LEVEL}-clang" \

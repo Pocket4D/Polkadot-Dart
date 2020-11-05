@@ -6,7 +6,27 @@
 
 void rust_cstr_free(char *s);
 
-char *random_phrase(uint32_t words_number);
+char *bip39_generate(uint32_t words_number);
+
+bool bip39_validate(const char *phrase);
+
+char *bip39_to_entropy(const char *phrase);
+
+char *bip39_to_mini_secret(const char *phrase, const char *password);
+
+char *bip39_to_seed(const char *phrase, const char *password);
+
+char *blake2b(const char *data, const char *key, uint32_t size);
+
+char *keccak256(const char *data);
+
+char *pbkdf2(const char *data, const char *salt, uint32_t rounds);
+
+char *scrypt(const char *password, const char *salt, uint8_t log2_n, uint32_t r, uint32_t p);
+
+char *sha512(const char *data);
+
+char *twox(const char *data, uint32_t rounds);
 
 char *encrypt_data(const char *data, const char *password);
 
