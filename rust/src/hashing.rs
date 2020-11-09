@@ -9,8 +9,11 @@ use scrypt::{scrypt, ScryptParams};
 use sha2::{Digest, Sha512};
 // use secp256k1;
 // use no_mangle::prelude::*;
+use std::convert::TryInto;
 use tiny_keccak::{Hasher, Keccak};
 use twox_hash::XxHash;
+
+type HmacSha512 = Hmac<Sha512>;
 
 /// helper function for a single twox round with a seed
 fn create_twox(data: &[u8], seed: u64) -> [u8; 8] {
@@ -68,7 +71,12 @@ pub fn ext_pbkdf2(data: &[u8], salt: &[u8], rounds: u32) -> Vec<u8> {
     let mut result = [0u8; 64];
 
     // we cast to usize here - due to the WASM, we'd rather have u32 inputs
-    pbkdf2::<Hmac<Sha512>>(data, salt, rounds as usize, &mut result);
+    pbkdf2::<HmacSha512>(
+        data,
+        salt,
+        (rounds as usize).try_into().unwrap(),
+        &mut result,
+    );
 
     result.to_vec()
 }
@@ -153,7 +161,6 @@ pub fn ext_scrypt(password: &[u8], salt: &[u8], log2_n: u8, r: u32, p: u32) -> V
 #[no_mangle]
 pub fn ext_sha512(data: &[u8]) -> Vec<u8> {
     let mut hasher = Sha512::new();
-
     hasher.input(data);
 
     hasher.result().to_vec()
@@ -181,6 +188,7 @@ pub fn ext_twox(data: &[u8], rounds: u32) -> Vec<u8> {
 pub mod tests {
     use super::*;
     use hex_literal::hex;
+    // use rustc_hex::ToHex;
 
     // // Constructs the message that Ethereum RPCs `personal_sign` and `eth_sign` would sign.
     // fn ethereum_signable_message(data: &[u8]) -> Vec<u8> {

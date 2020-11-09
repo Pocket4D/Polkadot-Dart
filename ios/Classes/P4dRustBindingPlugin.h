@@ -28,6 +28,34 @@ char *sha512(const char *data);
 
 char *twox(const char *data, uint32_t rounds);
 
+char *bip32_get_private_key(const char *seed, const char *path);
+
+char *ed25519_get_pub_from_prv(const char *private_key);
+
+char *secp256k1_get_pub_from_prv(const char *private_key);
+
+char *sr25519_get_pub_from_seed(const char *seed);
+
+char *ed25519_keypair_from_seed(const char *seed);
+
+char *ed25519_sign(const char *pubkey, const char *seckey, const char *message);
+
+bool ed25519_verify(const char *signature, const char *message, const char *pubkey);
+
+char *sr25519_derive_keypair_hard(const char *pair, const char *cc);
+
+char *sr25519_derive_keypair_soft(const char *pair, const char *cc);
+
+char *sr25519_derive_public_soft(const char *pubkey, const char *cc);
+
+char *sr25519_keypair_from_seed(const char *seed);
+
+char *sr25519_keypair_from_pair(const char *pair);
+
+char *sr25519_sign(const char *pubkey, const char *seckey, const char *message);
+
+bool sr25519_verify(const char *signature, const char *message, const char *pubkey);
+
 char *encrypt_data(const char *data, const char *password);
 
 char *decrypt_data(const char *data, const char *password);
