@@ -1,6 +1,5 @@
-import 'package:ffi/ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/wrapper/crypto.dart';
+import 'package:p4d_rust_binding/p4d_rust_binding.dart';
 
 void main() {
   test('rust binding: random_phase', () {

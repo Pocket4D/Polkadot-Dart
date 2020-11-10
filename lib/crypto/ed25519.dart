@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/wrapper/crypto.dart';
-import 'package:p4d_rust_binding/wrapper/util.dart';
+import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:p4d_rust_binding/crypto/common.dart';
 
 const int ED25519_PRIVATE_LENGTH = 64;
 const int ED25519_PUBLIC_LENGTH = 64;
@@ -25,7 +25,7 @@ class ED25519 {
   }
 
   static bool verify(String signature, String message, String pubkey) {
-    var hexMessage = isHex(message) ? message : plainTextToHex(message);
+    var hexMessage = isHexString(message) ? message : plainTextToHex(message);
     return ed25519Verify(signature, hexMessage, pubkey);
   }
 
@@ -42,7 +42,7 @@ class ED25519 {
 
   String sign(String message) {
     try {
-      var hexMessage = isHex(message) ? message : plainTextToHex(message);
+      var hexMessage = isHexString(message) ? message : plainTextToHex(message);
       final signature = ed25519Sign(public, private, hexMessage);
       if (ED25519.verify(signature, message, public) &&
           signature.length == ED25519_SIGNATURE_LENGTH) {

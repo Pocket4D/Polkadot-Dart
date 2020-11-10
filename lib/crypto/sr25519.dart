@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/wrapper/crypto.dart';
-import 'package:p4d_rust_binding/wrapper/util.dart';
+import 'package:p4d_rust_binding/crypto/common.dart';
+import 'package:p4d_rust_binding/utils/utils.dart';
 
 const int SR25519_KEY_LENGTH = 64;
 const int SR25519_NONCE_LENGTH = 64;
@@ -22,7 +22,7 @@ class SR25519 {
   }
 
   static bool verify(String signature, String message, String pubkey) {
-    var hexMessage = isHex(message) ? message : plainTextToHex(message);
+    var hexMessage = isHexString(message) ? message : plainTextToHex(message);
 
     return sr25519Verify(signature, hexMessage, pubkey);
   }
@@ -67,7 +67,7 @@ class SR25519 {
 
   String sign(String message) {
     try {
-      var hexMessage = isHex(message) ? message : plainTextToHex(message);
+      var hexMessage = isHexString(message) ? message : plainTextToHex(message);
       final signature = sr25519Sign(public, secret, hexMessage);
       if (SR25519.verify(signature, message, public) &&
           signature.length == SR25519_SIGNATURE_LENGTH) {

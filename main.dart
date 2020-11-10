@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:p4d_rust_binding/p4d_rust_binding.dart';
 
 main() async {
@@ -369,5 +370,44 @@ main() async {
     print("\n");
   } catch (e) {
     print(e);
+  }
+
+  try {
+    var a = Uint8List.fromList([1, 2, 3]);
+    var b = Uint8List.fromList([4, 5, 6]);
+    var some2 = u8aConcat([a, b]);
+    print(some2);
+    print(u8aSorted([a, b]));
+
+    var c = "hello";
+    var space = " ";
+    var d = "world";
+    var some3 = u8aConcat([c, space, d]);
+    var sooor = u8aSorted([stringToU8a(c), stringToU8a(space), stringToU8a(d)]);
+
+    print(some3);
+    print(u8aConcat(sooor));
+
+    var e = "hello world";
+    var some4 = stringToU8a(e);
+    print(some4);
+
+    print(u8aEq(some3, some4));
+
+    var f = '0x1234';
+    var some5 = stringToU8a(f, 'hex');
+    print(some5);
+
+    print(bytesToHex(u8aFixLength(some5, bitLength: 16), include0x: true));
+
+    var g = Uint8List.fromList([0x68, 0x65, 0x6c, 0xf]);
+    print(u8aToHex(g));
+    print(u8aToBN(g));
+    print(u8aToBuffer(g));
+
+    var h = Uint8List.fromList([0x68, 0x65, 0x6c, 0x6c, 0x6f]);
+    print(u8aToString(h));
+  } catch (e) {
+    throw ("u8a Error :$e");
   }
 }
