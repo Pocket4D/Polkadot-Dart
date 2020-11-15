@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:p4d_rust_binding/p4d_rust_binding.dart';
+import 'package:convert/convert.dart';
+import 'metajson.dart';
 
 main() async {
   var phrase = "legal winner thank year wave sausage worth useful legal winner thank yellow";
@@ -409,5 +412,227 @@ main() async {
     print(u8aToString(h));
   } catch (e) {
     throw ("u8a Error :$e");
+  }
+
+  try {
+    print(zeroPad(5));
+    print(formatDate(DateTime.now()));
+    print(formatDecimal("-test"));
+    var start = 12345678;
+    var now = DateTime.fromMillisecondsSinceEpoch(start);
+
+    var eee = formatElapsed(
+        now, BigInt.from(DateTime.fromMillisecondsSinceEpoch(start + 9700).millisecondsSinceEpoch));
+
+    var fff = formatElapsed(now, BigInt.from(start + 42700));
+    var ggg = formatElapsed(now, BigInt.from(start + (5.3 * 60000)));
+    var hhh = formatElapsed(now, BigInt.from(start + (42 * 60 * 60000)));
+    var jjj = formatElapsed();
+
+    print(eee);
+    print(fff);
+    print(ggg);
+    print(hhh);
+    print(jjj);
+
+    var testVal = BigInt.from(123456789000);
+    var option1 = BalanceFormatterOptions(decimals: 15, withSi: true);
+    var option2 = BalanceFormatterOptions(decimals: 0, withSi: true);
+    var option3 = BalanceFormatterOptions(decimals: 36, withSi: true);
+    var option4 = BalanceFormatterOptions(withSi: true);
+    var option5 = BalanceFormatterOptions(withSi: true, withUnit: 'BAR');
+    var option6 = BalanceFormatterOptions(
+      withSi: true,
+    );
+    var option7 = BalanceFormatterOptions(
+      forceUnit: '-',
+    );
+    var option8 = BalanceFormatterOptions(
+      withUnit: '🔥',
+    );
+
+    BalanceFormatter();
+    print(BalanceFormatter.instance.formatBalance(testVal, option1)); // 123.4567 µUnit
+    print(BalanceFormatter.instance.formatBalance(123456, option2)); // 123.4560 kUnit
+    print(BalanceFormatter.instance.formatBalance(testVal, option3)); // 0.1234 yUnit
+    print(BalanceFormatter.instance.formatBalance(testVal, option4, 6)); // 123.4567 kUnit
+    print(BalanceFormatter.instance.formatBalance(testVal, option5, 6)); // 123.4567 kBAR
+    print(BalanceFormatter.instance
+        .formatBalance(BigInt.from(-123456789000), option6, 15)); // -123.4567 µUnit
+    print(BalanceFormatter.instance.formatBalance(testVal, option7, 7)); // 12,345.6789 Unit
+    print(BalanceFormatter.instance.formatBalance(testVal, option8, 15)); // 123.4567 µ🔥
+    BalanceFormatter.instance.setDefaults(Defaults(decimals: 0, unit: 'TEST'));
+    print(BalanceFormatter.instance.getOptions()); // [{power: 0, text: TEST, value: -},...]
+  } catch (e) {
+    throw "format Error: $e";
+  }
+
+  try {
+    var jsonData = MetaDataJson.fromMap(metaJson);
+    var systemModule =
+        jsonData.metadata.version.modules.firstWhere((element) => element.name == 'System');
+    if (systemModule.storage.prefix == "System") {
+      systemModule.storage.items.forEach((e) => print("${e.toMap()} \n"));
+    }
+  } catch (e) {
+    throw e;
+  }
+
+  try {
+    const test = '1234abcd';
+    print("\n");
+    print("----- isHex");
+    print(isHex('0x')); // true
+    print(isHex("0x$test")); // true
+    print(isHex("0x${test}0")); // false
+    print(isHex("0x${test.toUpperCase()}")); // true
+    print(isHex(test)); // false
+    print(isHex(false)); // false
+    print(isHex('0x1234', 16)); // true
+    print(isHex('0x1234', 8)); // false
+    print(isHex('1234')); // false
+
+    const jsonObject = {
+      "Test": "1234",
+      "NestedTest": {"Test": "5678"}
+    };
+    print("\n");
+    print("----- isJsonObject");
+    print(isJsonObject("{}")); // true
+    print(isJsonObject("${jsonEncode(jsonObject)}")); // true
+    print(isJsonObject(123)); // false
+    print(isJsonObject(null)); // false
+    print(isJsonObject("asdfasdf")); // false
+    print(isJsonObject("{'abc','def'}")); // false
+    print("\n");
+    print("----- testchain");
+    var validTestModeChainSpecsWithDev = ['Development'];
+    var validTestModeChainSpecsWithLoc = ['Local Testnet'];
+
+    validTestModeChainSpecsWithDev.addAll(validTestModeChainSpecsWithLoc);
+    validTestModeChainSpecsWithDev.forEach((element) {
+      print(isTestChain(element));
+    });
+
+    const invalidTestModeChainSpecs = [
+      'dev',
+      'local',
+      'development',
+      'PoC-1 Testnet',
+      'Staging Testnet',
+      'future PoC-2 Testnet',
+      'a pocadot?',
+      null
+    ];
+
+    invalidTestModeChainSpecs.forEach((s) {
+      print(isTestChain(s));
+    });
+    print("\n");
+    print("----- utf8");
+
+    print(isUtf8('Hello\tWorld!\n\rTesting')); // true
+    print(isUtf8(Uint8List.fromList([0x31, 0x32, 0x20, 10]))); // true
+    print(isUtf8('')); // true
+    print(isUtf8([])); // true
+    print(isUtf8('Приветствую, ми')); // true
+    print(isUtf8('你好')); // true
+    print(isUtf8('0x7f07b1f87709608bee603bbc79a0dfc29cd315c1351a83aa31adf7458d7d3003')); // false
+    print("\n");
+    print("-----hexAddPrefix");
+    print(hexAddPrefix('0x0123')); //0x0123
+    print(hexAddPrefix('0123')); //0x0123
+    print(hexAddPrefix('123')); //0x0123
+    print(hexAddPrefix(null)); //'0x'
+    print("\n");
+    print("-----hexFixLength");
+    print(hexFixLength('0x12345678')); //0x12345678
+    print(hexFixLength('0x1234567')); //0x01234567
+    print(hexFixLength('0x12345678', 32)); //0x12345678
+    print(hexFixLength('0x12345678', 16)); //0x5678 -->
+    print(hexFixLength('0x1234', 32)); //0x1234
+    print(hexFixLength('0x1234', 32, true)); // 0x00001234 -->
+    print("\n");
+    print("-----hexHasPrefix");
+    print(hexHasPrefix('0x123')); //true
+    print(hexHasPrefix('123')); //false
+    print(hexHasPrefix(null)); //false;
+
+    print("\n");
+    print("----- hexStripPrefix");
+
+    print(hexStripPrefix(null)); //''
+    print(hexStripPrefix("0x1223")); // 1223
+    print(hexStripPrefix('abcd1223')); //abcd1223
+    // print(hexStripPrefix('0x0x01ab')); //throw
+
+    print("\n");
+    print("----- hexToBn");
+    print(hexStripPrefix('0x'));
+    print(hexToBn(0x81).toRadixString(16)); //81
+    print(hexToBn(null).toInt()); //0;
+    print(hexToBn('0x').toInt()); //0;
+    print(hexToBn('0x0100').toInt()); // 256
+    print(hexToBn('0x4500000000000000', endian: Endian.little).toInt()); //69
+    print(hexToBn('0x2efb', endian: Endian.little, isNegative: true).toInt()); // -1234
+    print(hexToBn('0xfb2e', endian: Endian.big, isNegative: true).toInt()); // -1234
+    print(hexToBn('0x00009c584c491ff2ffffffffffffffff', endian: Endian.little, isNegative: true)
+        .toString()); //-1000000000000000000
+    print(hexToBn('0x0000000000000100', endian: Endian.big).toInt()); // 256
+    print(hexToBn('0x0001000000000000', endian: Endian.little).toInt()); // 256
+    print(
+        hexToBn('0x0001000000000000', endian: Endian.big) == hexToBn('0x0001000000000000')); // true
+
+    print("\n");
+    print("----- hexToNumber");
+    print(hexToNumber(0x1234) == 0x1234); // true
+    print(hexToNumber(null)); // null
+
+    print("\n");
+    print("----- hexToString");
+    print(hexToString('0x68656c6c6f')); // hello
+
+    print("\n");
+    print("----- hexToU8a");
+    print(u8aEq(hexToU8a('0x80000a'), Uint8List.fromList([128, 0, 10]))); // true
+    print(u8aEq(hexToU8a('0x80000a', 32), Uint8List.fromList([0, 128, 0, 10]))); // true
+
+    print("\n");
+    print("----- bnToHex");
+    print(bnToHex(null)); // 0x00
+    print(bnToHex(BigInt.from(128))); // 0x80 -- >
+    print(bnToHex(BigInt.from(128), bitLength: 16)); // 0x0080 -- >
+    print(bnToHex(BigInt.from(128), bitLength: 16, endian: Endian.little)); // 0x8000
+    print(bnToHex(BigInt.from(-1234), isNegative: true)); // 0xfb2e
+    print(bnToHex(BigInt.from(-1234), bitLength: 32, isNegative: true)); // 0xfffffb2e
+
+    print("\n");
+    print("----- bnToU8a");
+    print(bnToU8a(null, bitLength: 32, isNegative: false)); // [0,0,0,0]
+    print(bnToU8a(BigInt.from(0x123456), bitLength: -1, endian: Endian.big)); // [0x12, 0x34, 0x56]
+    print(bnToU8a(BigInt.from(0x123456),
+        bitLength: 32, endian: Endian.big)); // [0x00, 0x12, 0x34, 0x56]
+    print(bnToU8a(BigInt.from(0x123456),
+        bitLength: 32, endian: Endian.little)); // [0x56, 0x34, 0x12, 0x00]
+    print(bnToU8a(BigInt.from(-1234), endian: Endian.little, isNegative: true)); // [46,251]
+    print(bnToU8a(BigInt.from(-1234), endian: Endian.big, isNegative: true)); // [251,46]
+    print(bnToU8a(BigInt.from(-1234),
+        bitLength: 32, isNegative: true)); // [46, 251, 255, 255] -- different from [46,251,255,255]
+
+    print("\n");
+    print('----- bnMax');
+    print(bnMax([BigInt.from(1), BigInt.from(2), BigInt.from(3)]).toString()); // 3
+
+    print("\n");
+    print('----- bnMin');
+    print(bnMin([BigInt.from(1), BigInt.from(2), BigInt.from(3)]).toString()); // 1
+
+    print("\n");
+    print('----- bnSqrt');
+
+    // print(BigInt.from(16) / BigInt.from(1));
+    print(bnSqrt(BigInt.from(16)));
+  } catch (e) {
+    throw e;
   }
 }

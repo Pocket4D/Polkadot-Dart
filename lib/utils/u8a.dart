@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:p4d_rust_binding/utils/string.dart';
 
+import 'is.dart';
 import 'number.dart';
 
 Uint8List convertString(String str) {
@@ -13,18 +14,19 @@ Uint8List convertString(String str) {
 }
 
 Uint8List convertArray(List<int> arr) {
-  return (arr is List<int>) ? Uint8List.fromList(arr) : arr;
+  return Uint8List.fromList(arr);
 }
 
 Uint8List u8aToU8a(dynamic value) {
-  if (value == null) {
-    return Uint8List.fromList([]);
-  } else if (value is ByteBuffer) {
+  if (value is ByteBuffer) {
     return value.asUint8List();
   } else if (value is String) {
     return convertString(value);
+  } else if (value is List && value.isNotEmpty) {
+    return convertArray(value);
+  } else {
+    return Uint8List.fromList([]);
   }
-  return convertArray(value);
 }
 
 Uint8List u8aConcat(List<dynamic> list) {
@@ -83,8 +85,8 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   return u8as;
 }
 
-BigInt u8aToBN(Uint8List u8a) {
-  return decodeBigInt(u8a);
+BigInt u8aToBN(Uint8List u8a, {Endian endian = Endian.little}) {
+  return decodeBigInt(u8a, endian: endian);
 }
 
 String u8aToHex(Uint8List u8a, {bool include0x = true}) {

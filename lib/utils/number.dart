@@ -1,26 +1,22 @@
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
-import 'package:p4d_rust_binding/utils/string.dart';
 
-/// Decode a BigInt from bytes in big-endian encoding.
-BigInt decodeBigInt(List<int> bytes) {
-  BigInt result = new BigInt.from(0);
+BigInt decodeBigInt(List<int> bytes, {Endian endian = Endian.little}) {
+  BigInt result = BigInt.from(0);
   for (int i = 0; i < bytes.length; i++) {
-    result += new BigInt.from(bytes[bytes.length - i - 1]) << (8 * i);
+    result += BigInt.from(bytes[endian == Endian.little ? i : bytes.length - i - 1]) << (8 * i);
   }
   return result;
 }
 
-var _byteMask = new BigInt.from(0xff);
+Uint8List encodeBigInt(BigInt number, {Endian endian = Endian.little, int bitLength}) {
+  var bl = (bitLength != null) ? bitLength : number.bitLength;
+  int size = (bl + 7) >> 3;
+  var result = Uint8List(size);
 
-/// Encode a BigInt into bytes using big-endian encoding.
-Uint8List encodeBigInt(BigInt number) {
-  // Not handling negative numbers. Decide how you want to do that.
-  int size = (number.bitLength + 7) >> 3;
-  var result = new Uint8List(size);
   for (int i = 0; i < size; i++) {
-    result[size - i - 1] = (number & _byteMask).toInt();
+    result[endian == Endian.little ? i : size - i - 1] = (number & BigInt.from(0xff)).toInt();
     number = number >> 8;
   }
   return result;
@@ -64,23 +60,28 @@ String bytesToHex(List<int> bytes, {bool include0x = false}) {
   return (include0x ? "0x" : "") + hex.encode(bytes);
 }
 
+///Converts the bytes from that list (big endian) to a BigInt.
+// BigInt bytesToInt(List<int> bytes) => p_utils.decodeBigInt(bytes);
+BigInt bytesToInt(List<int> bytes) => decodeBigInt(bytes, endian: Endian.big);
+
 /// Converts the given number, either a [int] or a [BigInt] to a list of
 /// bytes representing the same value.
 List<int> numberToBytes(dynamic number) {
-  if (number is BigInt) return encodeBigInt(number);
+  if (number is BigInt) return encodeBigInt(number, endian: Endian.big);
 
   var hexString = numberToHex(number, pad: true);
   return hex.decode(hexString);
 }
 
-///Converts the bytes from that list (big endian) to a BigInt.
-// BigInt bytesToInt(List<int> bytes) => p_utils.decodeBigInt(bytes);
-BigInt bytesToInt(List<int> bytes) => decodeBigInt(bytes);
+/// wrapper to u8a
+Uint8List numberToU8a(dynamic number) {
+  final listInt = numberToBytes(number);
+  return Uint8List.fromList(listInt);
+}
 
 // List<int> intToBytes(BigInt number) => p_utils.encodeBigInt(number);
-
 /// big int to bytes
-List<int> intToBytes(BigInt number, {int length}) {
+List<int> bnToBytes(BigInt number, {int length}) {
   Uint8List bigIntList = encodeBigInt(number);
   if (length != null && length > bigIntList.length) {
     var newList = new Int8List(length);
@@ -94,9 +95,9 @@ List<int> intToBytes(BigInt number, {int length}) {
 }
 
 ///Takes the hexadecimal input and creates a BigInt.
-BigInt hexToInt(String hex) {
-  return BigInt.parse(strip0xHex(hex), radix: 16);
-}
+// BigInt hexToBN(String hex) {
+//   return BigInt.parse(strip0xHex(hex), radix: 16);
+// }
 
 List<String> numberToHexArray(int number, int size) {
   String hexVal = number.toRadixString(16);

@@ -10,11 +10,6 @@ bool isByteString(String byStr, {int length}) {
       validators.isLength(str, length, length);
 }
 
-bool isHexString(String str) {
-  var result = str.startsWith(new RegExp(r'0x', caseSensitive: false)) ? str.substring(2) : str;
-  return validators.matches(result, '^[0-9a-fA-F]{${result.length}}');
-}
-
 String strip0xHex(String hex) {
   if (hex.startsWith('0x', 0)) return hex.substring(2);
   return hex;
