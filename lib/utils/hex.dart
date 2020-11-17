@@ -53,7 +53,6 @@ BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = fal
       var hex = value is num
           ? int.parse(value.toString(), radix: 10).toRadixString(16)
           : hexStripPrefix(value);
-
       if (hex.length % 2 > 0) {
         hex = '0' + hex;
       }

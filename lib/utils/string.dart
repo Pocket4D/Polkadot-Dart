@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:p4d_rust_binding/utils/number.dart';
+import 'package:recase/recase.dart';
 import 'package:validators/validators.dart' as validators;
 
 bool isByteString(String byStr, {int length}) {
@@ -60,6 +61,22 @@ Uint8List stringToU8a(String msg, [String enc]) {
   }
 }
 
+Uint8List textEncoder(String value) {
+  final u8a = Uint8List(value.length);
+  for (var i = 0; i < value.length; i++) {
+    u8a[i] = value.codeUnitAt(i);
+  }
+  return u8a;
+}
+
+String textDecoder(Uint8List value) {
+  var _value = '';
+  for (var i = 0; i < value.length; i += 1) {
+    _value = _value + String.fromCharCode(value[i]);
+  }
+  return _value;
+}
+
 String plainTextToHex(String plainText) {
   var u8a = stringToU8a(plainText);
   return bytesToHex(u8a);
@@ -73,4 +90,29 @@ String hexToPlainText(String hex) {
 /// sequence.
 List<int> hexToBytes(String hexStr) {
   return hex.decode(strip0xHex(hexStr));
+}
+
+String stringCamelCase(String value) {
+  return value.camelCase;
+}
+
+String stringLowerFirst(String value) {
+  return value != null ? value[0].toLowerCase() + value.substring(1) : '';
+}
+
+String stringUpperFirst(String value) {
+  return value != null ? value[0].toUpperCase() + value.substring(1) : '';
+}
+
+String stringShorten(String value, {int prefixLength = 6}) {
+  if (value.length <= 2 + 2 * prefixLength) {
+    return value.toString();
+  }
+
+  var tLength = value.length;
+  var secStart = value.length - prefixLength;
+  var firstPart = value.substring(0, prefixLength);
+  var secondPart = value.substring(secStart, tLength);
+
+  return "$firstPart…$secondPart";
 }

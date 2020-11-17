@@ -85,7 +85,7 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   return u8as;
 }
 
-BigInt u8aToBN(Uint8List u8a, {Endian endian = Endian.little}) {
+BigInt u8aToBn(Uint8List u8a, {Endian endian = Endian.little}) {
   return decodeBigInt(u8a, endian: endian);
 }
 
@@ -97,6 +97,9 @@ ByteBuffer u8aToBuffer(Uint8List u8a) {
   return u8a.buffer;
 }
 
-String u8aToString(Uint8List u8a) {
-  return utf8.decode(u8a);
+String u8aToString(Uint8List u8a, {bool useDartEncode = false}) {
+  if (useDartEncode) {
+    return utf8.decode(u8a, allowMalformed: true);
+  }
+  return textDecoder(u8a);
 }

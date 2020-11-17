@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'dart:math' as math;
 import 'package:convert/convert.dart';
 
 BigInt decodeBigInt(List<int> bytes, {Endian endian = Endian.little}) {
@@ -109,3 +109,5 @@ List<String> numberToHexArray(int number, int size) {
   hex.setRange(size - hexVal.length, size, hexRep);
   return hex;
 }
+
+num log2(num x) => math.log(x) / math.log(2);

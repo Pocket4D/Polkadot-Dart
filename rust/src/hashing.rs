@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use blake2_rfc::blake2b::blake2b;
-use byteorder::{ByteOrder, LittleEndian};
+use byteorder::{BigEndian, ByteOrder, LittleEndian};
 use hmac::Hmac;
 use pbkdf2::pbkdf2;
 use scrypt::{scrypt, ScryptParams};
@@ -11,7 +11,7 @@ use sha2::{Digest, Sha512};
 // use no_mangle::prelude::*;
 use std::convert::TryInto;
 use tiny_keccak::{Hasher, Keccak};
-use twox_hash::XxHash;
+use twox_hash::{XxHash, XxHash64};
 
 type HmacSha512 = Hmac<Sha512>;
 
@@ -184,6 +184,17 @@ pub fn ext_twox(data: &[u8], rounds: u32) -> Vec<u8> {
     vec
 }
 
+#[no_mangle]
+pub fn ext_xxhash(data: &[u8], seed: u32) -> Vec<u8> {
+    let mut hasher = XxHash64::with_seed(seed as u64);
+    use ::std::hash::Hasher;
+    hasher.write(data);
+    let hash64 = hasher.finish();
+    let mut result = [0u8; 8];
+    BigEndian::write_u64(&mut result, hash64);
+    result.to_vec()
+}
+
 #[cfg(test)]
 pub mod tests {
     use super::*;
@@ -279,5 +290,13 @@ pub mod tests {
 
         assert_eq!(hash_64[..], expected_64[..]);
         assert_eq!(hash_256[..], expected_256[..]);
+    }
+
+    #[test]
+    fn can_xxhash() {
+        let data = b"abcd";
+        let expected_64 = hex!("e29f70f8b8c96df7"); //e29f70f8b8c96df7
+        let hash_64 = ext_xxhash(data, 0xabcd);
+        assert_eq!(hash_64[..], expected_64[..]);
     }
 }

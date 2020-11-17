@@ -17,6 +17,10 @@ bool isBigInt(dynamic value) {
   return value is BigInt;
 }
 
+bool isBn(dynamic value) {
+  return isBigInt(value);
+}
+
 bool isBoolean(dynamic value) {
   return value is bool;
 }

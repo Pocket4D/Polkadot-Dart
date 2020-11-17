@@ -73,7 +73,7 @@ pub extern "C" fn bip39_to_seed(phrase: *const c_char, password: *const c_char) 
 // Binding hashing to dart
 #[no_mangle]
 pub extern "C" fn blake2b(data: *const c_char, key: *const c_char, size: u32) -> *mut c_char {
-    let result_vec = hashing::ext_blake2b(get_str(data).as_bytes(), get_str(key).as_bytes(), size);
+    let result_vec = hashing::ext_blake2b(&get_u8vec_from_ptr(data), get_str(key).as_bytes(), size);
     get_ptr_from_u8vec(result_vec)
 }
 
@@ -117,6 +117,12 @@ pub extern "C" fn sha512(data: *const c_char) -> *mut c_char {
 #[no_mangle]
 pub extern "C" fn twox(data: *const c_char, rounds: u32) -> *mut c_char {
     let result_vec = hashing::ext_twox(get_str(data).as_bytes(), rounds);
+    get_ptr_from_u8vec(result_vec)
+}
+
+#[no_mangle]
+pub extern "C" fn xxhash64(data: *const c_char, seed: u32) -> *mut c_char {
+    let result_vec = hashing::ext_xxhash(get_str(data).as_bytes(), seed);
     get_ptr_from_u8vec(result_vec)
 }
 
@@ -333,12 +339,12 @@ pub mod tests {
 
     #[test]
     fn can_blake2b() {
-        let data = "abc";
+        let data = b"abc";
         let key = "";
         let expected_32 = hex!("bddd813c634239723171ef3fee98579b94964e3bb1cb3e427262c8c068d52319");
         let expected_64 = hex!("ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923");
-        let hash_32 = blake2b(get_ptr(data), get_ptr(key), 32);
-        let hash_64 = blake2b(get_ptr(data), get_ptr(key), 64);
+        let hash_32 = blake2b(get_ptr_from_u8vec(data.to_vec()), get_ptr(key), 32);
+        let hash_64 = blake2b(get_ptr_from_u8vec(data.to_vec()), get_ptr(key), 64);
         let message_32 = get_u8vec_from_ptr(hash_32);
         let message_64 = get_u8vec_from_ptr(hash_64);
         assert_eq!(message_32[..], expected_32[..]);
@@ -406,6 +412,15 @@ pub mod tests {
         let message_256 = get_u8vec_from_ptr(hash_256);
         assert_eq!(message_64[..], expected_64[..]);
         assert_eq!(message_256[..], expected_256[..]);
+    }
+
+    #[test]
+    fn can_xxhash64() {
+        let data = "abcd";
+        let expected_64 = hex!("e29f70f8b8c96df7");
+        let hash_64 = xxhash64(get_ptr(data), 0xabcd);
+        let message_64 = get_u8vec_from_ptr(hash_64);
+        assert_eq!(message_64[..], expected_64[..]);
     }
 
     #[test]

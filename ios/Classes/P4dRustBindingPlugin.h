@@ -28,6 +28,8 @@ char *sha512(const char *data);
 
 char *twox(const char *data, uint32_t rounds);
 
+char *xxhash64(const char *data, uint32_t seed);
+
 char *bip32_get_private_key(const char *seed, const char *path);
 
 char *ed25519_get_pub_from_prv(const char *private_key);

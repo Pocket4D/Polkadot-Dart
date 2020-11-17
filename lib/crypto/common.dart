@@ -48,9 +48,13 @@ String bip39ToSeed(String phrase, String password) {
   return throwReturn(resultString);
 }
 
+/// data have to be `hex` without `0x`
 String blake2b(String data, String password, int size) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-  final result = rustBlake2b(data.toUtf8(), password.toUtf8(), size);
+  if (!isHexString(data)) {
+    throw "ERROR: `data` should be `hex` without `0x`";
+  }
+  final result = rustBlake2b(data.toHex().toUtf8(), password.toUtf8(), size);
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -67,6 +71,14 @@ String keccak256(String data) {
 String sha512(String data) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   final result = rustSha512(data.toUtf8());
+  final resultString = Utf8.fromUtf8(result);
+  freeCString(result);
+  return throwReturn(resultString);
+}
+
+String xxhash(String data, int seed) {
+  if (dylib == null) throw "ERROR: The library is not initialized 🙁";
+  var result = rustXxhash64(data.toUtf8(), seed);
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);

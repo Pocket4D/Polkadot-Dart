@@ -89,7 +89,6 @@ class Options {
 Uint8List bnToU8a(BigInt value,
     {int bitLength = -1, Endian endian = Endian.little, bool isNegative = false}) {
   BigInt valueBn = bnToBn(value);
-
   int byteLength;
   if (bitLength == -1) {
     byteLength = (valueBn.bitLength / 8).ceil();

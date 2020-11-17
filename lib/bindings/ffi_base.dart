@@ -117,6 +117,15 @@ final rustTwoxFunc rustTwox =
     dylib.lookup<NativeFunction<rustTwoxNative>>(rustTwoxName).asFunction();
 
 ///
+/// `fn xxhash(data: *const c_char, seed: u32) -> *mut c_char`
+///
+typedef rustXxhash64Func = Pointer<Utf8> Function(Pointer<Utf8> data, int seed);
+typedef rustXxhash64Native = Pointer<Utf8> Function(Pointer<Utf8>, Uint32);
+final rustXxhash64Name = "xxhash64";
+final rustXxhash64Func rustXxhash64 =
+    dylib.lookup<NativeFunction<rustXxhash64Native>>(rustXxhash64Name).asFunction();
+
+///
 /// `fn bip32_get_private_key(seed: *const c_char, path: *const c_char) -> *mut c_char`
 ///
 typedef rustBip32GetPrivateKeyFunc = Pointer<Utf8> Function(Pointer<Utf8> seed, Pointer<Utf8> path);
