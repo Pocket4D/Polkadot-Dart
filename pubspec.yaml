@@ -16,6 +16,7 @@ dependencies:
   recase: ^3.0.1
   laksadart: ^0.1.20-dev.1
   tweetnacl: ^0.3.2
+  base_x: ^1.0.1
 
 dev_dependencies:
   flutter_test:

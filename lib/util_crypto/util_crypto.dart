@@ -8,3 +8,4 @@ export 'schnorrkel.dart';
 export 'mnemonic.dart';
 export 'types.dart';
 export 'secp256k1.dart';
+export 'base32.dart';

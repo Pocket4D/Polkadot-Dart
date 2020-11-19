@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety.1"
+  base_x:
+    dependency: "direct main"
+    description:
+      name: base_x
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   basic_utils:
     dependency: transitive
     description:
