@@ -35,7 +35,6 @@ String formatDecimal(String value) {
 }
 
 String formatValue(double elapsed) {
-  print(elapsed);
   if (elapsed < 15) {
     return "${elapsed.toStringAsFixed(1)}s";
   } else if (elapsed < 60) {
