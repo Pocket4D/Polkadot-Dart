@@ -5,11 +5,6 @@ import 'package:ffi/ffi.dart';
 import 'package:p4d_rust_binding/bindings/bindings.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 
-extension on String {
-  String toHex() => strip0xHex(this);
-  Pointer<Utf8> toUtf8() => Utf8.toUtf8(this);
-}
-
 String bip39Generate(int wordsNumber) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   final phrasePointer = rustBip39(wordsNumber);
@@ -54,7 +49,7 @@ String blake2b(String data, String password, int size) {
   if (!isHexString(data)) {
     throw "ERROR: `data` should be `hex` without `0x`";
   }
-  final result = rustBlake2b(data.toHex().toUtf8(), password.toUtf8(), size);
+  final result = rustBlake2b(data.hexStripPrefix().toUtf8(), password.toUtf8(), size);
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -222,7 +217,8 @@ void _isolateTwox(SendPort initialReplyTo) {
 String bip32GetPrivateKey(String seed, String path) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(seed)) throw "ERROR: `seed` should be `hex` without `0x`";
-  final result = rustBip32GetPrivateKey(seed.toHex().toUtf8(), path.toHex().toUtf8());
+  final result =
+      rustBip32GetPrivateKey(seed.hexStripPrefix().toUtf8(), path.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -232,7 +228,7 @@ String bip32GetPrivateKey(String seed, String path) {
 String ed25519GetPubFromPrivate(String privateKey) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(privateKey)) throw "ERROR: `privateKey` should be `hex` without `0x`";
-  final result = rustEd25519GetPubFromPrivate(privateKey.toHex().toUtf8());
+  final result = rustEd25519GetPubFromPrivate(privateKey.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -242,7 +238,17 @@ String ed25519GetPubFromPrivate(String privateKey) {
 String secp256k1GetPubFromPrivate(String privateKey) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(privateKey)) throw "ERROR: `privateKey` should be `hex` without `0x`";
-  final result = rustSecp256k1GetPubFromPrivate(privateKey.toHex().toUtf8());
+  final result = rustSecp256k1GetPubFromPrivate(privateKey.hexStripPrefix().toUtf8());
+  final resultString = Utf8.fromUtf8(result);
+  freeCString(result);
+  return throwReturn(resultString);
+}
+
+/// `pubKey` should be `hex` without `0x`
+String secp256k1GetCompressPub(String pubKey) {
+  if (dylib == null) throw "ERROR: The library is not initialized 🙁";
+  if (!isHexString(pubKey)) throw "ERROR: `pubKey` should be `hex` without `0x`";
+  final result = rustSecp256k1GetCompressPub(pubKey.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -252,7 +258,7 @@ String secp256k1GetPubFromPrivate(String privateKey) {
 String sr25519GetPubFromSeed(String seed) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(seed)) throw "ERROR: `seed` should be `hex` without `0x`";
-  final result = rustSr25519GetPubFromSeed(seed.toHex().toUtf8());
+  final result = rustSr25519GetPubFromSeed(seed.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -262,7 +268,7 @@ String sr25519GetPubFromSeed(String seed) {
 String ed25519KeypairFromSeed(String seed) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(seed)) throw "ERROR: `seed` should be `hex` without `0x`";
-  final result = rustEd25519KeypairFromSeed(seed.toHex().toUtf8());
+  final result = rustEd25519KeypairFromSeed(seed.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -284,8 +290,8 @@ String ed25519Sign(String pubkey, String seckey, String message) {
     throw "ERROR: `message` should be `hex` without `0x`";
   }
 
-  final result =
-      rustEd25519Sign(pubkey.toHex().toUtf8(), seckey.toHex().toUtf8(), message.toHex().toUtf8());
+  final result = rustEd25519Sign(pubkey.hexStripPrefix().toUtf8(), seckey.hexStripPrefix().toUtf8(),
+      message.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -297,8 +303,8 @@ bool ed25519Verify(String signature, String message, String pubkey) {
   if (!isHexString(signature)) throw "ERROR: `signature` should be `hex` without `0x`";
   if (!isHexString(message)) throw "ERROR: `message` should be `hex` without `0x`";
   if (!isHexString(pubkey)) throw "ERROR: `pubkey` should be `hex` without `0x`";
-  final result = rustEd25519Verify(
-      signature.toHex().toUtf8(), message.toHex().toUtf8(), pubkey.toHex().toUtf8());
+  final result = rustEd25519Verify(signature.hexStripPrefix().toUtf8(),
+      message.hexStripPrefix().toUtf8(), pubkey.hexStripPrefix().toUtf8());
   return result == 1;
 }
 
@@ -308,7 +314,8 @@ String sr25519DeriveKeypairHard(String pair, String cc) {
   if (!isHexString(pair)) throw "ERROR: `pair` should be `hex` without `0x`";
   if (!isHexString(cc)) throw "ERROR: `cc` should be `hex` without `0x`";
 
-  final result = rustSr25519DeriveKeypairHard(pair.toHex().toUtf8(), cc.toHex().toUtf8());
+  final result =
+      rustSr25519DeriveKeypairHard(pair.hexStripPrefix().toUtf8(), cc.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -319,7 +326,8 @@ String sr25519DeriveKeypairSoft(String pair, String cc) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(pair)) throw "ERROR: `pair` should be `hex` without `0x`";
   if (!isHexString(cc)) throw "ERROR: `cc` should be `hex` without `0x`";
-  final result = rustSr25519DeriveKeypairSoft(pair.toHex().toUtf8(), cc.toHex().toUtf8());
+  final result =
+      rustSr25519DeriveKeypairSoft(pair.hexStripPrefix().toUtf8(), cc.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -330,7 +338,8 @@ String sr25519DerivePublicSoft(String public, String cc) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(public)) throw "ERROR: `public` should be `hex` without `0x`";
   if (!isHexString(cc)) throw "ERROR: `cc` should be `hex` without `0x`";
-  final result = rustSr25519DerivePublicSoft(public.toHex().toUtf8(), cc.toHex().toUtf8());
+  final result =
+      rustSr25519DerivePublicSoft(public.hexStripPrefix().toUtf8(), cc.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -340,7 +349,7 @@ String sr25519DerivePublicSoft(String public, String cc) {
 String sr25519KeypairFromSeed(String seed) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(seed)) throw "ERROR: `seed` should be `hex` without `0x`";
-  final result = rustSr25519KeypairFromSeed(seed.toHex().toUtf8());
+  final result = rustSr25519KeypairFromSeed(seed.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   return throwReturn(resultString);
 }
@@ -349,7 +358,7 @@ String sr25519KeypairFromSeed(String seed) {
 String sr25519KeypairFromPair(String seed) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(seed)) throw "ERROR: `seed` should be `hex` without `0x`";
-  final result = rustSr25519KeypairFromPair(seed.toHex().toUtf8());
+  final result = rustSr25519KeypairFromPair(seed.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -369,8 +378,8 @@ String sr25519Sign(String pubkey, String seckey, String message) {
   if (!isHexString(pubkey)) {
     throw "ERROR: `pubkey` should be `hex` without `0x`";
   }
-  final result =
-      rustSr25519Sign(pubkey.toHex().toUtf8(), seckey.toHex().toUtf8(), message.toHex().toUtf8());
+  final result = rustSr25519Sign(pubkey.hexStripPrefix().toUtf8(), seckey.hexStripPrefix().toUtf8(),
+      message.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -382,7 +391,7 @@ bool sr25519Verify(String signature, String message, String pubkey) {
   if (!isHexString(signature)) throw "ERROR: `signature` should be `hex` without `0x`";
   if (!isHexString(message)) throw "ERROR: `message` should be `hex` without `0x`";
   if (!isHexString(pubkey)) throw "ERROR: `pubkey` should be `hex` without `0x`";
-  final result = rustSr25519Verify(
-      signature.toHex().toUtf8(), message.toHex().toUtf8(), pubkey.toHex().toUtf8());
+  final result = rustSr25519Verify(signature.hexStripPrefix().toUtf8(),
+      message.hexStripPrefix().toUtf8(), pubkey.hexStripPrefix().toUtf8());
   return result == 1;
 }

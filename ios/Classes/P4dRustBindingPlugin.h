@@ -36,6 +36,8 @@ char *ed25519_get_pub_from_prv(const char *private_key);
 
 char *secp256k1_get_pub_from_prv(const char *private_key);
 
+char *secp256k1_get_compress_pub(const char *uncompressed);
+
 char *sr25519_get_pub_from_seed(const char *seed);
 
 char *ed25519_keypair_from_seed(const char *seed);

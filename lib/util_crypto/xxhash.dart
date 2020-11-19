@@ -12,7 +12,7 @@ BigInt xxhash64AsValue(dynamic data, int seed) {
     toHash = data;
   }
   var twoXResult = xxhash(toHash, seed);
-  return hexToBn(hexAddPrefix(twoXResult));
+  return twoXResult.hexAddPrefix().hexToBn();
 }
 
 String xxhash64AsRaw(dynamic data, int seed) {
@@ -20,7 +20,7 @@ String xxhash64AsRaw(dynamic data, int seed) {
 }
 
 String xxhash64AsHex(dynamic data, int seed) {
-  return hexAddPrefix(xxhash64AsValue(data, seed).toRadixString(16));
+  return xxhash64AsValue(data, seed).toRadixString(16).hexAddPrefix();
 }
 
 BigInt xxhash64AsBn(dynamic data, int seed) {
@@ -43,16 +43,18 @@ Future<Uint8List> xxhashAsU8aAsync(dynamic data, {int bitLength = 64}) async {
   final iterations = (bitLength / 64).ceil();
 
   if (isU8a(data)) {
-    return hexToU8a(hexAddPrefix(await twox(u8aToHex(data, include0x: false), iterations)));
+    final twoxResult = await twox(u8aToHex(data, include0x: false), iterations);
+    return twoxResult.hexAddPrefix().toU8a();
   } else {
     return xxhashAsU8a(data, bitLength: bitLength);
   }
 }
 
 String xxhashAsHex(dynamic data, {int bitLength = 64}) {
-  return u8aToHex(xxhashAsU8a(data, bitLength: bitLength));
+  return xxhashAsU8a(data, bitLength: bitLength).toHex();
 }
 
 Future<String> xxhashAsHexAsync(dynamic data, {int bitLength = 64}) async {
-  return u8aToHex(await xxhashAsU8aAsync(data, bitLength: bitLength));
+  final xxhashResult = await xxhashAsU8aAsync(data, bitLength: bitLength);
+  return xxhashResult.toHex();
 }

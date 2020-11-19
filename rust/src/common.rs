@@ -159,6 +159,15 @@ pub extern "C" fn secp256k1_get_pub_from_prv(private_key: *const c_char) -> *mut
 }
 
 #[no_mangle]
+pub extern "C" fn secp256k1_get_compress_pub(uncompressed: *const c_char) -> *mut c_char {
+    let u8_vec = get_u8vec_from_ptr(uncompressed);
+    let pk = secp256k1::key::PublicKey::from_slice(&u8_vec).unwrap();
+    let new_box: Box<[u8]> = Box::new(pk.serialize());
+    let result = new_box.into_vec();
+    get_ptr_from_u8vec(result)
+}
+
+#[no_mangle]
 pub extern "C" fn sr25519_get_pub_from_seed(seed: *const c_char) -> *mut c_char {
     let seed_vec = get_u8vec_from_ptr(seed);
     let keypair_option = sr25519::KeyPair::from_seed(&seed_vec[..32]);
@@ -446,6 +455,14 @@ pub mod tests {
         let prv_str = "8f94d394a8e8fd6b1bc2f3f49f5c47e385281d5c17e65324b0f62483e37e8793";
         let expected = hex!("0215197801d5ba7001d143183d04bf4e675be6c24b5101fc89de1659d50dbbaa24");
         let pub_ptr = secp256k1_get_pub_from_prv(get_ptr(prv_str));
+        let message = get_u8vec_from_ptr(pub_ptr);
+        assert_eq!(message[..], expected[..]);
+    }
+    #[test]
+    fn can_secp256k1_get_compress_pub() {
+        let origin="04b9dc646dd71118e5f7fda681ad9eca36eb3ee96f344f582fbe7b5bcdebb1307763fe926c273235fd979a134076d00fd1683cbd35868cb485d4a3a640e52184af";
+        let expected = hex!("03b9dc646dd71118e5f7fda681ad9eca36eb3ee96f344f582fbe7b5bcdebb13077");
+        let pub_ptr = secp256k1_get_compress_pub(get_ptr(origin));
         let message = get_u8vec_from_ptr(pub_ptr);
         assert_eq!(message[..], expected[..]);
     }

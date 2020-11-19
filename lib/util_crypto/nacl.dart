@@ -39,8 +39,8 @@ KeyPair naclKeypairFromSecret(Uint8List secret) {
 
 KeyPair naclKeypairFromSeed(Uint8List seed, {bool useNative = true}) {
   if (useNative) {
-    final full = ed25519KeypairFromSeed(u8aToHex(seed, include0x: false));
-    final fullU8a = hexToU8a(hexAddPrefix(full));
+    final full = ed25519KeypairFromSeed(seed.toHex(include0x: false));
+    final fullU8a = full.hexAddPrefix().toU8a();
     return KeyPair(publicKey: fullU8a.sublist(32), secretKey: fullU8a.sublist(0, 64));
   }
   final naclKeyPair = nacl.Signature.keyPair_fromSeed(seed);
@@ -48,7 +48,7 @@ KeyPair naclKeypairFromSeed(Uint8List seed, {bool useNative = true}) {
 }
 
 KeyPair naclKeypairFromString(String value) {
-  return naclKeypairFromSeed(blake2AsU8a(stringToU8a(value), bitLength: 256));
+  return naclKeypairFromSeed(blake2AsU8a(value.plainToU8a(), bitLength: 256));
 }
 
 NaclEncrypted naclEncrypt(Uint8List message, Uint8List secret, Uint8List nonce) {
@@ -56,7 +56,7 @@ NaclEncrypted naclEncrypt(Uint8List message, Uint8List secret, Uint8List nonce) 
     nonce = randomAsU8a(24);
   }
   return NaclEncrypted(
-      encrypted: nacl.SecretBox.nonce(secret, u8aToBn(nonce).toInt()).box(message), nonce: nonce);
+      encrypted: nacl.SecretBox.nonce(secret, nonce.toBn().toInt()).box(message), nonce: nonce);
 }
 
 Uint8List naclDecrypt(Uint8List encrypted, Uint8List nonce, Uint8List secret) {
@@ -72,7 +72,7 @@ Uint8List naclDeriveHard(Uint8List seed, Uint8List chainCode) {
 
 Uint8List naclOpen(
     Uint8List sealed, Uint8List nonce, Uint8List senderBoxPublic, Uint8List receiverBoxSecret) {
-  return nacl.Box.nonce(senderBoxPublic, receiverBoxSecret, u8aToBn(nonce).toInt()).open(sealed);
+  return nacl.Box.nonce(senderBoxPublic, receiverBoxSecret, nonce.toBn().toInt()).open(sealed);
 }
 
 NaclSealed naclSeal(
@@ -81,7 +81,6 @@ NaclSealed naclSeal(
     nonce = randomAsU8a(24);
   }
   return NaclSealed(
-      sealed:
-          nacl.Box.nonce(receiverBoxPublic, senderBoxSecret, u8aToBn(nonce).toInt()).box(message),
+      sealed: nacl.Box.nonce(receiverBoxPublic, senderBoxSecret, nonce.toBn().toInt()).box(message),
       nonce: nonce);
 }

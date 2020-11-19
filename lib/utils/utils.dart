@@ -11,6 +11,7 @@ export 'hex.dart';
 export 'bn.dart';
 export 'compact.dart';
 export 'time.dart';
+export 'extension.dart';
 
 String throwReturn(String message) {
   if (message.startsWith("Error:")) {

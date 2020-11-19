@@ -5,3 +5,6 @@
 .pub/
 
 build/
+
+# temporarily remove ios build
+ios/*.a

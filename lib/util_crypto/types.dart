@@ -26,7 +26,7 @@ class KeyPair implements AbstractKeyPair {
   Map<String, Uint8List> toMap() => {"publicKey": publicKey, "secretKey": secretKey};
 
   Map<String, String> toHexMap() =>
-      {"publicKey": u8aToHex(publicKey), "secretKey": u8aToHex(secretKey)};
+      {"publicKey": publicKey.toHex(), "secretKey": u8aToHex(secretKey)};
 
   String toJson() => json.encode(toMap());
 

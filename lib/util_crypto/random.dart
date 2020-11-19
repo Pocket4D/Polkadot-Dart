@@ -19,7 +19,7 @@ Uint8List getRandomValues([int length = DEFAULT_LENGTH]) {
   if (randomPers.length > (length) * 2) {
     randomPers = randomPers.substring(0, (length) * 2);
   }
-  return hexToU8a(hexAddPrefix(randomPers));
+  return randomPers.hexAddPrefix().toU8a();
 }
 
 Uint8List randomAsU8a([int length = DEFAULT_LENGTH]) {

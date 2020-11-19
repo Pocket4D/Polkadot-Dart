@@ -5,5 +5,5 @@ import 'package:p4d_rust_binding/utils/utils.dart';
 
 Uint8List mnemonicToMiniSecret(String mnemonic, [String password = '']) {
   var nativeResult = bip39ToMiniSecret(mnemonic, password);
-  return hexToU8a(hexAddPrefix(nativeResult));
+  return nativeResult.hexAddPrefix().toU8a();
 }

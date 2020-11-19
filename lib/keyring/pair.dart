@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
+import 'package:p4d_rust_binding/utils/utils.dart';
+
 class PairInfo {
   PairInfo({
     this.publicKey,
@@ -79,32 +82,52 @@ PairInfo decodePkcs8(Uint8List encoded) {
   return PairInfo(publicKey: publicKey, secretKey: secretKey);
 }
 
-//  decodePair (String passphrase, {Uint8List encrypted, List<String> encType= ENCODING}) {
-//   assert(encrypted==null, 'No encrypted data available to decode');
-//   assert(passphrase==null || !encType.contains('xsalsa20-poly1305'), 'Password required to decode encypted data');
+Future<PairInfo> decodePair(String passphrase,
+    {Uint8List encrypted, List<String> encType = ENCODING}) async {
+  assert(encrypted == null, 'No encrypted data available to decode');
+  assert(passphrase == null || !encType.contains('xsalsa20-poly1305'),
+      'Password required to decode encypted data');
 
-//   final encoded = encrypted;
+  var encoded = encrypted;
 
-//   if (passphrase!=null) {
-//     Uint8List password;
+  if (passphrase != null) {
+    Uint8List password;
 
-//     if (encType.contains('scrypt')) {
-//       const { params, salt } = scryptFromU8a(encrypted);
+    if (encType.contains('scrypt')) {
+      final scryptResult = scryptFromU8a(encrypted);
+      var params = scryptResult["params"] as Map<String, int>;
+      var salt = scryptResult["salt"] as Uint8List;
 
-//       password = scryptEncode(passphrase, salt, params).password;
-//       encrypted = encrypted.subarray(SCRYPT_LENGTH);
-//     } else {
-//       password = stringToU8a(passphrase);
-//     }
+      password = (await scryptEncode(passphrase, salt: salt, params: params)).password;
+      encrypted = encrypted.sublist(SCRYPT_LENGTH);
+    } else {
+      password = stringToU8a(passphrase);
+    }
 
-//     encoded = naclDecrypt(
-//       encrypted.subarray(NONCE_LENGTH),
-//       encrypted.subarray(0, NONCE_LENGTH),
-//       u8aFixLength(password, 256, true)
-//     );
-//   }
+    encoded = naclDecrypt(encrypted.sublist(NONCE_LENGTH), encrypted.sublist(0, NONCE_LENGTH),
+        u8aFixLength(password, bitLength: 256, atStart: true));
+  }
 
-//   assert(encoded, 'Unable to decode using the supplied passphrase');
+  assert(encoded != null, 'Unable to decode using the supplied passphrase');
 
-//   return decodePkcs8(encoded);
-// }
+  return decodePkcs8(encoded);
+}
+
+Future<Uint8List> encodePair(PairInfo pair, String passphrase) async {
+  assert(pair.secretKey != null, 'Expected a valid secretKey to be passed to encode');
+
+  var encoded = u8aConcat([PKCS8_HEADER, pair.secretKey, PKCS8_DIVIDER, pair.publicKey]);
+
+  if (passphrase == null) {
+    return encoded;
+  }
+
+  final ScryptResult scryptResult = await scryptEncode(passphrase);
+  var params = scryptResult.params;
+  var password = scryptResult.password;
+  var salt = scryptResult.salt;
+
+  final naclResult = naclEncrypt(encoded, password.sublist(0, 32), null);
+
+  return u8aConcat([scryptToU8a(salt, params.toMap()), naclResult.nonce, naclResult.encrypted]);
+}

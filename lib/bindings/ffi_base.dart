@@ -157,6 +157,16 @@ final rustSecp256k1GetPubFromPrivateFunc rustSecp256k1GetPubFromPrivate = dylib
     .asFunction();
 
 ///
+/// pub extern "C" fn secp256k1_get_compress_pub(uncompressed: *const c_char) -> *mut c_char
+///
+typedef rustSecp256k1GetCompressPubFunc = Pointer<Utf8> Function(Pointer<Utf8> privateKey);
+typedef rustSecp256k1GetCompressPubNative = Pointer<Utf8> Function(Pointer<Utf8>);
+final rustSecp256k1GetCompressPubName = "secp256k1_get_compress_pub";
+final rustSecp256k1GetCompressPubFunc rustSecp256k1GetCompressPub = dylib
+    .lookup<NativeFunction<rustSecp256k1GetCompressPubNative>>(rustSecp256k1GetCompressPubName)
+    .asFunction();
+
+///
 /// `fn sr25519_get_pub_from_seed(seed: *const c_char) -> *mut c_char`
 ///
 typedef rustSr25519GetPubFromSeedFunc = Pointer<Utf8> Function(Pointer<Utf8> seed);

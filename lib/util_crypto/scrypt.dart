@@ -47,7 +47,26 @@ class ScryptParams {
       };
 }
 
-Future<Map<String, dynamic>> scryptEncode(dynamic passphrase,
+class ScryptResult {
+  ScryptParams params;
+  Uint8List password;
+  Uint8List salt;
+  ScryptResult({this.params, this.password, this.salt});
+
+  factory ScryptResult.fromMap(Map<String, dynamic> json) => ScryptResult(
+        params: ScryptParams.fromMap(json["params"] as Map<String, dynamic>),
+        password: json["password"] as Uint8List,
+        salt: json["salt"] as Uint8List,
+      );
+
+  Map<String, dynamic> toMap() => {
+        "params": params,
+        "password": password,
+        "salt": salt,
+      };
+}
+
+Future<ScryptResult> scryptEncode(dynamic passphrase,
     {Uint8List salt, Map<String, int> params = DEFAULT_PARAMS}) async {
   if (salt == null) {
     salt = randomAsU8a();
@@ -55,26 +74,27 @@ Future<Map<String, dynamic>> scryptEncode(dynamic passphrase,
   final sParams = ScryptParams.fromMap(params);
 
   var result = await scrypt(
-      passphrase, u8aToHex(salt, include0x: true), log2(sParams.n).floor(), sParams.r, sParams.p);
+      passphrase, salt.toHex(include0x: true), log2(sParams.n).floor(), sParams.r, sParams.p);
 
-  return {...params, "password": hexToU8a(hexAddPrefix(result)), "salt": salt};
+  return ScryptResult.fromMap(
+      {"params": params, "password": result.hexAddPrefix().toU8a(), "salt": salt});
 }
 
 Uint8List scryptToU8a(Uint8List salt, Map<String, int> params) {
   final sParams = ScryptParams.fromMap(params);
   return u8aConcat([
     salt,
-    bnToU8a(BigInt.from(sParams.n), bitLength: 32, endian: Endian.little),
-    bnToU8a(BigInt.from(sParams.p), bitLength: 32, endian: Endian.little),
-    bnToU8a(BigInt.from(sParams.r), bitLength: 32, endian: Endian.little)
+    BigInt.from(sParams.n).toU8a(bitLength: 32, endian: Endian.little),
+    BigInt.from(sParams.p).toU8a(bitLength: 32, endian: Endian.little),
+    BigInt.from(sParams.r).toU8a(bitLength: 32, endian: Endian.little)
   ]);
 }
 
 Map<String, dynamic> scryptFromU8a(Uint8List data) {
   final salt = data.sublist(0, 32);
-  final N = u8aToBn(data.sublist(32 + 0, 32 + 4), endian: Endian.little).toInt();
-  final p = u8aToBn(data.sublist(32 + 4, 32 + 8), endian: Endian.little).toInt();
-  final r = u8aToBn(data.sublist(32 + 8, 32 + 12), endian: Endian.little).toInt();
+  final N = data.sublist(32 + 0, 32 + 4).toBn(endian: Endian.little).toInt();
+  final p = data.sublist(32 + 4, 32 + 8).toBn(endian: Endian.little).toInt();
+  final r = data.sublist(32 + 8, 32 + 12).toBn(endian: Endian.little).toInt();
 
   // FIXME At this moment we assume these to be fixed params, this is not a great idea since we lose flexibility
   // and updates for greater security. However we need some protection against carefully-crafted params that can
@@ -83,5 +103,5 @@ Map<String, dynamic> scryptFromU8a(Uint8List data) {
   assert(N == DEFAULT_PARAMS["N"] && p == DEFAULT_PARAMS["p"] && r == DEFAULT_PARAMS["r"],
       'Invalid injected scrypt params found');
   final sParams = ScryptParams(n: N, p: p, r: r);
-  return {...sParams.toMap(), "salt": salt};
+  return {"params": sParams.toMap(), "salt": salt};
 }
