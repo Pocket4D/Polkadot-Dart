@@ -1,10 +1,51 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:laksadart/laksadart.dart';
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
+// import 'package:laksadart/laksadart.dart';
+import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:p4d_rust_binding/utils/number.dart' as numbers;
 
 const DEFAULT_LENGTH = 32;
+
+class DartRandom {
+  Random dartRandom;
+
+  DartRandom(this.dartRandom);
+
+  String get algorithmName => "DartRandom";
+
+  BigInt nextBigInteger(int bitLength) {
+    int fullBytes = bitLength ~/ 8;
+
+    /// var remainingBits = bitLength % 8;
+
+    /// Generate a number from the full bytes. Then, prepend a smaller number
+    /// covering the remaining bits.
+    BigInt main = numbers.bytesToInt(nextBytes(fullBytes));
+
+    /// forcing remainingBits to be calculate with bitLength
+    int remainingBits = (bitLength - main.bitLength);
+    int additional = remainingBits < 4 ? dartRandom.nextInt(pow(2, remainingBits)) : remainingBits;
+    BigInt additionalBit = (new BigInt.from(additional) << (fullBytes * 8));
+    BigInt result = main + additionalBit;
+    return result;
+  }
+
+  Uint8List nextBytes(int count) {
+    Uint8List list = new Uint8List(count);
+
+    for (int i = 0; i < list.length; i++) {
+      list[i] = nextUint8();
+    }
+    return list;
+  }
+
+  int nextUint16() => dartRandom.nextInt(pow(2, 32));
+
+  int nextUint32() => dartRandom.nextInt(pow(2, 32));
+
+  int nextUint8() => dartRandom.nextInt(pow(2, 8));
+}
 
 Uint8List getRandomValues([int length = DEFAULT_LENGTH]) {
   DartRandom rn = DartRandom(Random.secure());

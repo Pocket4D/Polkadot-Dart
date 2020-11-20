@@ -1,13 +1,17 @@
-pub use derivation_path::DerivationPath;
-use std::ffi::CString;
-use std::os::raw::c_char;
-
+extern crate bitcoin_hashes;
+extern crate secp256k1;
 use super::bip32;
 use super::bip39;
 use super::ed25519;
 use super::hashing;
 use super::sr25519;
 use super::util::{get_ptr, get_ptr_from_u8vec, get_str, get_u8vec_from_ptr};
+// use bitcoin_hashes::{sha256, Hash};
+pub use derivation_path::DerivationPath;
+use secp256k1::recovery::{RecoverableSignature, RecoveryId};
+use secp256k1::Message;
+use std::ffi::CString;
+use std::os::raw::c_char;
 
 #[no_mangle]
 pub extern "C" fn rust_cstr_free(s: *mut c_char) {
@@ -73,20 +77,22 @@ pub extern "C" fn bip39_to_seed(phrase: *const c_char, password: *const c_char) 
 // Binding hashing to dart
 #[no_mangle]
 pub extern "C" fn blake2b(data: *const c_char, key: *const c_char, size: u32) -> *mut c_char {
-    let result_vec = hashing::ext_blake2b(&get_u8vec_from_ptr(data), get_str(key).as_bytes(), size);
+    let result_vec =
+        hashing::ext_blake2b(&get_u8vec_from_ptr(data), &get_u8vec_from_ptr(key), size);
     get_ptr_from_u8vec(result_vec)
 }
 
 #[no_mangle]
 pub extern "C" fn keccak256(data: *const c_char) -> *mut c_char {
-    let result_vec = hashing::ext_keccak256(get_str(data).as_bytes());
+    // let result_vec = hashing::ext_keccak256(get_str(data).as_bytes());
+    let result_vec = hashing::ext_keccak256(&get_u8vec_from_ptr(data));
     get_ptr_from_u8vec(result_vec)
 }
 
 #[no_mangle]
 pub extern "C" fn pbkdf2(data: *const c_char, salt: *const c_char, rounds: u32) -> *mut c_char {
     let result_vec =
-        hashing::ext_pbkdf2(get_str(data).as_bytes(), get_str(salt).as_bytes(), rounds);
+        hashing::ext_pbkdf2(&get_u8vec_from_ptr(data), &get_u8vec_from_ptr(salt), rounds);
     get_ptr_from_u8vec(result_vec)
 }
 
@@ -99,8 +105,8 @@ pub extern "C" fn scrypt(
     p: u32,
 ) -> *mut c_char {
     let result_vec = hashing::ext_scrypt(
-        get_str(password).as_bytes(),
-        get_str(salt).as_bytes(),
+        &get_u8vec_from_ptr(password),
+        &get_u8vec_from_ptr(salt),
         log2_n,
         r,
         p,
@@ -110,19 +116,19 @@ pub extern "C" fn scrypt(
 
 #[no_mangle]
 pub extern "C" fn sha512(data: *const c_char) -> *mut c_char {
-    let result_vec = hashing::ext_sha512(get_str(data).as_bytes());
+    let result_vec = hashing::ext_sha512(&get_u8vec_from_ptr(data));
     get_ptr_from_u8vec(result_vec)
 }
 
 #[no_mangle]
 pub extern "C" fn twox(data: *const c_char, rounds: u32) -> *mut c_char {
-    let result_vec = hashing::ext_twox(get_str(data).as_bytes(), rounds);
+    let result_vec = hashing::ext_twox(&get_u8vec_from_ptr(data), rounds);
     get_ptr_from_u8vec(result_vec)
 }
 
 #[no_mangle]
 pub extern "C" fn xxhash64(data: *const c_char, seed: u32) -> *mut c_char {
-    let result_vec = hashing::ext_xxhash(get_str(data).as_bytes(), seed);
+    let result_vec = hashing::ext_xxhash(&get_u8vec_from_ptr(data), seed);
     get_ptr_from_u8vec(result_vec)
 }
 
@@ -162,6 +168,25 @@ pub extern "C" fn secp256k1_get_pub_from_prv(private_key: *const c_char) -> *mut
 pub extern "C" fn secp256k1_get_compress_pub(uncompressed: *const c_char) -> *mut c_char {
     let u8_vec = get_u8vec_from_ptr(uncompressed);
     let pk = secp256k1::key::PublicKey::from_slice(&u8_vec).unwrap();
+    let new_box: Box<[u8]> = Box::new(pk.serialize());
+    let result = new_box.into_vec();
+    get_ptr_from_u8vec(result)
+}
+
+#[no_mangle]
+pub extern "C" fn secp256k1_recover(
+    message: *const c_char,
+    signature: *const c_char,
+    recovery_id: u8,
+) -> *mut c_char {
+    let msg_vec = get_u8vec_from_ptr(message);
+    let sig_vec = get_u8vec_from_ptr(signature);
+    // let msg_hash = sha256::Hash::hash(&msg_vec);
+    let msg = Message::from_slice(&msg_vec).unwrap();
+    let id = RecoveryId::from_i32(recovery_id as i32).unwrap();
+    let sig = RecoverableSignature::from_compact(&sig_vec[..64], id).unwrap();
+    let s = secp256k1::Secp256k1::new();
+    let pk = s.recover(&msg, &sig).unwrap();
     let new_box: Box<[u8]> = Box::new(pk.serialize());
     let result = new_box.into_vec();
     get_ptr_from_u8vec(result)
@@ -349,11 +374,19 @@ pub mod tests {
     #[test]
     fn can_blake2b() {
         let data = b"abc";
-        let key = "";
+        let key = b"";
         let expected_32 = hex!("bddd813c634239723171ef3fee98579b94964e3bb1cb3e427262c8c068d52319");
         let expected_64 = hex!("ba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923");
-        let hash_32 = blake2b(get_ptr_from_u8vec(data.to_vec()), get_ptr(key), 32);
-        let hash_64 = blake2b(get_ptr_from_u8vec(data.to_vec()), get_ptr(key), 64);
+        let hash_32 = blake2b(
+            get_ptr_from_u8vec(data.to_vec()),
+            get_ptr_from_u8vec(key.to_vec()),
+            32,
+        );
+        let hash_64 = blake2b(
+            get_ptr_from_u8vec(data.to_vec()),
+            get_ptr_from_u8vec(key.to_vec()),
+            64,
+        );
         let message_32 = get_u8vec_from_ptr(hash_32);
         let message_64 = get_u8vec_from_ptr(hash_64);
         assert_eq!(message_32[..], expected_32[..]);
@@ -362,19 +395,23 @@ pub mod tests {
 
     #[test]
     fn can_keccak256() {
-        let data = "test value";
+        let data = b"test value";
         let expected = hex!("2d07364b5c231c56ce63d49430e085ea3033c750688ba532b24029124c26ca5e");
-        let hash = keccak256(get_ptr(data));
+        let hash = keccak256(get_ptr_from_u8vec(data.to_vec()));
         let message = get_u8vec_from_ptr(hash);
         assert_eq!(message[..], expected[..]);
     }
 
     #[test]
     fn can_pbkdf2() {
-        let salt = "this is a salt";
-        let data = "hello world";
+        let salt = b"this is a salt";
+        let data = b"hello world";
         let expected = hex!("5fcbe04f05300a3ecc5c35d18ea0b78f3f6853d2ae5f3fca374f69a7d1f78b5def5c60dae1a568026c7492511e0c53521e8bb6e03a650e1263265fee92722270");
-        let hash = pbkdf2(get_ptr(data), get_ptr(salt), 2048);
+        let hash = pbkdf2(
+            get_ptr_from_u8vec(data.to_vec()),
+            get_ptr_from_u8vec(salt.to_vec()),
+            2048,
+        );
 
         let message = get_u8vec_from_ptr(hash);
         assert_eq!(message[..], expected[..]);
@@ -382,10 +419,16 @@ pub mod tests {
 
     #[test]
     fn can_scrypt() {
-        let password = "password";
-        let salt = "salt";
+        let password = b"password";
+        let salt = b"salt";
         let expected = hex!("745731af4484f323968969eda289aeee005b5903ac561e64a5aca121797bf7734ef9fd58422e2e22183bcacba9ec87ba0c83b7a2e788f03ce0da06463433cda6");
-        let hash = scrypt(get_ptr(password), get_ptr(salt), 14, 8, 1);
+        let hash = scrypt(
+            get_ptr_from_u8vec(password.to_vec()),
+            get_ptr_from_u8vec(salt.to_vec()),
+            14,
+            8,
+            1,
+        );
         let message = get_u8vec_from_ptr(hash);
         assert_eq!(message[..], expected[..]);
     }
@@ -403,20 +446,20 @@ pub mod tests {
 
     #[test]
     fn can_sha512() {
-        let data = "hello world";
+        let data = b"hello world";
         let expected = hex!("309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f");
-        let hash = sha512(get_ptr(data));
+        let hash = sha512(get_ptr_from_u8vec(data.to_vec()));
         let message = get_u8vec_from_ptr(hash);
         assert_eq!(message[..], expected[..]);
     }
 
     #[test]
     fn can_twox() {
-        let data = "abc";
+        let data = b"abc";
         let expected_64 = hex!("990977adf52cbc44");
         let expected_256 = hex!("990977adf52cbc440889329981caa9bef7da5770b2b8a05303b75d95360dd62b");
-        let hash_64 = twox(get_ptr(data), 1);
-        let hash_256 = twox(get_ptr(data), 4);
+        let hash_64 = twox(get_ptr_from_u8vec(data.to_vec()), 1);
+        let hash_256 = twox(get_ptr_from_u8vec(data.to_vec()), 4);
         let message_64 = get_u8vec_from_ptr(hash_64);
         let message_256 = get_u8vec_from_ptr(hash_256);
         assert_eq!(message_64[..], expected_64[..]);
@@ -425,9 +468,9 @@ pub mod tests {
 
     #[test]
     fn can_xxhash64() {
-        let data = "abcd";
+        let data = b"abcd";
         let expected_64 = hex!("e29f70f8b8c96df7");
-        let hash_64 = xxhash64(get_ptr(data), 0xabcd);
+        let hash_64 = xxhash64(get_ptr_from_u8vec(data.to_vec()), 0xabcd);
         let message_64 = get_u8vec_from_ptr(hash_64);
         assert_eq!(message_64[..], expected_64[..]);
     }

@@ -167,6 +167,16 @@ final rustSecp256k1GetCompressPubFunc rustSecp256k1GetCompressPub = dylib
     .asFunction();
 
 ///
+///pub extern "C" fn secp256k1_recover(message: *const c_char,signature: *const c_char,recovery_id: u8,) -> *mut c_char
+///
+typedef rustSecp256k1RecoverFunc = Pointer<Utf8> Function(
+    Pointer<Utf8> message, Pointer<Utf8> signature, int recoveryId);
+typedef rustSecp256k1RecoverNative = Pointer<Utf8> Function(Pointer<Utf8>, Pointer<Utf8>, Uint8);
+final rustSecp256k1RecoverName = "secp256k1_recover";
+final rustSecp256k1RecoverFunc rustSecp256k1Recover =
+    dylib.lookup<NativeFunction<rustSecp256k1RecoverNative>>(rustSecp256k1RecoverName).asFunction();
+
+///
 /// `fn sr25519_get_pub_from_seed(seed: *const c_char) -> *mut c_char`
 ///
 typedef rustSr25519GetPubFromSeedFunc = Pointer<Utf8> Function(Pointer<Utf8> seed);

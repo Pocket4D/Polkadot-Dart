@@ -17,7 +17,7 @@ void ed25519Test() {
       var pub2 = kp2.public;
       var expected3 = ED25519.getPubFromPrivate(prv2);
       expect(pub2, expected3);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -31,7 +31,7 @@ void ed25519Test() {
       var verified2 = ED25519.verify(signature2, message, kp2.public);
       expect(signature2.length, kp2.keyPair.length);
       expect(verified2, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -45,7 +45,7 @@ void ed25519Test() {
       var pub = "2f8c6129d816cf51c374bc7f08c3e63ed156cf78aefb4a6550d97b87997977ee";
       var verified2 = ED25519.verify(signature, message, pub);
       expect(verified2, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }

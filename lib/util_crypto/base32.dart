@@ -15,7 +15,7 @@ class Base32Config extends CheckConfig {
   Base32Config();
 }
 
-bool base32Validate({String value, bool ipfsCompat}) {
+bool base32Validate(String value, {bool ipfsCompat}) {
   return validateChars(Base32Config(), value: value, ipfsCompat: ipfsCompat);
 }
 
@@ -44,7 +44,7 @@ List<dynamic> decode(Uint8List output, String input, num offset) {
 }
 
 Uint8List base32Decode(String value, {bool ipfsCompat = false}) {
-  base32Validate(value: value, ipfsCompat: ipfsCompat);
+  base32Validate(value, ipfsCompat: ipfsCompat);
 
   var offset = (ipfsCompat ? 1 : 0);
   var decodedResult =
@@ -82,16 +82,16 @@ String base32Encode(dynamic value, {bool ipfsCompat = false}) {
   return ipfsCompat ? "b$out" : out;
 }
 
-typedef BaseValidator = bool Function({String value, bool ipfsCompat});
+typedef BaseValidator = bool Function(String value, {bool ipfsCompat});
 
-bool testValidator(BaseValidator validate, {String value, bool ipfsCompat}) {
+bool testValidator(BaseValidator validate, String value, {bool ipfsCompat}) {
   try {
-    return validate(value: value, ipfsCompat: ipfsCompat);
+    return validate(value, ipfsCompat: ipfsCompat);
   } catch (error) {
     return false;
   }
 }
 
 bool isBase32({String value, bool ipfsCompat}) {
-  return testValidator(base32Validate, value: value, ipfsCompat: ipfsCompat);
+  return testValidator(base32Validate, value, ipfsCompat: ipfsCompat);
 }

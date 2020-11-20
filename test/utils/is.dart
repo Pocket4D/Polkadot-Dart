@@ -20,7 +20,7 @@ void isTest() {
     expect(isHex('0x1234', 16), true); // true
     expect(isHex('0x1234', 8), false); // false
     expect(isHex('1234'), false); // false
-    print("\n");
+    // print("\n");
   });
 
   test('isJsonObject', () {
@@ -34,7 +34,7 @@ void isTest() {
     expect(isJsonObject(null), false); // false
     expect(isJsonObject("asdfasdf"), false); // false
     expect(isJsonObject("{'abc','def'}"), false); // false
-    print("\n");
+    // print("\n");
   });
 
   test('testChain', () {
@@ -59,7 +59,7 @@ void isTest() {
     invalidTestModeChainSpecs.forEach((s) {
       expect(isTestChain(s), false);
     });
-    print("\n");
+    // print("\n");
   });
 
   test('isUtf8', () {
@@ -71,6 +71,6 @@ void isTest() {
     expect(isUtf8('你好'), true); // true
     expect(isUtf8('0x7f07b1f87709608bee603bbc79a0dfc29cd315c1351a83aa31adf7458d7d3003'),
         false); // false
-    print("\n");
+    // print("\n");
   });
 }

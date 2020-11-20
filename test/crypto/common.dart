@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:p4d_rust_binding/crypto/common.dart';
+import 'package:p4d_rust_binding/crypto/secp256k1.dart';
+import 'package:p4d_rust_binding/util_crypto/keccak.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 
 void main() async {
@@ -13,7 +15,7 @@ void commonTest() async {
       var result = bip39Generate(length);
       var resultArray = result.split(" ").toList();
       expect(resultArray.length, length);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -24,7 +26,7 @@ void commonTest() async {
       var password = "Substrate";
       var miniSecret = bip39ToMiniSecret(phrase, password);
       expect(isHexString(miniSecret), true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -34,7 +36,7 @@ void commonTest() async {
       var phrase = "legal winner thank year wave sausage worth useful legal winner thank yellow";
       var validate = bip39Validate(phrase);
       expect(validate, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -51,7 +53,7 @@ void commonTest() async {
       var blake2bHash64 = blake2b(blake2bData, blake2bKey, 64);
       expect(blake2bHash32, blake2bExpected32);
       expect(blake2bHash64, blake2bExpected64);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -61,10 +63,9 @@ void commonTest() async {
     try {
       var keccakData = "test value";
       var keccakExpected = "2d07364b5c231c56ce63d49430e085ea3033c750688ba532b24029124c26ca5e";
-
-      var keccakHash = keccak256(keccakData);
+      var keccakHash = keccak256(stringToU8a(keccakData).toHex());
       expect(keccakHash, keccakExpected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -78,7 +79,7 @@ void commonTest() async {
           "5fcbe04f05300a3ecc5c35d18ea0b78f3f6853d2ae5f3fca374f69a7d1f78b5def5c60dae1a568026c7492511e0c53521e8bb6e03a650e1263265fee92722270";
       var pbkdf2Hash = await pbkdf2(pbkdf2Data, pbkdf2Salt, 2048);
       expect(pbkdf2Hash, pbkdf2Expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -92,7 +93,7 @@ void commonTest() async {
           "745731af4484f323968969eda289aeee005b5903ac561e64a5aca121797bf7734ef9fd58422e2e22183bcacba9ec87ba0c83b7a2e788f03ce0da06463433cda6";
       var scryptHash = await scrypt(scryptData, scryptSalt, 14, 8, 1);
       expect(scryptHash, scryptExpected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -105,7 +106,7 @@ void commonTest() async {
           "309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f";
       var sha512Hash = sha512(sha512Data);
       expect(sha512Hash, sha512Expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -121,7 +122,7 @@ void commonTest() async {
       var twoxHash256 = await twox(twoxData, 4);
       expect(twoxHash64, twoxExpected64);
       expect(twoxHash256, twoxExpected256);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -134,7 +135,7 @@ void commonTest() async {
       var expected = "8f94d394a8e8fd6b1bc2f3f49f5c47e385281d5c17e65324b0f62483e37e8793";
       var result = bip32GetPrivateKey(seed, path);
       expect(result, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -146,7 +147,7 @@ void commonTest() async {
       var expected = "3c24da049451555d51a7014a37337aa4e12d41e485abccfa46b47dfb2af54b7a";
       var result = ed25519GetPubFromPrivate(prv);
       expect(result, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -158,7 +159,23 @@ void commonTest() async {
       var expected = "0215197801d5ba7001d143183d04bf4e675be6c24b5101fc89de1659d50dbbaa24";
       var result = secp256k1GetPubFromPrivate(prv);
       expect(result, expected);
-      print("\n");
+      // print("\n");
+    } catch (e) {
+      throw e;
+    }
+  });
+  test('rust binding: secp256k1RecoverPublic', () async {
+    try {
+      var sig =
+          "0x7505f2880114da51b3f5d535f8687953c0ab9af4ab81e592eaebebf53b728d2b6dfd9b5bcd70fee412b1f31360e7c2774009305cb84fc50c1d0ff8034dfa5fff";
+      var msg = "0xa30b64ce1eedf409c8afb801d72c05234e64849ea538c15dd3c8cf4ffcf166c9";
+
+      var recId = 0;
+      var expected = "0x93a9fc7154c6da3c826415df01eb0e37fb4da4b0";
+      var rcv = u8aToU8a(secp256k1RecoverPublic(msg, sig, recId).hexAddPrefix());
+      var res = keccakAsU8a(rcv);
+      expect(u8aToHex(res.sublist(12)), expected);
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -169,7 +186,7 @@ void commonTest() async {
       var expected = "44a996beb1eef7bdcab976ab6d2ca26104834164ecf28fb375600576fcc6eb0f";
       var result = sr25519GetPubFromSeed(seed);
       expect(result, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -186,7 +203,7 @@ void commonTest() async {
       var expected2 = ed25519GetPubFromPrivate(prv);
       expect(pub, expected);
       expect(pub, expected2);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -204,7 +221,7 @@ void commonTest() async {
       var verified = ed25519Verify(signature, plainTextToHex(message), pub);
       expect(signature.length, kp.length);
       expect(verified, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -218,7 +235,7 @@ void commonTest() async {
       var pub = "2f8c6129d816cf51c374bc7f08c3e63ed156cf78aefb4a6550d97b87997977ee";
       var verified = ed25519Verify(signature, plainTextToHex(message), pub);
       expect(verified, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -231,7 +248,7 @@ void commonTest() async {
       var keypair = sr25519KeypairFromSeed(seed);
       var pub = keypair.substring(seed.length * 2, keypair.length);
       expect(pub, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -247,7 +264,7 @@ void commonTest() async {
       var signature = sr25519Sign(pub, prv, message);
       var verified = sr25519Verify(signature, message, pub);
       expect(verified, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -262,7 +279,7 @@ void commonTest() async {
           "1037eb7e51613d0dcf5930ae518819c87d655056605764840d9280984e1b7063c4566b55bf292fcab07b369d01095879b50517beca4d26e6a65866e25fec0d83";
       var verified = sr25519Verify(signature, message, pub);
       expect(verified, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -278,7 +295,7 @@ void commonTest() async {
       var pub = derivedPair.substring(128, keypair.length);
 
       expect(pub, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -291,7 +308,7 @@ void commonTest() async {
       var pub = "46ebddef8cd9bb167dc30878d7113b7e168e6f0646beffd77d69d39bad76b47a";
       var derivedPublic = sr25519DerivePublicSoft(pub, cc);
       expect(derivedPublic, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -307,7 +324,7 @@ void commonTest() async {
       var pub = derivedPair.substring(128, keypair.length);
 
       expect(pub, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }

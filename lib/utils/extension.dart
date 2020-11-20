@@ -16,7 +16,8 @@ extension StringExtension on String {
   String hexStripPrefix() => stringUtil.strip0xHex(this);
   String plainToHex() => u8aUtil.u8aToHex(stringUtil.stringToU8a(this));
   Uint8List toU8a({int bitLength = -1}) => hexUtil.hexToU8a(this, bitLength);
-  Uint8List plainToU8a([String enc]) => stringUtil.stringToU8a(this, enc);
+  Uint8List plainToU8a({String enc, bool useDartEncode = false}) =>
+      stringUtil.stringToU8a(this, enc: enc, useDartEncode: useDartEncode);
   BigInt hexToBn({Endian endian = Endian.big, bool isNegative = false}) =>
       hexUtil.hexToBn(this, endian: endian, isNegative: isNegative);
   Pointer<Utf8> toUtf8() => Utf8.toUtf8(this);
@@ -25,7 +26,7 @@ extension StringExtension on String {
 extension U8aExtension on Uint8List {
   Uint8List toU8a() => u8aUtil.u8aToU8a(this);
   String toHex({bool include0x = true}) => u8aUtil.u8aToHex(this, include0x: include0x);
-  String u8aToString({bool useDartEncode = false}) =>
+  String u8aToString({bool useDartEncode = true}) =>
       u8aUtil.u8aToString(this, useDartEncode: useDartEncode);
   bool eq(Uint8List other) => u8aUtil.u8aEq(this, other);
   BigInt toBn({Endian endian = Endian.little}) => u8aUtil.u8aToBn(this, endian: endian);

@@ -50,7 +50,7 @@ void compactTest() {
           0xf3,
           0x5a
         ])); // new Uint8Array([3 + ((6 - 4) << 2), 0x00, 0x40, 0x7a, 0x10, 0xf3, 0x5a])
-    print("\n");
+    // print("\n");
   });
   test('compactToU8a testCases', () {
     List<Map<String, dynamic>> testCases = [
@@ -87,19 +87,19 @@ void compactTest() {
       }).toList());
       expect(u8aEq(u8List, compactToU8a(map["value"] as BigInt)), true);
     });
-    print("\n");
+    // print("\n");
   });
 
   test('compactAddLength', () {
     expect(compactAddLength(Uint8List.fromList([12, 13])),
         Uint8List.fromList([8, 12, 13])); // [8, 12, 13]
-    print("\n");
+    // print("\n");
   });
   test('compactStripLength', () {
     expect(compactStripLength(Uint8List.fromList([2 << 2, 12, 13])), [
       3,
       [12, 13]
     ]); // [8, 12, 13]
-    print("\n");
+    // print("\n");
   });
 }

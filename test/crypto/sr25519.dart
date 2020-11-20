@@ -15,7 +15,7 @@ void sr25519Test() {
 
       var result2 = SR25519.getPubFromSeed(seed);
       expect(result2, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -27,7 +27,7 @@ void sr25519Test() {
       var keypair2 = SR25519.fromSeed(seed);
       var pub2 = keypair2.public;
       expect(pub2, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -41,7 +41,7 @@ void sr25519Test() {
       var signature2 = keypair2.sign(message2);
       var verified2 = SR25519.verify(signature2, message2, keypair2.public);
       expect(verified2, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -56,7 +56,7 @@ void sr25519Test() {
           "1037eb7e51613d0dcf5930ae518819c87d655056605764840d9280984e1b7063c4566b55bf292fcab07b369d01095879b50517beca4d26e6a65866e25fec0d83";
       var verified2 = SR25519.verify(signature, message, pub);
       expect(verified2, true);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -72,7 +72,7 @@ void sr25519Test() {
       final derivedPair2 = SR25519.deriveKeypairSoft(keypair2.keyPair, cc);
       final pub2 = derivedPair2.public;
       expect(pub2, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -84,7 +84,7 @@ void sr25519Test() {
       var pub = "46ebddef8cd9bb167dc30878d7113b7e168e6f0646beffd77d69d39bad76b47a";
       var derivedPublic2 = SR25519.derivePublicSoft(pub, cc);
       expect(derivedPublic2, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }
@@ -100,7 +100,7 @@ void sr25519Test() {
       var derivedPair2 = SR25519.deriveKeypairHard(keypair2.keyPair, cc);
       var pub2 = derivedPair2.public;
       expect(pub2, expected);
-      print("\n");
+      // print("\n");
     } catch (e) {
       throw e;
     }

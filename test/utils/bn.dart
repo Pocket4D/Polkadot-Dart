@@ -17,7 +17,7 @@ void bnTest() {
     expect(bnToHex(BigInt.from(-1234), isNegative: true), '0xfb2e'); // 0xfb2e
     expect(
         bnToHex(BigInt.from(-1234), bitLength: 32, isNegative: true), '0xfffffb2e'); // 0xfffffb2e
-    print("\n");
+    // print("\n");
   });
 
   test('bnToU8a', () {
@@ -47,12 +47,12 @@ void bnTest() {
         u8aEq(bnToU8a(BigInt.from(-1234), bitLength: 32, isNegative: true),
             Uint8List.fromList([46, 251, 255, 255])),
         true); // [46, 251, 255, 255] -- different from [46,251,255,255]
-    print("\n");
+    // print("\n");
   });
 
   test('bnMax', () {
     expect(bnMax([BigInt.from(1), BigInt.from(2), BigInt.from(3)]).toString(), '3'); // 3
-    print("\n");
+    // print("\n");
   });
 
   test('bnMin', () {

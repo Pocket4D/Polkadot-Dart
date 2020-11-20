@@ -1,1 +1,38 @@
-// TODO
+import 'package:flutter_test/flutter_test.dart';
+import 'package:p4d_rust_binding/util_crypto/base64.dart';
+import 'package:p4d_rust_binding/utils/utils.dart';
+
+void main() {
+  base64Test();
+}
+
+void base64Test() {
+  test('base64Validate', () {
+    expect(
+        () => base64Validate('aGVsbG8gd29ybGQg0J/RgNC40LLQtd^GC0YHRgtCy0YPRjiDQvNC4IOS9oOWlvQ=='),
+        throwsA(isAssertionError.having((e) => e.message, "message", "Invalid base64 encoding")));
+    // print("\n");
+  });
+
+  test('base64Trim', () {
+    expect(base64Trim('aGVsbG8gd29ybGQg0J/RgNC40LLQtdGC0YHRgtCy0YPRjiDQvNC4IOS9oOWlvQ=='),
+        'aGVsbG8gd29ybGQg0J/RgNC40LLQtdGC0YHRgtCy0YPRjiDQvNC4IOS9oOWlvQ');
+    // print("\n");
+  });
+
+  test('base64Pad', () {
+    expect(base64Pad('YWJjZA'), 'YWJjZA==');
+    // print("\n");
+  });
+
+  test('base64Encode', () {
+    expect(base64Encode('hello world Приветствую ми 你好'),
+        'aGVsbG8gd29ybGQg0J/RgNC40LLQtdGC0YHRgtCy0YPRjiDQvNC4IOS9oOWlvQ==');
+    // print("\n");
+  });
+
+  test('base64Decode', () {
+    expect(base64Decode('aGVsbG8gd29ybGQg0J/RgNC40LLQtdGC0YHRgtCy0YPRjiDQvNC4IOS9oOWlvQ=='),
+        stringToU8a('hello world Приветствую ми 你好', useDartEncode: true));
+  });
+}

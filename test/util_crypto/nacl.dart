@@ -116,14 +116,14 @@ void naclTest() async {
               0x50, 0xd9, 0x7b, 0x87, 0x99, 0x79, 0x77, 0xee
             ])),
         true);
-    print("\n");
+    // print("\n");
   });
 
   test('naclKeypairFromRandom', () {
     final randomNaclKeypair = naclKeypairFromRandom();
     expect(randomNaclKeypair.publicKey.length, 32);
     expect(randomNaclKeypair.secretKey.length, 64);
-    print("\n");
+    // print("\n");
   });
 
   test('naclKeypairFromSecret', () {
@@ -230,7 +230,7 @@ void naclTest() async {
     expect(u8aEq(naclKeypairFromSecret(testNaclSecretKey).secretKey, testNaclSecretKey), true);
     expect(u8aEq(naclKeypairFromSecret(testNaclSecretKey).publicKey, expectedNaclKeypairFromSecret),
         true);
-    print("\n");
+    // print("\n");
   });
 
   test('naclKeypairFromString', () {
@@ -338,7 +338,7 @@ void naclTest() async {
     expect(u8aEq(kpFrmStr.secretKey, prvFromStr), true);
     expect(u8aEq(kpFrmStr.publicKey, pubFromStr), true);
 
-    print("\n");
+    // print("\n");
   });
 
   test('naclEncrypt and naclDecrypt', () {
@@ -354,7 +354,7 @@ void naclTest() async {
   });
   test('naclDeriveHard', () {
     print("⚠️ naclDeriveHard is not tested");
-    print("\n");
+    // print("\n");
   });
 
   test('naclSeal and naclOpen', () {
@@ -373,6 +373,6 @@ void naclTest() async {
     var naclOpened = naclOpen(naclSealed.sealed, naclSealed.nonce, naclSealsenderBox.publicKey,
         naclSealreceiverBox.secretKey);
     expect(naclOpened, naclSealmessage);
-    print("\n");
+    // print("\n");
   });
 }

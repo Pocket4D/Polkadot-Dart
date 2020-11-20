@@ -20,7 +20,7 @@ void u8aTest() {
     var d = "world";
     var some3 = u8aConcat([c, space, d]);
     expect(some3, Uint8List.fromList([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]));
-    print("\n");
+    // print("\n");
   });
   test("u8aSorted", () async {
     var a = Uint8List.fromList([1, 2, 3]);
@@ -38,7 +38,7 @@ void u8aTest() {
       Uint8List.fromList([104, 101, 108, 108, 111]),
       Uint8List.fromList([119, 111, 114, 108, 100])
     ]);
-    print("\n");
+    // print("\n");
   });
 
   test("u8aEq", () async {
@@ -49,32 +49,38 @@ void u8aTest() {
     var e = "hello world";
     var some4 = stringToU8a(e);
     expect(u8aEq(some3, some4), true);
-    print("\n");
+    // print("\n");
   });
   test("u8aFixLength", () async {
     var f = '0x1234';
-    var some5 = stringToU8a(f, 'hex');
+    var some5 = stringToU8a(f, enc: 'hex', useDartEncode: false);
     expect(bytesToHex(u8aFixLength(some5, bitLength: 16), include0x: true), f);
-    print("\n");
+    // print("\n");
   });
   test("u8aToHex", () async {
     var g = Uint8List.fromList([0x68, 0x65, 0x6c, 0xf]);
     expect(u8aToHex(g), "0x68656c0f");
-    print("\n");
+    // print("\n");
   });
   test("u8aToBn", () async {
     var g = Uint8List.fromList([0x68, 0x65, 0x6c, 0xf]);
     expect(u8aToBn(g).toInt(), 258762088);
-    print("\n");
+    // print("\n");
   });
   test("u8aToBuffer", () async {
     var g = Uint8List.fromList([0x68, 0x65, 0x6c, 0xf]);
     expect(u8aToBuffer(g).asUint8List(), g);
-    print("\n");
+    // print("\n");
   });
   test("u8aToString", () async {
     var h = Uint8List.fromList([0x68, 0x65, 0x6c, 0x6c, 0x6f]);
     expect(u8aToString(h), "hello");
-    print("\n");
+    // print("\n");
+  });
+  test("u8aToU8a", () {
+    expect(u8aToU8a('0x80000a'), Uint8List.fromList([128, 0, 10]));
+    expect(u8aToU8a('abcde fghij'),
+        Uint8List.fromList([97, 98, 99, 100, 101, 32, 102, 103, 104, 105, 106]));
+    expect(u8aToU8a([128, 0, 10, 11, 12]), Uint8List.fromList([128, 0, 10, 11, 12]));
   });
 }

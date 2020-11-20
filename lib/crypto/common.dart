@@ -43,13 +43,20 @@ String bip39ToSeed(String phrase, String password) {
   return throwReturn(resultString);
 }
 
+// common::tests::can_pbkdf2
+// common::tests::can_scrypt
+// common::tests::can_sha512
+// common::tests::can_twox
+// common::tests::can_xxhash64
+
 /// data have to be `hex` without `0x`
 String blake2b(String data, String password, int size) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(data)) {
     throw "ERROR: `data` should be `hex` without `0x`";
   }
-  final result = rustBlake2b(data.hexStripPrefix().toUtf8(), password.toUtf8(), size);
+  final result = rustBlake2b(
+      data.hexStripPrefix().toUtf8(), password.plainToHex().hexStripPrefix().toUtf8(), size);
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -57,7 +64,10 @@ String blake2b(String data, String password, int size) {
 
 String keccak256(String data) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-  final result = rustKeccak256(data.toUtf8());
+  if (!isHexString(data)) {
+    throw "ERROR: `data` should be `hex` without `0x`";
+  }
+  final result = rustKeccak256(data.hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -65,7 +75,7 @@ String keccak256(String data) {
 
 String sha512(String data) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-  final result = rustSha512(data.toUtf8());
+  final result = rustSha512(data.plainToHex().hexStripPrefix().toUtf8());
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -73,7 +83,7 @@ String sha512(String data) {
 
 String xxhash(String data, int seed) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
-  var result = rustXxhash64(data.toUtf8(), seed);
+  var result = rustXxhash64(data.plainToHex().hexStripPrefix().toUtf8(), seed);
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);
@@ -114,7 +124,8 @@ void _isolatePbkdf2(SendPort initialReplyTo) {
       final rounds = message[2] as int;
       final send = message.last as SendPort;
       var encrypted;
-      encrypted = rustPbkdf2(data.toUtf8(), salt.toUtf8(), rounds);
+      encrypted = rustPbkdf2(data.plainToHex().hexStripPrefix().toUtf8(),
+          salt.plainToHex().hexStripPrefix().toUtf8(), rounds);
       final result = Utf8.fromUtf8(encrypted);
       freeCString(encrypted);
       send.send(result);
@@ -160,7 +171,8 @@ void _isolateScrypt(SendPort initialReplyTo) {
       final p = message[4] as int;
       final send = message.last as SendPort;
       var encrypted;
-      encrypted = rustScrypt(password.toUtf8(), salt.toUtf8(), log2N, r, p);
+      encrypted = rustScrypt(password.plainToHex().hexStripPrefix().toUtf8(),
+          salt.plainToHex().hexStripPrefix().toUtf8(), log2N, r, p);
       final result = Utf8.fromUtf8(encrypted);
       freeCString(encrypted);
       send.send(result);
@@ -203,7 +215,7 @@ void _isolateTwox(SendPort initialReplyTo) {
       final rounds = message[1] as int;
       final send = message.last as SendPort;
       var encrypted;
-      encrypted = rustTwox(data.toUtf8(), rounds);
+      encrypted = rustTwox(data.plainToHex().hexStripPrefix().toUtf8(), rounds);
       final result = Utf8.fromUtf8(encrypted);
       freeCString(encrypted);
       send.send(result);
@@ -239,6 +251,17 @@ String secp256k1GetPubFromPrivate(String privateKey) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";
   if (!isHexString(privateKey)) throw "ERROR: `privateKey` should be `hex` without `0x`";
   final result = rustSecp256k1GetPubFromPrivate(privateKey.hexStripPrefix().toUtf8());
+  final resultString = Utf8.fromUtf8(result);
+  freeCString(result);
+  return throwReturn(resultString);
+}
+
+String secp256k1RecoverPublic(String message, String signature, int recoveryId) {
+  if (dylib == null) throw "ERROR: The library is not initialized 🙁";
+  if (!isHexString(message)) throw "ERROR: `message` should be `hex` without `0x`";
+  if (!isHexString(signature)) throw "ERROR: `signature` should be `hex` without `0x`";
+  final result = rustSecp256k1Recover(
+      message.hexStripPrefix().toUtf8(), signature.hexStripPrefix().toUtf8(), recoveryId);
   final resultString = Utf8.fromUtf8(result);
   freeCString(result);
   return throwReturn(resultString);

@@ -33,12 +33,12 @@ bool validateChars(CheckConfig config, {String value, bool ipfsCompat}) {
   return true;
 }
 
-bool base58Validate({String value, bool ipfsCompat}) {
+bool base58Validate(String value, {bool ipfsCompat}) {
   return validateChars(Base58Config(), value: value, ipfsCompat: ipfsCompat);
 }
 
-Uint8List base58Decode({String value, bool ipfsCompat}) {
-  base58Validate(value: value, ipfsCompat: ipfsCompat);
+Uint8List base58Decode(String value, {bool ipfsCompat}) {
+  base58Validate(value, ipfsCompat: ipfsCompat);
   return bs58.decode(value.substring(ipfsCompat ? 1 : 0)).toU8a();
 }
 
@@ -49,5 +49,5 @@ String base58Encode(dynamic value, {bool ipfsCompat = false}) {
 }
 
 bool isBase58({String value, bool ipfsCompat}) {
-  return testValidator(base58Validate, value: value, ipfsCompat: ipfsCompat);
+  return testValidator(base58Validate, value, ipfsCompat: ipfsCompat);
 }

@@ -12,6 +12,6 @@ void scryptTest() async {
     var sU8a = scryptToU8a(salt, scryptEncoded.params.toMap());
     var mU8a = scryptFromU8a(sU8a);
     expect(mU8a["salt"], salt);
-    print("\n");
+    // print("\n");
   });
 }

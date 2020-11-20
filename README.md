@@ -85,7 +85,7 @@ TBD
 * [ ] sha512
 * [ ] signature
 * [ ] types
-* [ ] xxhash
+* [x] xxhash
 
 ### utils
 * [x] bn

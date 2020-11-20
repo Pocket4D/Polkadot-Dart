@@ -1,6 +1,7 @@
-import 'package:laksadart/laksadart.dart';
 import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
+import 'package:p4d_rust_binding/crypto/curve.dart';
+import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
 
 class Secp256k1 {
   String _keypair;
@@ -17,6 +18,17 @@ class Secp256k1 {
 
   static getCompressPublic(String publicKey) {
     return hexAddPrefix(secp256k1GetCompressPub(publicKey));
+  }
+
+  static getUncompressPublic(String publicKey) {
+    assert([66, 130].contains(publicKey.hexStripPrefix().length), 'Invalid publicKey provided');
+    CurvePublicKey result;
+    if (publicKey.hexStripPrefix().length == 66) {
+      result = CurvePublicKey.fromCompressedHex(publicKey.hexStripPrefix());
+    } else {
+      result = CurvePublicKey.fromHex(publicKey.hexStripPrefix());
+    }
+    return hexAddPrefix(result.toHex());
   }
 
   Secp256k1.fromSeed(dynamic seed) {

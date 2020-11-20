@@ -3,13 +3,6 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:p4d_rust_binding/utils/number.dart';
 import 'package:recase/recase.dart';
-import 'package:validators/validators.dart' as validators;
-
-bool isByteString(String byStr, {int length}) {
-  var str = byStr.startsWith(new RegExp(r'0x', caseSensitive: false)) ? byStr.substring(2) : byStr;
-  return validators.matches(str, '^[0-9a-fA-F]{$length}') &&
-      validators.isLength(str, length, length);
-}
 
 String strip0xHex(String hex) {
   if (hex.startsWith('0x', 0)) return hex.substring(2);
@@ -31,33 +24,37 @@ String zero2(word) {
     return word;
 }
 
-Uint8List stringToU8a(String msg, [String enc]) {
-  if (enc == 'hex') {
-    msg = strip0xHex(msg);
-    List<int> hexRes = new List();
-    msg = msg.replaceAll(new RegExp("[^a-z0-9]"), '');
-    if (msg.length % 2 != 0) msg = '0' + msg;
-    for (var i = 0; i < msg.length; i += 2) {
-      var cul = msg[i] + msg[i + 1];
-      var result = int.parse(cul, radix: 16);
-      hexRes.add(result);
-    }
-    return Uint8List.fromList(hexRes);
-  } else {
-    List<int> noHexRes = new List();
-    for (var i = 0; i < msg.length; i++) {
-      var c = msg.codeUnitAt(i);
-      var hi = c >> 8;
-      var lo = c & 0xff;
-      if (hi > 0) {
-        noHexRes.add(hi);
-        noHexRes.add(lo);
-      } else {
-        noHexRes.add(lo);
+Uint8List stringToU8a(String msg, {String enc, bool useDartEncode = true}) {
+  if (useDartEncode == false) {
+    if (enc == 'hex') {
+      msg = strip0xHex(msg);
+      List<int> hexRes = new List();
+      msg = msg.replaceAll(new RegExp("[^a-z0-9]"), '');
+      if (msg.length % 2 != 0) msg = '0' + msg;
+      for (var i = 0; i < msg.length; i += 2) {
+        var cul = msg[i] + msg[i + 1];
+        var result = int.parse(cul, radix: 16);
+        hexRes.add(result);
       }
-    }
+      return Uint8List.fromList(hexRes);
+    } else {
+      List<int> noHexRes = new List();
+      for (var i = 0; i < msg.length; i++) {
+        var c = msg.codeUnitAt(i);
+        var hi = c >> 8;
+        var lo = c & 0xff;
+        if (hi > 0) {
+          noHexRes.add(hi);
+          noHexRes.add(lo);
+        } else {
+          noHexRes.add(lo);
+        }
+      }
 
-    return Uint8List.fromList(noHexRes);
+      return Uint8List.fromList(noHexRes);
+    }
+  } else {
+    return Uint8List.fromList(utf8.encode(msg));
   }
 }
 
@@ -83,7 +80,7 @@ String plainTextToHex(String plainText) {
 }
 
 String hexToPlainText(String hex) {
-  return utf8.decode(stringToU8a(hex, "hex"));
+  return utf8.decode(stringToU8a(hex, enc: "hex"));
 }
 
 // Converts the hexadecimal string, which can be prefixed with 0x, to a byte

@@ -2,26 +2,29 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:p4d_rust_binding/p4d_rust_binding.dart';
 import 'package:p4d_rust_binding/utils/string.dart';
 
 import 'is.dart';
 import 'number.dart';
 
-Uint8List convertString(String str) {
-  return isHexString(str)
-      ? Uint8List.fromList(stringToU8a(strip0xHex(str)))
-      : Uint8List.fromList(stringToU8a(str));
+Uint8List convertString(String str, {bool useDartEncode = true}) {
+  // return isHexString(str)
+  //     ? stringToU8a(strip0xHex(str), useDartEncode: useDartEncode)
+  //     : stringToU8a(str, useDartEncode: useDartEncode);
+
+  return isHex(str) ? hexToU8a(str) : stringToU8a(str, useDartEncode: useDartEncode);
 }
 
 Uint8List convertArray(List<int> arr) {
   return Uint8List.fromList(arr);
 }
 
-Uint8List u8aToU8a(dynamic value) {
+Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
   if (value is ByteBuffer) {
     return value.asUint8List();
   } else if (value is String) {
-    return convertString(value);
+    return convertString(value, useDartEncode: useDartEncode);
   } else if (value is List && value.isNotEmpty) {
     return convertArray(value);
   } else {

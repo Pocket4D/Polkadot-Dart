@@ -1,41 +1,9 @@
-import 'crypto/common.dart';
-import 'crypto/ed25519.dart';
-import 'crypto/sr25519.dart';
-import 'util_crypto/blake2.dart';
-import 'util_crypto/key.dart';
-import 'util_crypto/nacl.dart';
-import 'util_crypto/schnorrkel.dart';
-import 'util_crypto/scrypt.dart';
-import 'util_crypto/secp256k1.dart';
-import 'util_crypto/xxhash.dart';
-import 'utils/bn.dart';
-import 'utils/compact.dart';
-import 'utils/hex.dart';
-import 'utils/is.dart';
-import 'utils/metadata.dart';
-import 'utils/string.dart';
-import 'utils/time.dart';
-import 'utils/u8a.dart';
-import 'utils/format.dart';
+import 'crypto/crypto.dart' as crypto;
+import 'util_crypto/util_crypto.dart' as util_crypto;
+import 'utils/utils.dart' as utils;
 
 void main() {
-  commonTest();
-  ed25519Test();
-  sr25519Test();
-  u8aTest();
-  formatTest();
-  metaDataTest();
-  isTest();
-  hexTest();
-  bnTest();
-  compactTest();
-  stringTest();
-  timeTest();
-  scryptTest();
-  xxhashTest();
-  naclTest();
-  blake2Test();
-  keyTest();
-  schnorrkelTest();
-  secp256k1Test();
+  utils.main();
+  crypto.main();
+  util_crypto.main();
 }

@@ -24,8 +24,8 @@ void base32Test() {
 
   test('base32Validate', () {
     expect(
-        () => base32Validate(
-            value: 'bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy', ipfsCompat: true),
+        () => base32Validate('bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy',
+            ipfsCompat: true),
         returnsNormally);
   });
 }

@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:p4d_rust_binding/util_crypto/mnemonic.dart';
 import 'package:p4d_rust_binding/util_crypto/secp256k1.dart';
 import 'package:p4d_rust_binding/util_crypto/types.dart';
+import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 
 void main() {
@@ -9,6 +12,8 @@ void main() {
 }
 
 void secp256k1Test() {
+  // ignore: non_constant_identifier_names
+  final MESSAGE = stringToU8a('this is a message');
   test('secp256k1', () {
     const secp256k1Tests = [
       [
@@ -53,6 +58,195 @@ void secp256k1Test() {
       expect(u8aToHex(pair.secretKey), sk);
       expect(u8aToHex(pair.publicKey), pk);
     });
-    print("\n");
+    // print("\n");
+  });
+
+  test('secp256k1Expandexpands a known key', () {
+    expect(
+        secp256k1Expand(
+            hexToU8a('0x03b9dc646dd71118e5f7fda681ad9eca36eb3ee96f344f582fbe7b5bcdebb13077')),
+        hexToU8a(
+            '0xb9dc646dd71118e5f7fda681ad9eca36eb3ee96f344f582fbe7b5bcdebb1307763fe926c273235fd979a134076d00fd1683cbd35868cb485d4a3a640e52184af'));
+  });
+
+  test('secp256k1Expand expands a known full key', () {
+    expect(
+        secp256k1Expand(hexToU8a(
+            '0x04b9dc646dd71118e5f7fda681ad9eca36eb3ee96f344f582fbe7b5bcdebb1307763fe926c273235fd979a134076d00fd1683cbd35868cb485d4a3a640e52184af')),
+        hexToU8a(
+            '0xb9dc646dd71118e5f7fda681ad9eca36eb3ee96f344f582fbe7b5bcdebb1307763fe926c273235fd979a134076d00fd1683cbd35868cb485d4a3a640e52184af'));
+  });
+
+  group("secp256k1Hasher tests", () {
+    test('fails with unknown hasher', () {
+      expect(() => secp256k1Hasher('unknown', 'testing'),
+          throwsA("Unsupported secp256k1 hasher unknown, expected one of blake2, keccak"));
+    });
+
+    test('creates a blake2 hash', () {
+      expect(
+          secp256k1Hasher('blake2', 'abc'),
+          Uint8List.fromList([
+            189,
+            221,
+            129,
+            60,
+            99,
+            66,
+            57,
+            114,
+            49,
+            113,
+            239,
+            63,
+            238,
+            152,
+            87,
+            155,
+            148,
+            150,
+            78,
+            59,
+            177,
+            203,
+            62,
+            66,
+            114,
+            98,
+            200,
+            192,
+            104,
+            213,
+            35,
+            25
+          ]));
+    });
+
+    test('creates a keccak hash', () {
+      expect(
+          secp256k1Hasher('keccak', 'abc'),
+          Uint8List.fromList([
+            78,
+            3,
+            101,
+            122,
+            234,
+            69,
+            169,
+            79,
+            199,
+            212,
+            123,
+            168,
+            38,
+            200,
+            214,
+            103,
+            192,
+            209,
+            230,
+            227,
+            58,
+            100,
+            160,
+            54,
+            236,
+            68,
+            245,
+            143,
+            161,
+            45,
+            108,
+            69
+          ]));
+    });
+    test("", () {
+      // secp256k1Sign(message, keyPair)
+    });
+    test('validates known ETH against address', () {
+      const message =
+          'Pay KSMs to the Kusama account:88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee';
+
+      expect(
+          secp256k1Verify(
+            "\x19Ethereum Signed Message:\n${message.length.toString()}$message",
+            '0x55bd020bdbbdc02de34e915effc9b18a99002f4c29f64e22e8dcbb69e722ea6c28e1bb53b9484063fbbfd205e49dcc1f620929f520c9c4c3695150f05a28f52a01',
+            '0x002309df96687e44280bb72c3818358faeeb699c',
+            'keccak',
+          ),
+          true);
+    });
+  });
+
+  group('sign and verify', () {
+    test('verify message signature', () {
+      final address = '0x59f587c045d4d4e9aa1016eae43770fc0551df8a385027723342753a876aeef0';
+      final sig =
+          '0x92fcacf0946bbd10b31dfe16d567ed1d3014e81007dd9e5256e19c0f07eacc1643b151ca29e449a765e16a7ce59b88d800467d6b3412d30ea8ad22307a59664b00';
+      final msg = stringToU8a('secp256k1');
+      expect(secp256k1Verify(msg, sig, address), true);
+    });
+
+    test('has 65-byte signatures', () {
+      final pair = secp256k1KeypairFromSeed(randomAsU8a());
+
+      expect(secp256k1Sign(MESSAGE, pair).length, 65);
+    });
+
+    test('signs/verifies a message by random key (blake2)', () {
+      final pair = secp256k1KeypairFromSeed(randomAsU8a());
+      final signature = secp256k1Sign(MESSAGE, pair);
+      final address = secp256k1Hasher('blake2', pair.publicKey);
+      // print("pub :${pair.publicKey.toHex()}");
+      expect(secp256k1Verify(MESSAGE, signature, address), true);
+    });
+
+    test('signs/verifies a message by random key (keccak)', () {
+      final pair = secp256k1KeypairFromSeed(randomAsU8a());
+      final signature = secp256k1Sign(MESSAGE, pair, 'keccak');
+      final address = secp256k1Hasher('keccak', secp256k1Expand(pair.publicKey));
+
+      expect(secp256k1Verify(MESSAGE, signature, address, 'keccak'), true);
+    });
+
+    test('fails verification on hasher mismatches', () {
+      final pair = secp256k1KeypairFromSeed(randomAsU8a());
+      final signature = secp256k1Sign(MESSAGE, pair, 'keccak');
+      final address = secp256k1Hasher('keccak', secp256k1Expand(pair.publicKey));
+
+      expect(secp256k1Verify(MESSAGE, signature, address, 'blake2'), false);
+    });
+
+    test('works over a range of random keys (blake2)', () {
+      for (var i = 0; i < 16; i++) {
+        final pair = secp256k1KeypairFromSeed(randomAsU8a());
+
+        try {
+          expect(
+              secp256k1Verify(MESSAGE, secp256k1Sign(MESSAGE, pair, 'blake2'),
+                  secp256k1Hasher('blake2', pair.publicKey), 'blake2'),
+              true);
+        } catch (error) {
+          print("blake2 failed on #$i");
+          throw error;
+        }
+      }
+    });
+
+    test('works over a range of random keys (keccak)', () {
+      for (var i = 0; i < 16; i++) {
+        final pair = secp256k1KeypairFromSeed(randomAsU8a());
+
+        try {
+          expect(
+              secp256k1Verify(MESSAGE, secp256k1Sign(MESSAGE, pair, 'keccak'),
+                  secp256k1Hasher('keccak', secp256k1Expand(pair.publicKey)), 'keccak'),
+              true);
+        } catch (error) {
+          print("keccak failed on #$i");
+          throw error;
+        }
+      }
+    });
   });
 }

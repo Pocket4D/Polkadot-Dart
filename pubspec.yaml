@@ -14,7 +14,7 @@ dependencies:
   validators: ^2.0.1
   logger: ^0.9.4
   recase: ^3.0.1
-  laksadart: ^0.1.20-dev.1
+  # sha3: ^0.1.2
   tweetnacl: ^0.3.2
   base_x: ^1.0.1
 

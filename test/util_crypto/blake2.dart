@@ -15,7 +15,7 @@ void blake2Test() {
             hexToU8a(
                 '0xba80a53f981c4d0d6a2797b69f12f6e94c212f14685ac4b74b12bb6fdbffa2d17d87c5392aab792dc252d5de4533cc9518d38aa8dbf1925ab92386edd4009923')),
         true);
-    print("\n");
+    // print("\n");
   });
   test('blake2AsHex', () {
     expect(blake2AsHex('abc'),
@@ -36,6 +36,6 @@ void blake2Test() {
     //     textDecoder(hexToU8a(
     //         '0x454545454545454545454545454545454545454545454545454545454545454501000000000000002481853da20b9f4322f34650fea5f240dcbfb266d02db94bfa0153c31f4a29dbdbf025dd4a69a6f4ee6e1577b251b655097e298b692cb34c18d3182cac3de0dc00000000')),
     //     bitLength: 256));
-    print("\n");
+    // print("\n");
   });
 }
