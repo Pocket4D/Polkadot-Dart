@@ -12,6 +12,11 @@ class ExpandOpt {
   static final Endian endian = Endian.big;
 }
 
+class HashType {
+  static const String blake2 = 'blake2';
+  static const String keccak = 'keccak';
+}
+
 KeyPair secp256k1KeypairFromSeed(Uint8List seed) {
   assert(seed.length == 32, 'Expected valid 32-byte private key as a seed');
   return crypto.Secp256k1.fromSeed(seed).toKeyPair();

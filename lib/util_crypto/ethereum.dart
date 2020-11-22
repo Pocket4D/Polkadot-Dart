@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:p4d_rust_binding/util_crypto/keccak.dart';
+import 'package:p4d_rust_binding/util_crypto/secp256k1.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 
 bool isInvalidChar(String char, num byte) {
@@ -28,4 +31,33 @@ bool isEthereumAddress(String address) {
   }
 
   return isEthereumChecksum(address);
+}
+
+Uint8List getH160(Uint8List u8a) {
+  if ([33, 65].contains(u8a.length)) {
+    u8a = keccakAsU8a(secp256k1Expand(u8a));
+  }
+  final u8aLength = u8a.length;
+  return u8a.sublist(u8aLength - 20, u8aLength);
+}
+
+String ethereumEncode(dynamic addressOrPublic) {
+  if (addressOrPublic == null) {
+    return '0x';
+  }
+
+  final u8aAddress = u8aToU8a(addressOrPublic);
+
+  assert([20, 32, 33, 65].contains(u8aAddress.length), 'Invalid address or publicKey passed');
+
+  final address = u8aToHex(getH160(u8aAddress), include0x: false);
+  final hash = u8aToHex(keccakAsU8a(address), include0x: false);
+  var result = '';
+
+  for (var index = 0; index < 40; index++) {
+    result =
+        "$result${int.parse(hash[index], radix: 16) > 7 ? address[index].toUpperCase() : address[index]}";
+  }
+
+  return "0x$result";
 }

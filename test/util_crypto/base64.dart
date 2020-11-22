@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:p4d_rust_binding/util_crypto/base64.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 
+import '../testUtils/throws.dart';
+
 void main() {
   base64Test();
 }
@@ -10,7 +12,7 @@ void base64Test() {
   test('base64Validate', () {
     expect(
         () => base64Validate('aGVsbG8gd29ybGQg0J/RgNC40LLQtd^GC0YHRgtCy0YPRjiDQvNC4IOS9oOWlvQ=='),
-        throwsA(isAssertionError.having((e) => e.message, "message", "Invalid base64 encoding")));
+        throwsA(assertionThrowsContains("Invalid base64 encoding")));
     // print("\n");
   });
 

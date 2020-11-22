@@ -84,3 +84,26 @@ NaclSealed naclSeal(
       sealed: nacl.Box.nonce(receiverBoxPublic, senderBoxSecret, nonce.toBn().toInt()).box(message),
       nonce: nonce);
 }
+
+Uint8List naclSign(dynamic message, KeyPair keyPair) {
+  assert(keyPair.secretKey != null, 'Expected a valid secretKey');
+
+  final messageU8a = u8aToU8a(message);
+
+  return ed25519Sign(
+          keyPair.publicKey.toHex(), keyPair.secretKey.sublist(0, 32).toHex(), messageU8a.toHex())
+      .toU8a();
+}
+
+bool naclVerify(dynamic message, dynamic signature, dynamic publicKey) {
+  final messageU8a = u8aToU8a(message);
+  final publicKeyU8a = u8aToU8a(publicKey);
+  final signatureU8a = u8aToU8a(signature);
+
+  assert(publicKeyU8a.length == 32,
+      "Invalid publicKey, received ${publicKeyU8a.length.toString()}, expected 32");
+  assert(signatureU8a.length == 64,
+      "Invalid signature, received ${signatureU8a.length.toString()} bytes, expected 64");
+
+  return ed25519Verify(signatureU8a.toHex(), messageU8a.toHex(), publicKeyU8a.toHex());
+}

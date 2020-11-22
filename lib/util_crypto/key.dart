@@ -46,15 +46,15 @@ class DeriveJunction {
     return isHard ? result.harden() : result;
   }
 
-  get chainCode {
+  Uint8List get chainCode {
     return this._chainCode;
   }
 
-  get isHard {
+  bool get isHard {
     return this._isHard;
   }
 
-  get isSoft {
+  bool get isSoft {
     return !this._isHard;
   }
 
@@ -121,3 +121,34 @@ ExtractResultSuri keyExtractSuri(String suri) {
 }
 
 //TODO  from pair needs schnorrkel,secp256k1,ecdsa
+
+KeyPair keyHdkdEcdsa(KeyPair keypair, DeriveJunction derive) {
+  assert(derive.isHard, 'A soft key was found in the path (and is unsupported)');
+
+  return secp256k1KeypairFromSeed(
+      secp256k1DeriveHard(keypair.secretKey.sublist(0, 32), derive.chainCode));
+}
+
+KeyPair keyHdkdEd25519(KeyPair keypair, DeriveJunction derive) {
+  assert(derive.isHard, 'A soft key was found in the path (and is unsupported)');
+
+  return naclKeypairFromSeed(naclDeriveHard(keypair.secretKey.sublist(0, 32), derive.chainCode));
+}
+
+KeyPair keyHdkdSr25519(KeyPair keypair, DeriveJunction derive) {
+  return derive.isSoft
+      ? schnorrkelDeriveSoft(keypair, derive.chainCode)
+      : schnorrkelDeriveHard(keypair, derive.chainCode);
+}
+
+const generators = {
+  KeypairType.ecdsa: keyHdkdEcdsa,
+  KeypairType.ed25519: keyHdkdEd25519,
+  KeypairType.ethereum: keyHdkdEcdsa,
+  KeypairType.sr25519: keyHdkdSr25519
+};
+
+KeyPair keyFromPath(KeyPair keypair, List<DeriveJunction> path, String type) {
+  final keyHdkd = generators[type];
+  return path.fold(keypair, (pair, junction) => keyHdkd(pair, junction));
+}

@@ -287,20 +287,35 @@ pub fn ext_sr_sign(pubkey: &[u8], secret: &[u8], message: &[u8]) -> Vec<u8> {
 		.to_vec()
 }
 
+#[no_mangle]
+pub fn ext_sr_sign_internal(pubkey: &[u8], secret: &[u8], message: &[u8]) -> Option<Vec<u8>> {
+	let sk = SecretKey::from_ed25519_bytes(secret).ok();
+	let kp = PublicKey::from_bytes(pubkey).ok();
+	Some(
+		sk?.sign_simple(SIGNING_CTX, message, &kp?)
+			.to_bytes()
+			.to_vec(),
+	)
+}
+
 /// Verify a message and its corresponding against a public key;
 ///
 /// * signature: UIntArray with 64 element
 /// * message: Arbitrary length UIntArray
 /// * pubkey: UIntArray with 32 element
 #[no_mangle]
+pub fn ext_sr_verify_internal(signature: &[u8], message: &[u8], pubkey: &[u8]) -> Option<bool> {
+	let signature = Signature::from_bytes(signature).ok();
+	let kp = PublicKey::from_bytes(pubkey).ok();
+	Some(kp?.verify_simple(SIGNING_CTX, message, &signature?).is_ok())
+}
+
+#[no_mangle]
 pub fn ext_sr_verify(signature: &[u8], message: &[u8], pubkey: &[u8]) -> bool {
-	match Signature::from_bytes(signature) {
-		Ok(signature) => PublicKey::from_bytes(pubkey)
-			.unwrap()
-			.verify_simple(SIGNING_CTX, message, &signature)
-			.is_ok(),
-		Err(_) => false,
-	}
+	return match ext_sr_verify_internal(signature, message, pubkey) {
+		Some(result) => result,
+		_ => false,
+	};
 }
 
 #[cfg(test)]
@@ -378,6 +393,15 @@ pub mod tests {
 		let is_valid = ext_sr_verify(&signature, message, &public);
 
 		assert!(is_valid);
+	}
+	#[test]
+	fn can_verify_known_message_2() {
+		let message = hex!("68656c6c6f20776f726c64");
+		let public = hex!("3d0c37d300d361c7042511d551afa617fbc790d21353ba01c4e70e9cab2e8d92");
+		let signature = hex!("ca01419b5a17219f7b78335658cab3b126db523a5df7be4bfc2bef76c2eb3b1dcf4ca86eb877d0a6cf6df12db5995c51d13b00e005d053b892bd09c594434288");
+		let is_valid = ext_sr_verify(&signature, &message, &public);
+
+		assert!(is_valid == false);
 	}
 
 	#[test]

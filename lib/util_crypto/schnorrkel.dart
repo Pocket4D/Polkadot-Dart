@@ -61,5 +61,9 @@ bool schnorrkelVerify(dynamic message, dynamic signature, dynamic publicKey) {
   assert(signatureU8a.length == 64,
       "Invalid signature, received ${signatureU8a.length} bytes, expected 64");
 
-  return sr25519Verify(u8aToHex(signatureU8a), u8aToHex(messageU8a), u8aToHex(publicKeyU8a));
+  try {
+    return sr25519Verify(u8aToHex(signatureU8a), u8aToHex(messageU8a), u8aToHex(publicKeyU8a));
+  } catch (e) {
+    throw e;
+  }
 }

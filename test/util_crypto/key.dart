@@ -166,8 +166,6 @@ void keyTest() {
           0,
           0
         ])); //
-
-    print("\n");
   });
 
   test("keyExtractSuri", () {
@@ -668,6 +666,5 @@ void keyTest() {
           0,
           0,
         ])); //
-    // print('\n');
   });
 }

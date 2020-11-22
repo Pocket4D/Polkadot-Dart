@@ -7,6 +7,8 @@ import 'package:p4d_rust_binding/utils/number.dart' as numbers;
 
 const DEFAULT_LENGTH = 32;
 
+final bn53 = BigInt.parse('11111111111111111111111111111111111111111111111111111', radix: 2);
+
 class DartRandom {
   Random dartRandom;
 
@@ -65,4 +67,12 @@ Uint8List getRandomValues([int length = DEFAULT_LENGTH]) {
 
 Uint8List randomAsU8a([int length = DEFAULT_LENGTH]) {
   return getRandomValues(length);
+}
+
+String randomAsHex([int length = 32]) {
+  return u8aToHex(randomAsU8a(length));
+}
+
+int randomAsNumber() {
+  return (hexToBn(randomAsHex(8)) & bn53).toInt();
 }

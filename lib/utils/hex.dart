@@ -91,9 +91,10 @@ int hexToNumber(dynamic value) {
   }
 }
 
+/// value sholud be `0x` hex
 Uint8List hexToU8a(String value, [int bitLength = -1]) {
   try {
-    if (!isHex(value)) {
+    if (!isHex(value) && !isHexString(value)) {
       throw 'Error: Expected hex value to convert, found $value';
     }
     var _value = hexStripPrefix(value);

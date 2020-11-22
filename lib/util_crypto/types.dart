@@ -1,4 +1,3 @@
-// TODO
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -36,4 +35,28 @@ class KeyPair implements AbstractKeyPair {
       );
 
   factory KeyPair.fromJson(String str) => KeyPair.fromMap(json.decode(str));
+}
+
+class KeypairType {
+  static const ed25519 = 'ed25519';
+  static const sr25519 = 'sr25519';
+  static const ecdsa = 'ecdsa';
+  static const ethereum = 'ethereum';
+  String _type;
+  KeypairType(this._type);
+
+  @override
+  String toString() {
+    super.toString();
+    return _type;
+  }
+}
+
+class VerifyResult {
+  String crypto;
+  bool isValid;
+  VerifyResult({this.crypto, this.isValid});
+  factory VerifyResult.fromMap(Map<String, dynamic> map) =>
+      VerifyResult(crypto: map['crypto'] as String, isValid: map["isValid"] as bool);
+  toMap() => {"crypto": this.crypto, "isValid": this.isValid};
 }

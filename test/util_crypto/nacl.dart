@@ -5,6 +5,8 @@ import 'package:p4d_rust_binding/util_crypto/nacl.dart';
 import 'package:p4d_rust_binding/utils/string.dart';
 import 'package:p4d_rust_binding/utils/u8a.dart';
 
+import '../testUtils/throws.dart';
+
 void main() {
   naclTest();
 }
@@ -353,7 +355,7 @@ void naclTest() async {
     expect(testMaclDecrypted, testNaclMessage);
   });
   test('naclDeriveHard', () {
-    print("⚠️ naclDeriveHard is not tested");
+    print("⚠️ we dont have test case for naclDeriveHard");
     // print("\n");
   });
 
@@ -374,5 +376,183 @@ void naclTest() async {
         naclSealreceiverBox.secretKey);
     expect(naclOpened, naclSealmessage);
     // print("\n");
+  });
+
+  test("returns a valid signature for the message)", () {
+    expect(
+        naclSign(
+          Uint8List.fromList([0x61, 0x62, 0x63, 0x64]),
+          naclKeypairFromSeed(stringToU8a('12345678901234567890123456789012')),
+        ),
+        Uint8List.fromList([
+          28,
+          58,
+          206,
+          239,
+          249,
+          70,
+          59,
+          191,
+          166,
+          40,
+          219,
+          218,
+          235,
+          170,
+          25,
+          79,
+          10,
+          94,
+          9,
+          197,
+          34,
+          126,
+          1,
+          150,
+          246,
+          68,
+          28,
+          238,
+          36,
+          26,
+          172,
+          163,
+          168,
+          90,
+          202,
+          211,
+          126,
+          246,
+          57,
+          212,
+          43,
+          24,
+          88,
+          197,
+          240,
+          113,
+          118,
+          76,
+          37,
+          81,
+          91,
+          110,
+          236,
+          50,
+          144,
+          134,
+          100,
+          223,
+          220,
+          238,
+          34,
+          185,
+          211,
+          7
+        ]));
+  });
+  group('naclVerify', () {
+    Uint8List publicKey =
+        naclKeypairFromSeed(stringToU8a('12345678901234567890123456789012')).publicKey;
+    Uint8List signature = Uint8List.fromList([
+      28,
+      58,
+      206,
+      239,
+      249,
+      70,
+      59,
+      191,
+      166,
+      40,
+      219,
+      218,
+      235,
+      170,
+      25,
+      79,
+      10,
+      94,
+      9,
+      197,
+      34,
+      126,
+      1,
+      150,
+      246,
+      68,
+      28,
+      238,
+      36,
+      26,
+      172,
+      163,
+      168,
+      90,
+      202,
+      211,
+      126,
+      246,
+      57,
+      212,
+      43,
+      24,
+      88,
+      197,
+      240,
+      113,
+      118,
+      76,
+      37,
+      81,
+      91,
+      110,
+      236,
+      50,
+      144,
+      134,
+      100,
+      223,
+      220,
+      238,
+      34,
+      185,
+      211,
+      7
+    ]);
+    test("validates a correctly signed message", () {
+      expect(
+          naclVerify(
+            Uint8List.fromList([0x61, 0x62, 0x63, 0x64]),
+            signature,
+            publicKey,
+          ),
+          true);
+    });
+
+    test('fails a correctly signed message (message changed)', () {
+      expect(naclVerify(Uint8List.fromList([0x61, 0x62, 0x63, 0x64, 0x65]), signature, publicKey),
+          false);
+    });
+
+    test('fails a correctly signed message (signature changed)', () {
+      signature[0] = 0xff;
+
+      expect(naclVerify(Uint8List.fromList([0x61, 0x62, 0x63, 0x64]), signature, publicKey), false);
+    });
+
+    test('throws error when publicKey lengths do not match', () {
+      expect(
+          () => naclVerify(
+              Uint8List.fromList([0x61, 0x62, 0x63, 0x64]), signature, Uint8List.fromList([1, 2])),
+          throwsA(assertionThrowsContains("Invalid publicKey, received 2, expected 3")));
+    });
+
+    test('throws error when signature lengths do not match', () {
+      expect(
+          () => naclVerify(
+              Uint8List.fromList([0x61, 0x62, 0x63, 0x64]), Uint8List.fromList([1, 2]), publicKey),
+          throwsA(assertionThrowsContains("Invalid signature, received 2 bytes, expected 64")));
+    });
   });
 }

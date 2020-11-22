@@ -12,6 +12,8 @@ export 'bn.dart';
 export 'compact.dart';
 export 'time.dart';
 export 'extension.dart';
+export 'logger.dart';
+export 'types.dart';
 
 String throwReturn(String message) {
   if (message.startsWith("Error:")) {
