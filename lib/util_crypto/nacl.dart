@@ -55,13 +55,11 @@ NaclEncrypted naclEncrypt(Uint8List message, Uint8List secret, Uint8List nonce) 
   if (nonce == null) {
     nonce = randomAsU8a(24);
   }
-  return NaclEncrypted(
-      encrypted: nacl.SecretBox.nonce(secret, nonce.toBn().toInt()).box(message), nonce: nonce);
+  return NaclEncrypted(encrypted: nacl.SecretBox(secret).box_nonce(message, nonce), nonce: nonce);
 }
 
 Uint8List naclDecrypt(Uint8List encrypted, Uint8List nonce, Uint8List secret) {
-  var boxed = nacl.SecretBox(secret);
-  return boxed.open_nonce(encrypted, nonce);
+  return nacl.SecretBox(secret).open_nonce(encrypted, nonce);
 }
 
 final hdkd = compactAddLength(stringToU8a('Ed25519HDKD'));

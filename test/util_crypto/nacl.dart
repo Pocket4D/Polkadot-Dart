@@ -354,6 +354,17 @@ void naclTest() async {
     expect(testNaclEncrypted.nonce, testNaclNonce);
     expect(testMaclDecrypted, testNaclMessage);
   });
+
+  test('naclEncrypt and naclDecrypt 2', () {
+    var testNaclSecret = Uint8List(32);
+    var testNaclMessage = Uint8List.fromList([1, 2, 3, 4, 5, 4, 3, 2, 1]);
+    var testNaclEncrypted = naclEncrypt(testNaclMessage, testNaclSecret, null);
+    var testMaclDecrypted =
+        naclDecrypt(testNaclEncrypted.encrypted, testNaclEncrypted.nonce, testNaclSecret);
+
+    expect(testMaclDecrypted, testNaclMessage);
+  });
+
   test('naclDeriveHard', () {
     print("⚠️ we dont have test case for naclDeriveHard");
     // print("\n");
