@@ -45,6 +45,7 @@ Uint8List compactAddLength(Uint8List input) {
   return u8aConcat([compactToU8a(input.length), input]);
 }
 
+/// result : [int, BN]
 List<dynamic> compactFromU8a(dynamic _input, {int bitLength = 32}) {
   var input = u8aToU8a(_input);
   var flag = input[0] & 3;

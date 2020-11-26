@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:p4d_rust_binding/utils/hex.dart' as hexUtil;
 import 'package:p4d_rust_binding/utils/string.dart' as stringUtil;
+
 import 'package:p4d_rust_binding/utils/u8a.dart' as u8aUtil;
 import 'package:p4d_rust_binding/utils/bn.dart' as bnUtil;
 import 'package:p4d_rust_binding/utils/is.dart' as isUtil;
@@ -21,6 +22,7 @@ extension StringExtension on String {
   BigInt hexToBn({Endian endian = Endian.big, bool isNegative = false}) =>
       hexUtil.hexToBn(this, endian: endian, isNegative: isNegative);
   Pointer<Utf8> toUtf8() => Utf8.toUtf8(this);
+  String camelCase() => stringUtil.stringCamelCase(this);
 }
 
 extension U8aExtension on Uint8List {

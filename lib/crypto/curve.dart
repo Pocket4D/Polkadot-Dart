@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/crypto/common.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 
 const secp256k1Params = {

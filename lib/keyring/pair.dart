@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/keyring/nobody.dart';
 import 'package:p4d_rust_binding/keyring/types.dart';
 import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';

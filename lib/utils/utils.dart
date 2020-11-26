@@ -5,7 +5,6 @@ export 'number.dart';
 export 'u8a.dart';
 export 'format.dart';
 export 'si.dart';
-export 'metadata.dart';
 export 'is.dart';
 export 'hex.dart';
 export 'bn.dart';

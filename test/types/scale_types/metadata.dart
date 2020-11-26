@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/utils/metadata.dart';
+import 'package:p4d_rust_binding/types/scale_types/metadata.dart';
 
-import '../metajson.dart';
+import '../../metajson.dart';
 
 void main() {}
 
@@ -13,7 +13,7 @@ void metaDataTest() {
           jsonData.metadata.version.modules.firstWhere((element) => element.name == 'System');
       expect(systemModule.storage.prefix, "System");
       if (systemModule.storage.prefix == "System") {
-        systemModule.storage.items.forEach((e) {
+        systemModule.storage.entry.forEach((e) {
           expect(e.name is String, true);
         });
       }

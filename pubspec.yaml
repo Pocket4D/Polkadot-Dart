@@ -17,6 +17,7 @@ dependencies:
   # sha3: ^0.1.2
   tweetnacl: ^0.3.2
   base_x: ^1.0.1
+  optional: ^5.0.0+1
 
 dev_dependencies:
   flutter_test:

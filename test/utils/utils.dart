@@ -3,7 +3,7 @@ import 'compact.dart';
 import 'format.dart';
 import 'hex.dart';
 import 'is.dart';
-import 'metadata.dart';
+import '../types/scale_types/metadata.dart';
 import 'string.dart';
 import 'time.dart';
 import 'u8a.dart';

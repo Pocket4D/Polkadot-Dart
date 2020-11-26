@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -283,6 +282,7 @@ void pair2() {
 
     test('allows getting public key after decoding', () async {
       // final keyring = createTestPairs(KeyringOptions(type: 'ed25519'), false);
+      // ignore: non_constant_identifier_names
       final PASS = 'testing';
       final encoded = await keyring["alice"].encodePkcs8(PASS);
 

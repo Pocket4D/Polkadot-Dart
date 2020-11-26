@@ -10,6 +10,7 @@ void main() {
 
 testingPairsTest() {
   const PHRASE = 'bottom drive obey lake curtain smoke basket hold race lonely fit walk';
+  // ignore: non_constant_identifier_names
   final TESTS = [
     {
       "pk": '0x46ebddef8cd9bb167dc30878d7113b7e168e6f0646beffd77d69d39bad76b47a',

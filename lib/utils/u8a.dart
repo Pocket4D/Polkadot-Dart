@@ -88,8 +88,9 @@ List<Uint8List> u8aSorted(List<Uint8List> u8as) {
   return u8as;
 }
 
-BigInt u8aToBn(Uint8List u8a, {Endian endian = Endian.little}) {
-  return decodeBigInt(u8a, endian: endian);
+BigInt u8aToBn(Uint8List u8a, {Endian endian = Endian.little, bool isNegative = false}) {
+  return hexToBn(u8aToHex(u8a), endian: endian, isNegative: isNegative);
+  // return decodeBigInt(u8a, endian: endian);
 }
 
 String u8aToHex(Uint8List u8a, {bool include0x = true}) {

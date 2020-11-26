@@ -10,6 +10,7 @@ import 'package:p4d_rust_binding/utils/utils.dart';
 // keyring is for testing - what happens is that in most cases the keyring is initialises
 // before anything else. Since the sr25519 crypto is async, this creates problems with
 // adding the keys when only the keyring is used.
+// ignore: non_constant_identifier_names
 final PAIRS = [
   {
     "publicKey": hexToU8a('0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'),
@@ -61,12 +62,10 @@ final PAIRS = [
   }
 ];
 
-/**
- * @name testKeyring
- * @summary Create an instance of Keyring pre-populated with locked test accounts
- * @description The test accounts (i.e. alice, bob, dave, eve, ferdie)
- * are available on the dev chain and each test account is initialized with DOT funds.
- */
+/// @name testKeyring
+/// @summary Create an instance of Keyring pre-populated with locked test accounts
+/// @description The test accounts (i.e. alice, bob, dave, eve, ferdie)
+/// are available on the dev chain and each test account is initialized with DOT funds.
 KeyringInstance createTestKeyring([KeyringOptions options, bool isDerived = true]) {
   options = options ?? KeyringOptions();
   final keyring = Keyring(options);

@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/crypto/secp256k1.dart';
 import 'package:p4d_rust_binding/util_crypto/keccak.dart';
 import 'package:p4d_rust_binding/utils/utils.dart';
 

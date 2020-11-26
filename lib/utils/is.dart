@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:p4d_rust_binding/p4d_rust_binding.dart';
 import 'package:validators/validators.dart' as validators;
 
@@ -77,6 +75,10 @@ bool isNull(dynamic value) {
 
 bool isNumber(dynamic value) {
   return value is num;
+}
+
+bool isObject(dynamic value) {
+  return value is Map;
 }
 
 abstract class Observable {

@@ -12,31 +12,44 @@ void main() {
 }
 
 void signatureTest() {
+  // ignore: non_constant_identifier_names
   final ADDR_ED = 'DxN4uvzwPzJLtn17yew6jEffPhXQfdKHTp2brufb98vGbPN';
+  // ignore: non_constant_identifier_names
   final ADDR_SR = 'EK1bFgKm2FsghcttHT7TB7rNyXApFgs9fCbijMGQNyFGBQm';
+  // ignore: non_constant_identifier_names
   final ADDR_EC = 'XyFVXiGaHxoBhXZkSh6NS2rjFyVaVNUo5UiZDqZbuSfUdji';
+  // ignore: non_constant_identifier_names
   final ADDR_ET = '0x54Dab85EE2c7b9F7421100d7134eFb5DfA4239bF';
+  // ignore: non_constant_identifier_names
   final MESSAGE = 'hello world';
+  // ignore: non_constant_identifier_names
   final SIG_ED =
       '0x299d3bf4c8bb51af732f8067b3a3015c0862a5ff34721749d8ed6577ea2708365d1c5f76bd519009971e41156f12c70abc2533837ceb3bad9a05a99ab923de06';
+  // ignore: non_constant_identifier_names
   final SIG_SR =
       '0xca01419b5a17219f7b78335658cab3b126db523a5df7be4bfc2bef76c2eb3b1dcf4ca86eb877d0a6cf6df12db5995c51d13b00e005d053b892bd09c594434288';
+  // ignore: non_constant_identifier_names
   final SIG_EC =
       '0x994638ee586d2c5dbd9bacacbc35d9b7e9018de8f7892f00c900db63bc57b1283e2ee7bc51a9b1c1dae121ac4f4b9e2a41cd1d6bf4bb3e24d7fed6faf6d85e0501';
+  // ignore: non_constant_identifier_names
   final SIG_ET =
       '0x4e35aad35793b71f08566615661c9b741d7c605bc8935ac08608dff685324d71b5704fbd14c9297d2f584ea0735f015dcf0def66b802b3f555e1db916eda4b7700';
+  // ignore: non_constant_identifier_names
   final MUL_ED = u8aToHex(u8aConcat([
     Uint8List.fromList([0]),
     hexToU8a(SIG_ED)
   ]));
+  // ignore: non_constant_identifier_names
   final MUL_SR = u8aToHex(u8aConcat([
     Uint8List.fromList([1]),
     hexToU8a(SIG_SR)
   ]));
+  // ignore: non_constant_identifier_names
   final MUL_EC = u8aToHex(u8aConcat([
     Uint8List.fromList([2]),
     hexToU8a(SIG_EC)
   ]));
+  // ignore: non_constant_identifier_names
   final MUL_ET = u8aToHex(u8aConcat([
     Uint8List.fromList([2]),
     hexToU8a(SIG_ET)

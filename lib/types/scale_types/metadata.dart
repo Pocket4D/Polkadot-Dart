@@ -42,6 +42,7 @@ class Metadata {
 
   Version version;
   String versionKey;
+  int get versionNumber => int.tryParse(versionKey.substring(1));
 
   Metadata copyWith({Version version, String versionKey}) => Metadata(
         version: version ?? this.version,
@@ -99,7 +100,7 @@ class Version {
 
   Map<String, dynamic> toMap() => {
         "modules": List<dynamic>.from(modules.map((x) => x.toMap())),
-        "extrinsic": extrinsic.toMap(),
+        "extrinsic": extrinsic != null ? extrinsic.toMap() : null,
       };
 }
 
@@ -213,6 +214,7 @@ class Call {
   String name;
   List<Arg> args;
   List<String> documentation;
+  int index;
 
   Call copyWith({
     String name,
@@ -395,19 +397,19 @@ class Event {
 class Storage {
   Storage({
     this.prefix,
-    this.items,
+    this.entry,
   });
 
   String prefix;
-  List<Item> items;
+  List<Entry> entry;
 
   Storage copyWith({
     String prefix,
-    List<Item> items,
+    List<Entry> entry,
   }) =>
       Storage(
         prefix: prefix ?? this.prefix,
-        items: items ?? this.items,
+        entry: entry ?? this.entry,
       );
 
   factory Storage.fromJson(String str) => Storage.fromMap(json.decode(str));
@@ -416,17 +418,17 @@ class Storage {
 
   factory Storage.fromMap(Map<String, dynamic> json) => Storage(
         prefix: json["prefix"],
-        items: List<Item>.from(json["items"].map((x) => Item.fromMap(x))),
+        entry: List<Entry>.from(json["items"].map((x) => Entry.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
         "prefix": prefix,
-        "items": List<dynamic>.from(items.map((x) => x.toMap())),
+        "items": List<dynamic>.from(entry.map((x) => x.toMap())),
       };
 }
 
-class Item {
-  Item({
+class Entry {
+  Entry({
     this.name,
     this.modifier,
     this.type,
@@ -436,18 +438,18 @@ class Item {
 
   String name;
   Modifier modifier;
-  Type type;
+  Typeof type;
   String fallback;
   List<String> documentation;
 
-  Item copyWith({
+  Entry copyWith({
     String name,
     Modifier modifier,
-    Type type,
+    Typeof type,
     String fallback,
     List<String> documentation,
   }) =>
-      Item(
+      Entry(
         name: name ?? this.name,
         modifier: modifier ?? this.modifier,
         type: type ?? this.type,
@@ -455,14 +457,14 @@ class Item {
         documentation: documentation ?? this.documentation,
       );
 
-  factory Item.fromJson(String str) => Item.fromMap(json.decode(str));
+  factory Entry.fromJson(String str) => Entry.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory Item.fromMap(Map<String, dynamic> json) => Item(
+  factory Entry.fromMap(Map<String, dynamic> json) => Entry(
         name: json["name"],
         modifier: modifierValues.map[json["modifier"]],
-        type: Type.fromMap(json["type"]),
+        // type: Type.fromMap(json["type"]),
         fallback: json["fallback"],
         documentation: List<String>.from(json["documentation"].map((x) => x)),
       );
@@ -476,47 +478,97 @@ class Item {
       };
 }
 
-enum Modifier { DEFAULT, OPTIONAL }
+enum Modifier { OPTIONAL, DEFAULT, REQUIRED }
 
-final modifierValues = EnumValues({"Default": Modifier.DEFAULT, "Optional": Modifier.OPTIONAL});
+final modifierValues = EnumValues(
+    {"Default": Modifier.DEFAULT, "Optional": Modifier.OPTIONAL, "Required": Modifier.REQUIRED});
 
-class Type {
-  Type({
-    this.map,
-    this.plain,
-    this.doubleMap,
-  });
+// class Type {
+//   Type({
+//     this.map,
+//     this.plain,
+//     this.doubleMap,
+//   });
 
-  MapClass map;
-  String plain;
-  DoubleMap doubleMap;
+//   MapDefinition map;
+//   String plain;
+//   DoubleMap doubleMap;
 
-  Type copyWith({
-    MapClass map,
-    String plain,
-    DoubleMap doubleMap,
-  }) =>
-      Type(
-        map: map ?? this.map,
-        plain: plain ?? this.plain,
-        doubleMap: doubleMap ?? this.doubleMap,
-      );
+//   Type copyWith({
+//     MapDefinition map,
+//     String plain,
+//     DoubleMap doubleMap,
+//   }) =>
+//       Type(
+//         map: map ?? this.map,
+//         plain: plain ?? this.plain,
+//         doubleMap: doubleMap ?? this.doubleMap,
+//       );
 
-  factory Type.fromJson(String str) => Type.fromMap(json.decode(str));
+//   factory Type.fromJson(String str) => Type.fromMap(json.decode(str));
 
-  String toJson() => json.encode(toMap());
+//   String toJson() => json.encode(toMap());
 
-  factory Type.fromMap(Map<String, dynamic> json) => Type(
-        map: json["Map"] == null ? null : MapClass.fromMap(json["Map"]),
-        plain: json["Plain"] == null ? null : json["Plain"],
-        doubleMap: json["DoubleMap"] == null ? null : DoubleMap.fromMap(json["DoubleMap"]),
-      );
+//   factory Type.fromMap(Map<String, dynamic> json) => Type(
+//         map: json["Map"] == null ? null : MapDefinition.fromMap(json["Map"]),
+//         plain: json["Plain"] == null ? null : json["Plain"],
+//         doubleMap: json["DoubleMap"] == null ? null : DoubleMap.fromMap(json["DoubleMap"]),
+//       );
 
-  Map<String, dynamic> toMap() => {
-        "Map": map == null ? null : map.toMap(),
-        "Plain": plain == null ? null : plain,
-        "DoubleMap": doubleMap == null ? null : doubleMap.toMap(),
-      };
+//   Map<String, dynamic> toMap() => {
+//         "Map": map == null ? null : map.toMap(),
+//         "Plain": plain == null ? null : plain,
+//         "DoubleMap": doubleMap == null ? null : doubleMap.toMap(),
+//       };
+// }
+
+abstract class Typeof<T> {
+  final T value;
+  Typeof(this.value);
+  Map<String, dynamic> toMap();
+  String toJson();
+}
+
+class TypeMapDefinition extends Typeof<MapDefinition> {
+  TypeMapDefinition(MapDefinition value) : super(value);
+
+  @override
+  Map<String, dynamic> toMap() {
+    return value.toMap();
+  }
+
+  @override
+  String toJson() {
+    return jsonEncode(toMap());
+  }
+}
+
+class TypePlain extends Typeof<String> {
+  TypePlain(String value) : super(value);
+
+  @override
+  toMap() {
+    return {"Plain": value};
+  }
+
+  @override
+  toJson() {
+    return jsonEncode(toMap());
+  }
+}
+
+class TypeDoubleMap extends Typeof<DoubleMap> {
+  TypeDoubleMap(DoubleMap value) : super(value);
+
+  @override
+  toMap() {
+    return value.toMap();
+  }
+
+  @override
+  toJson() {
+    return jsonEncode(toMap());
+  }
 }
 
 class DoubleMap {
@@ -570,16 +622,28 @@ class DoubleMap {
       };
 }
 
-enum Hasher { BLAKE2_128_CONCAT, TWOX64_CONCAT, IDENTITY }
+enum Hasher {
+  BLAKE2_128,
+  BLAKE2_256,
+  BLAKE2_256_CONCAT,
+  TWOX_128,
+  TWOX_256,
+  TWOX_64_CONCAT,
+  IDENTITY
+}
 
 final hasherValues = EnumValues({
-  "Blake2_128Concat": Hasher.BLAKE2_128_CONCAT,
+  "Blake2_128": Hasher.BLAKE2_128,
+  "Blake2_256": Hasher.BLAKE2_256,
+  "Blake2_256Concat": Hasher.BLAKE2_256_CONCAT,
+  "Twox128": Hasher.TWOX_128,
+  "Twox256": Hasher.TWOX_256,
+  "Twox64Concat": Hasher.TWOX_64_CONCAT,
   "Identity": Hasher.IDENTITY,
-  "Twox64Concat": Hasher.TWOX64_CONCAT
 });
 
-class MapClass {
-  MapClass({
+class MapDefinition {
+  MapDefinition({
     this.hasher,
     this.key,
     this.value,
@@ -591,24 +655,24 @@ class MapClass {
   String value;
   bool linked;
 
-  MapClass copyWith({
+  MapDefinition copyWith({
     Hasher hasher,
     String key,
     String value,
     bool linked,
   }) =>
-      MapClass(
+      MapDefinition(
         hasher: hasher ?? this.hasher,
         key: key ?? this.key,
         value: value ?? this.value,
         linked: linked ?? this.linked,
       );
 
-  factory MapClass.fromJson(String str) => MapClass.fromMap(json.decode(str));
+  factory MapDefinition.fromJson(String str) => MapDefinition.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory MapClass.fromMap(Map<String, dynamic> json) => MapClass(
+  factory MapDefinition.fromMap(Map<String, dynamic> json) => MapDefinition(
         hasher: hasherValues.map[json["hasher"]],
         key: json["key"],
         value: json["value"],

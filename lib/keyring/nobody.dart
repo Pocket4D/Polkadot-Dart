@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:p4d_rust_binding/keyring/types.dart';
@@ -108,6 +107,7 @@ KeyringPair nobody() {
       meta: meta,
       publicKey: publicKey,
       type: 'ed25519');
+  // ignore: missing_return
   pair.decodePkcs8 = (String passphrase, [Uint8List encoded]) {};
   pair.derive = (String suri, [Map<String, dynamic> meta]) => pair;
   pair.encodePkcs8 = ([String passphrase]) async => Uint8List(0);

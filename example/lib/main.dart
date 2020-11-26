@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
-
 void main() {
   runApp(MyApp());
 }
