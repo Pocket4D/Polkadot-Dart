@@ -13,7 +13,6 @@ class Int32Reader implements ScaleReader<int> {
 
     final value = Uint8List.fromList(list);
 
-    return u8aToBn(value.sublist(0, (32 / 8).ceil()), endian: Endian.little, isNegative: true)
-        .toInt();
+    return decodeBigInt(value, endian: Endian.little).toSigned(32).toInt();
   }
 }

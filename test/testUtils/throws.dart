@@ -4,3 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 Matcher assertionThrowsContains(String str) {
   return isAssertionError.having((e) => e.message, "message", contains(str));
 }
+
+Matcher rangeThrowsContains(String str) {
+  return isRangeError.having((e) => e.end, "end", contains(str));
+}

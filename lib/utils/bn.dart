@@ -34,7 +34,7 @@ BigInt bitnot(BigInt bn, {int bitLength}) {
     prefix = '1' * 8;
   }
 
-  if (bitLength > 0 && bitLength > bin.length) {
+  if (bitLength != null && bitLength > 0 && bitLength > bin.length) {
     prefix = '1' * (bitLength - bin.length);
   }
 

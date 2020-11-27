@@ -26,6 +26,6 @@ class CompactBigIntReader implements ScaleReader<BigInt> {
       value[value.length - i - 1] = temp;
     }
     //unsigned, i.e. always positive, signum=1
-    return u8aToBn(value);
+    return u8aToBn(value, endian: Endian.big, isNegative: false);
   }
 }

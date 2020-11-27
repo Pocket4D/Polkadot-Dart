@@ -30,16 +30,14 @@ BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = fal
     if (value == null) return BigInt.from(0);
     if (isNegative == false) {
       if (isHex(value)) {
-        if (isNegative == false) {
-          var sValue =
-              value is num ? int.parse(value.toString(), radix: 10).toRadixString(16) : value;
-          if (endian == Endian.big) {
-            return BigInt.parse(hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue),
-                radix: 16);
-          } else {
-            return decodeBigInt(
-                hexToBytes(hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue)));
-          }
+        var sValue =
+            value is num ? int.parse(value.toString(), radix: 10).toRadixString(16) : value;
+        if (endian == Endian.big) {
+          return BigInt.parse(hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue),
+              radix: 16);
+        } else {
+          return decodeBigInt(
+              hexToBytes(hexStripPrefix(sValue) == '' ? '0' : hexStripPrefix(sValue)));
         }
       }
       var _sValue = value is num ? int.parse(value.toString(), radix: 10).toRadixString(16) : value;
@@ -60,9 +58,7 @@ BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = fal
       hex = decodeBigInt(hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
               endian: endian)
           .toRadixString(16);
-
       var bn = BigInt.parse(hex, radix: 16);
-
       if (0x80 & int.parse(hex.substring(0, 2), radix: 16) > 0) {
         var some = BigInt.parse(
                 bn.toRadixString(2).split('').map((i) {

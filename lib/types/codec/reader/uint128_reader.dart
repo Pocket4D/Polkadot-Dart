@@ -20,6 +20,6 @@ class UInt128Reader implements ScaleReader<BigInt> {
   BigInt read(ScaleCodecReader rdr) {
     Uint8List value = rdr.readByteArray(sizeBytes);
     var reversed = reverse(value);
-    return u8aToBn(reversed);
+    return u8aToBn(reversed, endian: Endian.big).toUnsigned(128);
   }
 }

@@ -42,3 +42,13 @@ extension BnExtension on BigInt {
       bnUtil.bnToU8a(this, bitLength: bitLength, endian: endian, isNegative: isNegative);
   BigInt bitNot({int bitLength}) => bnUtil.bitnot(this, bitLength: bitLength);
 }
+
+extension IntExtension on int {
+  BigInt toBn() => bnUtil.bnToBn(this);
+  String toHex({int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) =>
+      bnUtil.bnToHex(this.toBn(), bitLength: bitLength, endian: endian, isNegative: isNegative);
+  Uint8List toU8a({int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) =>
+      bnUtil.bnToU8a(this.toBn(), bitLength: bitLength, endian: endian, isNegative: isNegative);
+  BigInt bitNot({int bitLength}) => bnUtil.bitnot(this.toBn(), bitLength: bitLength);
+  static get max => 4294967296;
+}

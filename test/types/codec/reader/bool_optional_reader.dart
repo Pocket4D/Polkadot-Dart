@@ -12,30 +12,30 @@ void boolOptionalReaderTest() {
   group('boolOptionalReader', () {
     var reader = BoolOptionalReader();
     test("Reads existing true bool", () {
-      var codec = ScaleCodecReader<Optional<bool>>('0x02'.toU8a());
+      var codec = ScaleCodecReader('0x02'.toU8a());
       var act = codec.read(reader);
       act.ifPresent((val) {
         expect(val, true);
       });
     });
     test("Reads existing false bool", () {
-      var codec = ScaleCodecReader<Optional<bool>>('0x01'.toU8a());
+      var codec = ScaleCodecReader('0x01'.toU8a());
       var act = codec.read(reader);
       act.ifPresent((val) {
         expect(val, false);
       });
     });
     test("Reads no bool", () {
-      var codec = ScaleCodecReader<Optional<bool>>('0x00'.toU8a());
+      var codec = ScaleCodecReader('0x00'.toU8a());
       var act = codec.read(reader);
       expect(act.isEmpty, true);
     });
     test("Errors if no input", () {
-      var codec = ScaleCodecReader<Optional<bool>>('0x'.toU8a());
+      var codec = ScaleCodecReader('0x'.toU8a());
       expect(() => codec.read(reader), throwsA(contains("Cannot read 0 of")));
     });
     test("Errors if invalid value", () {
-      var codec = ScaleCodecReader<Optional<bool>>('0x03'.toU8a());
+      var codec = ScaleCodecReader('0x03'.toU8a());
       expect(() => codec.read(reader), throwsA(contains("Not a boolean option: ")));
     });
     test("Reads bool through codec optional method", () {
@@ -46,10 +46,9 @@ void boolOptionalReaderTest() {
         Optional<bool>.of(true)
       ];
       for (var i = 0; i < testList.length; i += 1) {
-        var codec = ScaleCodecReader<Optional<bool>>((testList[i]).toU8a());
+        var codec = ScaleCodecReader((testList[i]).toU8a());
         var result = codec.readOptional(reader);
-        print(result);
-        // expect(codec, testExpected[i]);
+        expect(result.value, testExpected[i]);
       }
     });
   });
