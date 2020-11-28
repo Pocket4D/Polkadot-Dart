@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/utils/u8a.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
 import 'dart:convert' as convert;
 
 bool base64Validate(String value) {

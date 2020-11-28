@@ -1,4 +1,4 @@
-extern crate bitcoin_hashes;
+// extern crate bitcoin_hashes;
 extern crate secp256k1;
 use super::bip32;
 use super::bip39;
@@ -6,6 +6,7 @@ use super::ed25519;
 use super::hashing;
 use super::sr25519;
 use super::util::{get_ptr, get_ptr_from_u8vec, get_str, get_u8vec_from_ptr};
+use schnorrkel::{KEYPAIR_LENGTH, SECRET_KEY_LENGTH};
 // use bitcoin_hashes::{sha256, Hash};
 pub use derivation_path::DerivationPath;
 use secp256k1::recovery::{RecoverableSignature, RecoveryId};
@@ -195,13 +196,14 @@ pub extern "C" fn secp256k1_recover(
 #[no_mangle]
 pub extern "C" fn sr25519_get_pub_from_seed(seed: *const c_char) -> *mut c_char {
     let seed_vec = get_u8vec_from_ptr(seed);
-    let keypair_option = sr25519::KeyPair::from_seed(&seed_vec[..32]);
-    let keypair = match keypair_option {
-        Some(c) => c,
-        _ => panic!("keypair wrong"),
-    };
-    let result_vec: Vec<u8> = keypair.get_public().to_bytes()[..].to_vec();
-    get_ptr_from_u8vec(result_vec)
+    // let keypair_option = sr25519::KeyPair::from_seed(&seed_vec[..32]);
+    // let keypair = match keypair_option {
+    //     Some(c) => c,
+    //     _ => panic!("keypair wrong"),
+    // };
+    // let result_vec: Vec<u8> = keypair.get_public().to_bytes()[..].to_vec();
+    let result_vec = sr25519::ext_sr_from_seed(&seed_vec[..32]);
+    get_ptr_from_u8vec(result_vec[SECRET_KEY_LENGTH..KEYPAIR_LENGTH].to_vec())
 }
 
 // ed25519KeypairFromSeed

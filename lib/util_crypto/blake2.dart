@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 String blake2AsHex(dynamic data, {int bitLength = 256, dynamic key}) {
   final byteLength = (bitLength / 8).ceil();

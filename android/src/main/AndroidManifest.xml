@@ -1,3 +1,2 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.pocket4d.io.p4d_rust_binding">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.pocket4d.io.polkadot_dart">
 </manifest>

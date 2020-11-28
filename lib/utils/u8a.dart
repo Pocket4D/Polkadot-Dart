@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
-import 'package:p4d_rust_binding/utils/string.dart';
+import 'package:polkadot_dart/polkadot_dart.dart';
+import 'package:polkadot_dart/utils/string.dart';
 
 import 'is.dart';
 import 'number.dart';

@@ -1,4 +1,4 @@
-import 'package:p4d_rust_binding/direct/ifunction.dart';
+import 'package:polkadot_dart/direct/ifunction.dart';
 
 abstract class Unsubscribe<T> {
   T unsubscribe(int subscriptionId);

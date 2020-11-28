@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
-import 'package:p4d_rust_binding/types/codec/compact_mode.dart';
-import 'package:p4d_rust_binding/types/codec/reader/compact_uint_reader.dart';
-import 'package:p4d_rust_binding/types/codec/scale_codec_reader.dart';
-import 'package:p4d_rust_binding/types/codec/scale_reader.dart';
+import 'package:polkadot_dart/polkadot_dart.dart';
+import 'package:polkadot_dart/types/codec/compact_mode.dart';
+import 'package:polkadot_dart/types/codec/reader/compact_uint_reader.dart';
+import 'package:polkadot_dart/types/codec/scale_codec_reader.dart';
+import 'package:polkadot_dart/types/codec/scale_reader.dart';
 
 class CompactBigIntReader implements ScaleReader<BigInt> {
   static final CompactUIntReader intReader = new CompactUIntReader();

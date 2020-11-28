@@ -1,4 +1,4 @@
-import 'package:p4d_rust_binding/direct/isection.dart';
+import 'package:polkadot_dart/direct/isection.dart';
 
 abstract class IModule<S extends ISection> {
   S section(String section);

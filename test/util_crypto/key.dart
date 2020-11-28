@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/util_crypto/key.dart';
+import 'package:polkadot_dart/util_crypto/key.dart';
 
 void main() {
   keyTest();

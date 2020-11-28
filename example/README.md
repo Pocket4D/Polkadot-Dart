@@ -1,6 +1,6 @@
-# p4d_rust_binding_example
+# polkadot_dart_example
 
-Demonstrates how to use the p4d_rust_binding plugin.
+Demonstrates how to use the polkadot_dart plugin.
 
 ## Getting Started
 

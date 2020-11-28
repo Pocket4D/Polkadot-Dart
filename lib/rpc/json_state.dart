@@ -1,4 +1,4 @@
-import 'package:p4d_rust_binding/rpc/types.dart';
+import 'package:polkadot_dart/rpc/types.dart';
 
 class JsonState {
   static final JsonRpcMethodOpt call = JsonRpcMethodOpt(

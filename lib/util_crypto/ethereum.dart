@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/util_crypto/keccak.dart';
-import 'package:p4d_rust_binding/util_crypto/secp256k1.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/keccak.dart';
+import 'package:polkadot_dart/util_crypto/secp256k1.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 bool isInvalidChar(String char, num byte) {
   return (byte > 7 && char != char.toUpperCase()) || (byte <= 7 && char != char.toLowerCase());

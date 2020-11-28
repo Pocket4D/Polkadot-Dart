@@ -1,4 +1,4 @@
-import 'package:p4d_rust_binding/rpc/types.dart';
+import 'package:polkadot_dart/rpc/types.dart';
 
 class JsonAuthor {
   static final JsonRpcMethodOpt pendingExtrinsics = new JsonRpcMethodOpt(

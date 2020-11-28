@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/utils/utils.dart';
-import 'package:p4d_rust_binding/crypto/common.dart';
+import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/crypto/common.dart';
 
 const int ED25519_PRIVATE_LENGTH = 64;
 const int ED25519_PUBLIC_LENGTH = 64;

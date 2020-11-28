@@ -20,10 +20,10 @@ cp "./target/debug/lib${LIB_NAME}.dylib" "../linux/lib${LIB_NAME}.dylib"
 
 echo "#import <Flutter/Flutter.h>
 
-@interface P4dRustBindingPlugin : NSObject<FlutterPlugin>
-@end" > ../ios/Classes/P4dRustBindingPlugin.h
+@interface PolkadotDartPlugin : NSObject<FlutterPlugin>
+@end" > ../ios/Classes/PolkadotDartPlugin.h
 
-cat ./target/bindings.h >> ../ios/Classes/P4dRustBindingPlugin.h
+cat ./target/bindings.h >> ../ios/Classes/PolkadotDartPlugin.h
 
 
 

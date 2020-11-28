@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
-import 'package:p4d_rust_binding/utils/u8a.dart';
+import 'package:polkadot_dart/polkadot_dart.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
 
 import 'is.dart';
 

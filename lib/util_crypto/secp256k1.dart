@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/crypto/crypto.dart' as crypto;
-import 'package:p4d_rust_binding/crypto/curve.dart';
-import 'package:p4d_rust_binding/util_crypto/blake2.dart';
-import 'package:p4d_rust_binding/util_crypto/keccak.dart';
-import 'package:p4d_rust_binding/util_crypto/types.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/crypto/crypto.dart' as crypto;
+import 'package:polkadot_dart/crypto/curve.dart';
+import 'package:polkadot_dart/util_crypto/blake2.dart';
+import 'package:polkadot_dart/util_crypto/keccak.dart';
+import 'package:polkadot_dart/util_crypto/types.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 class ExpandOpt {
   static final int bitLength = 256;

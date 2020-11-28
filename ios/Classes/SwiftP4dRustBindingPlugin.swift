@@ -1,10 +1,10 @@
 import Flutter
 import UIKit
 
-public class SwiftP4dRustBindingPlugin: NSObject, FlutterPlugin {
+public class SwiftPolkadotDartPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "p4d_rust_binding", binaryMessenger: registrar.messenger())
-    let instance = SwiftP4dRustBindingPlugin()
+    let channel = FlutterMethodChannel(name: "polkadot_dart", binaryMessenger: registrar.messenger())
+    let instance = SwiftPolkadotDartPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/util_crypto/base58.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/base58.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 const BASE32_ALPHABET = 'abcdefghijklmnopqrstuvwxyz234567';
 const BITS_PER_CHAR = 5;

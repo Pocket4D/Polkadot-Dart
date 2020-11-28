@@ -1,7 +1,7 @@
 import 'package:optional/optional.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
-import 'package:p4d_rust_binding/types/codec/codec.dart';
-import 'package:p4d_rust_binding/types/scale_types/metadata.dart' as Meta;
+import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/types/codec/codec.dart';
+import 'package:polkadot_dart/types/scale_types/metadata.dart' as Meta;
 
 final ListReader<Meta.Module> modulesReader = ListReader(ModulesReader());
 final ListReader<String> stringsReader = ListReader(ScaleCodecReader.stringReader);

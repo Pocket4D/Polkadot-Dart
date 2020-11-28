@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/utils/bn.dart';
-import 'package:p4d_rust_binding/utils/u8a.dart';
+import 'package:polkadot_dart/utils/bn.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
 
 final BigInt maxU8 = BigInt.from(2).pow(8 - 2) - (BigInt.one);
 final BigInt maxU16 = BigInt.from(2).pow(16 - 2) - (BigInt.one);

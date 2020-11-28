@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
-import 'package:p4d_rust_binding/utils/number.dart';
+import 'package:polkadot_dart/utils/number.dart';
 import 'package:recase/recase.dart';
 
 String strip0xHex(String hex) {

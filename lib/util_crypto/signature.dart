@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/util_crypto/address.dart';
-import 'package:p4d_rust_binding/util_crypto/nacl.dart';
-import 'package:p4d_rust_binding/util_crypto/schnorrkel.dart';
-import 'package:p4d_rust_binding/util_crypto/secp256k1.dart';
-import 'package:p4d_rust_binding/util_crypto/types.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/address.dart';
+import 'package:polkadot_dart/util_crypto/nacl.dart';
+import 'package:polkadot_dart/util_crypto/schnorrkel.dart';
+import 'package:polkadot_dart/util_crypto/secp256k1.dart';
+import 'package:polkadot_dart/util_crypto/types.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 class VerifyInput {
   dynamic message;

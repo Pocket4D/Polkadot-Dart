@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 const int SR25519_KEY_LENGTH = 64;
 const int SR25519_NONCE_LENGTH = 64;

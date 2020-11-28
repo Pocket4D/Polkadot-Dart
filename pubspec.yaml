@@ -1,4 +1,4 @@
-name: p4d_rust_binding
+name: polkadot_dart
 description: A new flutter plugin project.
 version: 0.0.1
 homepage: https://github.com/pocket4d/p4d_rust_binding
@@ -35,10 +35,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.pocket4d.io.p4d_rust_binding
-        pluginClass: P4dRustBindingPlugin
+        package: com.pocket4d.io.polkadot_dart
+        pluginClass: PolkadotDartPlugin
       ios:
-        pluginClass: P4dRustBindingPlugin
+        pluginClass: PolkadotDartPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

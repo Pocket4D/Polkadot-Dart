@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/util_crypto/random.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/random.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 void main() {
   randomTest();

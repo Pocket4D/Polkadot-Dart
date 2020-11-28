@@ -1,8 +1,8 @@
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
-import 'package:p4d_rust_binding/bindings/bindings.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/bindings/bindings.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 String bip39Generate(int wordsNumber) {
   if (dylib == null) throw "ERROR: The library is not initialized 🙁";

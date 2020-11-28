@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/utils/format.dart';
+import 'package:polkadot_dart/utils/format.dart';
 
 void main() {
   formatTest();

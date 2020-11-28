@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change this name to the rust library name
-LIB_NAME=p4d_rust_binding
+LIB_NAME=polkadot_dart
 API_LEVEL=29
 
 ANDROID_ARCHS=(aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android)

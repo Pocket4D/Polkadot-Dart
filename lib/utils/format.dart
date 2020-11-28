@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/utils/si.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/utils/si.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 String zeroPad(int value) {
   return value.toString().padLeft(2, '0');

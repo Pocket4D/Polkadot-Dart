@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/direct/irpc_function.dart';
-import 'package:p4d_rust_binding/direct/isection.dart';
+import 'package:polkadot_dart/direct/irpc_function.dart';
+import 'package:polkadot_dart/direct/isection.dart';
 
 class RpcInterfaceSection extends ISection<IRpcFunction> {
   //Map<String, RpcInterfaceMethod> methods = new HashMap<>();

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/utils/time.dart';
+import 'package:polkadot_dart/utils/time.dart';
 
 void main() {
   timeTest();

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:optional/optional.dart';
-import 'package:p4d_rust_binding/types/codec/scale_codec_reader.dart';
-import 'package:p4d_rust_binding/utils/utils.dart'; // use extendsion methods for fast data format converting
+import 'package:polkadot_dart/types/codec/scale_codec_reader.dart';
+import 'package:polkadot_dart/utils/utils.dart'; // use extendsion methods for fast data format converting
 
 void main() {
   uint32ReaderTest(); // rename this test name

@@ -1,4 +1,4 @@
-group 'com.pocket4d.io.p4d_rust_binding'
+group 'com.pocket4d.io.polkadot_dart'
 version '1.0-SNAPSHOT'
 
 buildscript {

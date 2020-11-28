@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/crypto/ed25519.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/crypto/ed25519.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 void main() async {
   ed25519Test();

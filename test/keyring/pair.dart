@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/keyring/pair.dart';
-import 'package:p4d_rust_binding/keyring/testingPairs.dart';
-import 'package:p4d_rust_binding/keyring/types.dart';
-import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/keyring/pair.dart';
+import 'package:polkadot_dart/keyring/testingPairs.dart';
+import 'package:polkadot_dart/keyring/types.dart';
+import 'package:polkadot_dart/util_crypto/util_crypto.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 import '../testUtils/throws.dart';
 

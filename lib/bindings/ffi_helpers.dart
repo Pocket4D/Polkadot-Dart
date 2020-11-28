@@ -1,19 +1,19 @@
 import 'dart:ffi';
 import 'dart:io' show Platform;
 
-final androidlibName = "libp4d_rust_binding.so";
+final androidlibName = "libpolkadot_dart.so";
 
 final dylib = Platform.isAndroid
     ? DynamicLibrary.open(androidlibName)
     : Platform.isIOS
         ? DynamicLibrary.process()
         : Platform.isMacOS
-            ? DynamicLibrary.open("macos/libp4d_rust_binding.dylib")
+            ? DynamicLibrary.open("macos/libpolkadot_dart.dylib")
             : Platform.isLinux
-                ? DynamicLibrary.open("linux/libp4d_rust_binding.dylib")
+                ? DynamicLibrary.open("linux/libpolkadot_dart.dylib")
                 : Platform.isWindows
-                    ? DynamicLibrary.open("windows/libp4d_rust_binding.dll")
-                    : DynamicLibrary.open("rust/target/debug/libp4d_rust_binding.dylib");
+                    ? DynamicLibrary.open("windows/libpolkadot_dart.dll")
+                    : DynamicLibrary.open("rust/target/debug/libpolkadot_dart.dylib");
 
 // // Must Fix Utf8 because QuickJS need end with terminator '\0'
 // class Utf8Fix extends Struct {

@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 const secp256k1Params = {
   'p': 'fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f',

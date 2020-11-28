@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/types/codec/reader/uint128_reader.dart';
-import 'package:p4d_rust_binding/types/codec/scale_codec_reader.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/types/codec/reader/uint128_reader.dart';
+import 'package:polkadot_dart/types/codec/scale_codec_reader.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 void main() {
   uint128ReaderTest(); // rename this test name

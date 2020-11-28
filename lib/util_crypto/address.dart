@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/util_crypto/base58.dart';
-import 'package:p4d_rust_binding/util_crypto/blake2.dart';
-import 'package:p4d_rust_binding/util_crypto/key.dart';
-import 'package:p4d_rust_binding/util_crypto/schnorrkel.dart';
-import 'package:p4d_rust_binding/util_crypto/secp256k1.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/base58.dart';
+import 'package:polkadot_dart/util_crypto/blake2.dart';
+import 'package:polkadot_dart/util_crypto/key.dart';
+import 'package:polkadot_dart/util_crypto/schnorrkel.dart';
+import 'package:polkadot_dart/util_crypto/secp256k1.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 final ss58Prefix = stringToU8a('SS58PRE');
 final keyMultiPrefix = stringToU8a('modlpy/utilisuba');

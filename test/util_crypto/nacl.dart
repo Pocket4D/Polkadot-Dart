@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/util_crypto/nacl.dart';
-import 'package:p4d_rust_binding/utils/string.dart';
-import 'package:p4d_rust_binding/utils/u8a.dart';
+import 'package:polkadot_dart/util_crypto/nacl.dart';
+import 'package:polkadot_dart/utils/string.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
 
 import '../testUtils/throws.dart';
 

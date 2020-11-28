@@ -1,6 +1,6 @@
-import 'package:p4d_rust_binding/types/codec/scale_codec_reader.dart';
-import 'package:p4d_rust_binding/types/codec/scale_reader.dart';
-import 'package:p4d_rust_binding/types/codec/union_value.dart';
+import 'package:polkadot_dart/types/codec/scale_codec_reader.dart';
+import 'package:polkadot_dart/types/codec/scale_reader.dart';
+import 'package:polkadot_dart/types/codec/union_value.dart';
 
 class UnionReader<T> implements ScaleReader<UnionValue<T>> {
   List<ScaleReader<T>> mapping;

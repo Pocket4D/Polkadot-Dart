@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/direct/imodule.dart';
-import 'package:p4d_rust_binding/rpc/core_irpc.dart';
+import 'package:polkadot_dart/direct/imodule.dart';
+import 'package:polkadot_dart/rpc/core_irpc.dart';
 
 abstract class IRpcModule extends IModule<RpcInterfaceSection> {
   RpcInterfaceSection author();

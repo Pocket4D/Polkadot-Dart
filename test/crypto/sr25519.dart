@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/crypto/sr25519.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/crypto/sr25519.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 void main() {
   sr25519Test();

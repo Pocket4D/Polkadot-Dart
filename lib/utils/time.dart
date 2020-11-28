@@ -1,4 +1,4 @@
-import 'package:p4d_rust_binding/utils/types.dart';
+import 'package:polkadot_dart/utils/types.dart';
 
 const HRS = 60 * 60;
 const DAY = HRS * 24;

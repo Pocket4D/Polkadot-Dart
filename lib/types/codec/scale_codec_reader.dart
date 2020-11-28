@@ -1,19 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:optional/optional.dart';
-import 'package:p4d_rust_binding/types/codec/reader/bool_optional_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/bool_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/compact_bigInt_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/compact_uint_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/era_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/int32_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/string_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/ubyte_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/uint128_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/uint16_reader.dart';
-import 'package:p4d_rust_binding/types/codec/reader/uint32_reader.dart';
-import 'package:p4d_rust_binding/types/codec/scale_reader.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/types/codec/reader/reader.dart';
+import 'package:polkadot_dart/types/codec/scale_reader.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 class ScaleCodecReader<T> {
   static final UByteReader uByte = UByteReader();

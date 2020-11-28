@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/utils/is.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/utils/is.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 BigInt xxhash64AsValue(dynamic data, int seed) {
   var toHash;

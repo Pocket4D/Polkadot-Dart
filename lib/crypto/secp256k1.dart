@@ -1,7 +1,7 @@
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/crypto/curve.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
-import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/crypto/curve.dart';
+import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/util_crypto.dart';
 
 class Secp256k1 {
   String _keypair;

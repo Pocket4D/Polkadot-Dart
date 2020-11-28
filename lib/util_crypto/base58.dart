@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:base_x/base_x.dart';
-import 'package:p4d_rust_binding/util_crypto/base32.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/base32.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 

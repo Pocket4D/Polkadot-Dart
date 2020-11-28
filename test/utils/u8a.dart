@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/utils/number.dart';
-import 'package:p4d_rust_binding/utils/string.dart';
-import 'package:p4d_rust_binding/utils/u8a.dart';
+import 'package:polkadot_dart/utils/number.dart';
+import 'package:polkadot_dart/utils/string.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
 
 void main() {
   u8aTest();

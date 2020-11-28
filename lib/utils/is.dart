@@ -1,4 +1,4 @@
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
+import 'package:polkadot_dart/polkadot_dart.dart';
 import 'package:validators/validators.dart' as validators;
 
 import 'dart:typed_data';

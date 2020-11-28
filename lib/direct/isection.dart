@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/direct/ifunction.dart';
-import 'package:p4d_rust_binding/utils/logger.dart';
+import 'package:polkadot_dart/direct/ifunction.dart';
+import 'package:polkadot_dart/utils/logger.dart';
 
 abstract class ISection<F extends IFunction> {
   Map<String, F> functions = Map<String, F>();

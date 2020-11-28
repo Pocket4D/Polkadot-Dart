@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/types/scale_types/metadata.dart';
+import 'package:polkadot_dart/types/scale_types/metadata.dart';
 
 import '../../metajson.dart';
 

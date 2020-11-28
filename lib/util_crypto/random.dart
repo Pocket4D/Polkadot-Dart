@@ -2,8 +2,8 @@ import 'dart:math';
 import 'dart:typed_data';
 
 // import 'package:laksadart/laksadart.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
-import 'package:p4d_rust_binding/utils/number.dart' as numbers;
+import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/utils/number.dart' as numbers;
 
 const DEFAULT_LENGTH = 32;
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 abstract class AbstractKeyPair {
   Uint8List publicKey;

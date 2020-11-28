@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
-import 'package:p4d_rust_binding/utils/number.dart';
+import 'package:polkadot_dart/polkadot_dart.dart';
+import 'package:polkadot_dart/utils/number.dart';
 
 BigInt bnToBn(dynamic value) {
   if (value == null) {

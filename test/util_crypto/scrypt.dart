@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/util_crypto/scrypt.dart';
+import 'package:polkadot_dart/util_crypto/scrypt.dart';
 
 void main() {
   scryptTest();

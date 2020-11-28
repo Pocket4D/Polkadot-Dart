@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/utils/bn.dart';
-import 'package:p4d_rust_binding/utils/compact.dart';
-import 'package:p4d_rust_binding/utils/u8a.dart';
+import 'package:polkadot_dart/utils/bn.dart';
+import 'package:polkadot_dart/utils/compact.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
 
 void main() {
   compactTest();

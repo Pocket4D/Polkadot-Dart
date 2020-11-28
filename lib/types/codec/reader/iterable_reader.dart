@@ -1,5 +1,5 @@
-import 'package:p4d_rust_binding/types/codec/scale_codec_reader.dart';
-import 'package:p4d_rust_binding/types/codec/scale_reader.dart';
+import 'package:polkadot_dart/types/codec/scale_codec_reader.dart';
+import 'package:polkadot_dart/types/codec/scale_reader.dart';
 
 class IterableReader<T> implements ScaleReader<T> {
   Iterable<T> values;

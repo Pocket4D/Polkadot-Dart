@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:p4d_rust_binding/utils/is.dart';
+import 'package:polkadot_dart/utils/is.dart';
 
 void main() {
   isTest();

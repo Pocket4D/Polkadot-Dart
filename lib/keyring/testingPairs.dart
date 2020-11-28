@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/keyring/keyring.dart';
-import 'package:p4d_rust_binding/keyring/nobody.dart';
-import 'package:p4d_rust_binding/keyring/pair.dart';
-import 'package:p4d_rust_binding/keyring/types.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/keyring/keyring.dart';
+import 'package:polkadot_dart/keyring/nobody.dart';
+import 'package:polkadot_dart/keyring/pair.dart';
+import 'package:polkadot_dart/keyring/types.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 // NOTE This is not great since we have the secretKey here explicitly, but a testing
 // keyring is for testing - what happens is that in most cases the keyring is initialises

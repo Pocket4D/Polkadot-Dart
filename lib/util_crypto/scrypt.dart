@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/crypto/common.dart';
-import 'package:p4d_rust_binding/p4d_rust_binding.dart';
-import 'package:p4d_rust_binding/util_crypto/random.dart';
-import 'package:p4d_rust_binding/utils/number.dart';
+import 'package:polkadot_dart/crypto/common.dart';
+import 'package:polkadot_dart/polkadot_dart.dart';
+import 'package:polkadot_dart/util_crypto/random.dart';
+import 'package:polkadot_dart/utils/number.dart';
 
 const DEFAULT_PARAMS = {"N": 1 << 15, "p": 1, "r": 8};
 

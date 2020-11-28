@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:p4d_rust_binding/util_crypto/util_crypto.dart';
-import 'package:p4d_rust_binding/utils/is.dart';
-import 'package:p4d_rust_binding/utils/utils.dart';
+import 'package:polkadot_dart/util_crypto/util_crypto.dart';
+import 'package:polkadot_dart/utils/is.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 final regNumber = RegExp(r"^\d+$");
 final regJunction = RegExp(r"(//?)([^/]+)");
