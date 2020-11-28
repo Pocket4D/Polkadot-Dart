@@ -1,30 +1,15 @@
-# p4d_rust_binding
+# Polkadot-Dart
 
-A rust binding and dart libraries for crypto projects, providing reliable and stable implementation by rust libs.
+`Polkadot-Dart` is a Dart-lang library to use access API of Polkadot network.
 
-It is a sub-project of `Pocket4D`, and used in `Wallet4D` and `Pocket4D` internally.
-It will be published to [pub.dev](https://pub.dev) as flutter plugin, and re-used by other projects.
-
-it is aiming to support:
-
-* Substrate/Polkadot
-* Bitcoin
-* Ethereum
-* Zilliqa
-* Harmony
-* Oasis Protocol
-* other blockchains
+This library contains a set of crypto libraries and implementations of utils.
 
 
-## Build manually
+## Build rust binding manually
 
 ```bash
 ./scripts/clean.sh && ./scripts/init.sh && ./scripts/build.sh
 ```
-
-
-## Documents
-TBD
 
 
 ## TODO-List
