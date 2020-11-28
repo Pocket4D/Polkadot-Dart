@@ -4,5 +4,5 @@ mod common;
 mod ed25519;
 mod hashing;
 mod sr25519;
-mod substrate;
+// mod substrate;
 mod util;
