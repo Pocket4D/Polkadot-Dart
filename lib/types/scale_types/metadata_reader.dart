@@ -1,4 +1,3 @@
-import 'package:optional/optional.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 import 'package:polkadot_dart/types/codec/codec.dart';
 import 'package:polkadot_dart/types/scale_types/metadata.dart' as Meta;
