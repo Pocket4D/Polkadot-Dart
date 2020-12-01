@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:polkadot_dart/types/create/sanitize.dart';
 import 'package:polkadot_dart/types/create/types.dart';
 
@@ -10,22 +8,6 @@ class TypeDefOptions {
 }
 
 const MAX_NESTED = 64;
-
-/// decode an enum of either of the following forms
-///  { _enum: ['A', 'B', 'C'] }
-///  { _enum: { A: AccountId, B: Balance, C: u32 } }
-TypeDef _decodeEnum(TypeDef value, dynamic details, int count) {
-  value.info = TypeDefInfo.Enum;
-
-  // not as pretty, but remain compatible with oo7 for both struct and Array types
-  value.sub = (details is List)
-      ? details.map((name) => ({"info": TypeDefInfo.Plain, "name": name, "type": 'Null'}))
-      : (details as Map<String, String>).entries.map((d) =>
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
-          getTypeDef(d.value ?? 'Null', TypeDefOptions(name: d.key), count));
-
-  return value;
-}
 
 /// decode a set of the form
 ///   { _set: { A: 0b0001, B: 0b0010, C: 0b0100 } }

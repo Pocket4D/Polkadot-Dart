@@ -1,5 +1,5 @@
 import 'package:polkadot_dart/utils/utils.dart';
-import 'package:polkadot_dart/types/codec/codec.dart';
+import 'package:polkadot_dart/types/scale_codec/scale_codec.dart';
 import 'package:polkadot_dart/types/scale_types/metadata.dart' as Meta;
 
 final ListReader<Meta.Module> modulesReader = ListReader(ModulesReader());

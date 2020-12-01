@@ -108,7 +108,7 @@ T decodeStruct<T extends Map<dynamic, BaseCodec>>(Registry registry, Map<String,
   return decodeStructFromObject(registry, types, value, jsonMap);
 }
 
-class Struct<S extends Map<String, BaseCodec>, V extends Map, E extends Map<dynamic, String>>
+class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynamic, String>>
     extends BaseCodec {
   Registry registry;
   Map<dynamic, BaseCodec> _value;
