@@ -45,7 +45,6 @@ class Linkage<T extends BaseCodec> extends Struct {
   }
 }
 
-// TODO: LinkageResult
 class LinkageResult extends Tuple {
   LinkageResult(Registry registry, List<dynamic> typeKeys, List<dynamic> typeValues)
       : super(

@@ -120,8 +120,6 @@ ExtractResultSuri keyExtractSuri(String suri) {
       password: password, path: keyExtractPath(derivePath).path, phrase: phrase);
 }
 
-//TODO  from pair needs schnorrkel,secp256k1,ecdsa
-
 KeyPair keyHdkdEcdsa(KeyPair keypair, DeriveJunction derive) {
   assert(derive.isHard, 'A soft key was found in the path (and is unsupported)');
 

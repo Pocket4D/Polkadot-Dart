@@ -136,7 +136,8 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   /// @description Checks if the value is an empty value
   bool get isEmpty => this._value.isEmpty;
 
-  E get type {
+  // ignore: non_constant_identifier_names
+  E get Type {
     return (this._types.entries).fold({} as E, (result, entry) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (result as dynamic)[entry.key] = (entry.value)(this.registry).toRawType();

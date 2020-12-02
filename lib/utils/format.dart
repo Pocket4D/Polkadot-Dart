@@ -86,8 +86,6 @@ abstract class Formatter {
   void setDefaults(Defaults defaults);
 }
 
-// TODO: should make this into singleton
-
 class BalanceFormatter implements Formatter {
   num defaultDecimals;
   dynamic defaultUnit;

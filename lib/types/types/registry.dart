@@ -146,7 +146,7 @@ abstract class Registry {
   Constructor<T> createClass<T extends BaseCodec>(T type);
 
   // createType <K extends keyof InterfaceTypes>(type: K, ...params: unknown[]): InterfaceTypes[K];
-  Constructor<T> createType<T extends BaseCodec>(T type, [dynamic params]);
+  T createType<T extends BaseCodec>(T type, [dynamic params]);
 
   Constructor<T> getConstructor<T extends BaseCodec>(String name, [bool withUnknown]);
 

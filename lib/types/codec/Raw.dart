@@ -16,6 +16,7 @@ Uint8List _decodeU8a([dynamic value]) {
 class Raw implements IU8a {
   Registry registry;
   Uint8List _value;
+  Uint8List get value => _value;
 
   Raw(Registry registry, [dynamic value]) {
     _value = _decodeU8a(value);

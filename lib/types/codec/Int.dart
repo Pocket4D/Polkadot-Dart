@@ -8,9 +8,11 @@ CodecInt Function(Registry, [int]) intWith(int bitLength, [String typeName]) {
 
 class CodecInt extends AbstractInt {
   String _typeName;
+  Registry registry;
   CodecInt(Registry registry, [int value = 0, int bitLength, String typeName])
       : super(registry, value, bitLength, true) {
     _typeName = typeName;
+    registry = registry;
   }
 
   toRawType() {
