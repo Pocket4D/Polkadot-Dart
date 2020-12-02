@@ -54,7 +54,7 @@ String unwrapStorageType(StorageEntryTypeLatest type, [bool isOptional]) {
   return isOptional && !hasWrapper ? "Option<$outputType>" : outputType;
 }
 
-/** @internal */
+/// @internal */
 Decoded decodeStorageKey([dynamic value]) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   if (value is StorageKey) {
@@ -98,7 +98,7 @@ List<BaseCodec> decodeHashers(Registry registry, Uint8List value, List<dynamic> 
   });
 }
 
-/** @internal */
+/// @internal */
 List<BaseCodec> decodeArgsFromMeta(Registry registry, Uint8List value,
     [StorageEntryMetadataLatest meta]) {
   if (meta == null || !(meta.type.isDoubleMap || meta.type.isMap)) {
@@ -181,37 +181,27 @@ class StorageKey extends Bytes {
     return 'Raw';
   }
 
-  /**
-   * @description Return the decoded arguments(applicable to map/doublemap with decodable values)
-   */
+  /// @description Return the decoded arguments(applicable to map/doublemap with decodable values)
   List<BaseCodec> get args {
     return this._args;
   }
 
-  /**
-   * @description The key method or `undefined` when not specified
-   */
+  /// @description The key method or `undefined` when not specified
   String get method {
     return this._method;
   }
 
-  /**
-   * @description The output type
-   */
+  /// @description The output type
   String get outputType {
     return this._outputType;
   }
 
-  /**
-   * @description The key section or `undefined` when not specified
-   */
+  /// @description The key section or `undefined` when not specified
   String get section {
     return this._section;
   }
 
-  /**
-   * @description Sets the meta for this key
-   */
+  /// @description Sets the meta for this key
   StorageKey setMeta([StorageEntryMetadataLatest metaData, String sectionData, String methodData]) {
     this._meta = metaData;
     this._method = sectionData ?? this._method;
@@ -230,16 +220,12 @@ class StorageKey extends Bytes {
     return this;
   }
 
-  /**
-   * @description Returns the Human representation for this type
-   */
+  /// @description Returns the Human representation for this type
   dynamic toHuman([bool isExtended]) {
     return this._args.length != 0 ? this._args.map((arg) => arg.toHuman()) : super.toHuman();
   }
 
-  /**
-   * @description Returns the raw type for this
-   */
+  /// @description Returns the raw type for this
   String toRawType() {
     return 'StorageKey';
   }
