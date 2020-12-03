@@ -8,7 +8,7 @@ import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-typedef EnumConstructor<T extends BaseCodec<dynamic>> = T Function(Registry registry,
+typedef EnumConstructor<T extends BaseCodec> = T Function(Registry registry,
     [dynamic value, int index]);
 
 // type TypesDef = Record<string, Constructor>;

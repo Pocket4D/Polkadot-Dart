@@ -78,7 +78,7 @@ Map<K, V> decodeMap<K extends BaseCodec, V extends BaseCodec>(
   throw 'Map: cannot decode type';
 }
 
-class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec<Map<K, V>> {
+class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec {
   //  readonly registry: Registry;
 
   Registry registry;

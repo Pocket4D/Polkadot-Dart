@@ -22,7 +22,7 @@ abstract class ChainUpgrades {
 // RegistryTypes= Map<String,dynamic>;
 // export type RegistryTypes = Record<string, Constructor | string | Record<string, string> | { _enum: string[] | Record<string, string | null> } | { _set: Record<string, number> }>;
 
-abstract class RegistryMetadataText extends BaseCodec<String> {
+abstract class RegistryMetadataText extends BaseCodec {
   void setOverride(String override);
 }
 
@@ -156,8 +156,8 @@ abstract class Registry {
 
   String getDefinition(String name);
 
-  Constructor<T> getOrThrow<T extends BaseCodec<dynamic>>(String name, [String msg]);
-  Constructor<T> getOrUnknown<T extends BaseCodec<dynamic>>(String name);
+  Constructor<T> getOrThrow<T extends BaseCodec>(String name, [String msg]);
+  Constructor<T> getOrUnknown<T extends BaseCodec>(String name);
   void setKnownTypes(RegisteredTypes types);
 
   //  getSignedExtensionExtra(): Record<string, keyof InterfaceTypes>;

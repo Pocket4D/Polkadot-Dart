@@ -51,7 +51,7 @@ BigInt decodeAbstractInt(dynamic value, int bitLength, bool isNegative) {
   return bnToBn(value);
 }
 
-abstract class AbstractInt implements BaseCodec<BigInt> {
+abstract class AbstractInt implements BaseCodec {
   Registry registry;
   BigInt _value;
 

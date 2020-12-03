@@ -5,7 +5,7 @@ import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-abstract class AbstractArray<T extends BaseCodec> implements BaseCodec<List> {
+abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   Registry registry;
   List<T> _values;
   List<T> get value => _values;

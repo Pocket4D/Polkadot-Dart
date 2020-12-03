@@ -4,7 +4,9 @@ import 'registry.dart';
 
 class H256 {}
 
-abstract class BaseCodec<T> {
+abstract class BaseCodec {
+  static BaseCodec constructor;
+
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength;
 
