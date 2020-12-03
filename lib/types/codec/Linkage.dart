@@ -7,8 +7,8 @@ import 'package:polkadot_dart/types/codec/Vec.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-Linkage Function(Registry, Uint8List) linkageWith(dynamic type) {
-  return (Registry registry, [dynamic value]) => Linkage(registry, type, value);
+Linkage<T> Function(Registry, Uint8List) linkageWith<T extends BaseCodec>(dynamic type) {
+  return (Registry registry, [dynamic value]) => Linkage<T>(registry, type, value);
 }
 
 class Linkage<T extends BaseCodec> extends Struct {
@@ -23,6 +23,9 @@ class Linkage<T extends BaseCodec> extends Struct {
             value as String);
 
   static Constructor<Linkage<O>> withKey<O extends BaseCodec>(dynamic type) => linkageWith(type);
+
+  static Linkage constructor(Registry registry, [dynamic type, dynamic value]) =>
+      Linkage(registry, type, value);
 
   Option<T> get previous {
     return this.getCodec('previous') as Option<T>;

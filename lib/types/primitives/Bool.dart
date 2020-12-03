@@ -13,7 +13,7 @@ bool _decodeBool(dynamic value) {
   return !!value;
 }
 
-class CodecBool implements BaseCodec {
+class CodecBool extends BaseCodec {
   Registry registry;
   bool _value;
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -21,6 +21,9 @@ class CodecBool implements BaseCodec {
     _value = _decodeBool(value);
     this.registry = registry;
   }
+
+  static CodecBool constructor(Registry registry, [dynamic value = false]) =>
+      CodecBool(registry, value);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {

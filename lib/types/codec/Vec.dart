@@ -7,8 +7,8 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 const MAX_LENGTH = 64 * 1024;
 
-Vec Function(Registry, List<dynamic>) vecWith(dynamic type) {
-  return (Registry registry, List<dynamic> value) => Vec(registry, type, value);
+Vec<T> Function(Registry, List<dynamic>) vecWith<T extends BaseCodec>(dynamic type) {
+  return (Registry registry, List<dynamic> value) => Vec<T>(registry, type, value);
 }
 
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
@@ -22,6 +22,9 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
     final clazz = typeToConstructor<T>(registry, type);
     this._type = clazz;
   }
+
+  static Vec constructor(Registry registry, [dynamic type, dynamic value]) =>
+      Vec(registry, type, value);
 
   /// @internal */
   static List<T> decodeVec<T extends BaseCodec>(
@@ -60,7 +63,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
     final other = _other is BaseCodec ? _other : this._type(this.registry, _other);
 
     for (var i = 0; i < this.length; i++) {
-      if (other.eq(this.values[i])) {
+      if (other.eq(this.value[i])) {
         return i;
       }
     }

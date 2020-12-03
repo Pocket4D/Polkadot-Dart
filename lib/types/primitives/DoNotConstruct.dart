@@ -10,5 +10,7 @@ class DoNotConstruct extends CodecNull {
   DoNotConstruct(Registry registry, [String typeName = 'DoNotConstruct']) : super(registry) {
     throw "Cannot construct unknown type $encodedLength";
   }
+  static DoNotConstruct constructor(Registry registry, [dynamic typeName = 'DoNotConstruct']) =>
+      DoNotConstruct(registry, typeName);
   static Constructor<DoNotConstruct> withParams([String typeName]) => doNotConstructWith(typeName);
 }

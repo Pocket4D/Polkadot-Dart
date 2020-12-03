@@ -9,8 +9,8 @@ bool hasEq(dynamic o) {
   return isFunction((o as dynamic).eq);
 }
 
-Constructor<T> typeToConstructor<T extends BaseCodec>(Registry registry, T type) {
-  return (isString(type) ? registry.createClass(type) : type) as Constructor<T>;
+Constructor<T> typeToConstructor<T extends BaseCodec>(Registry registry, dynamic type) {
+  return (isString(type) ? registry.createClass(type as T) : type) as Constructor<T>;
 }
 
 Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> input) {

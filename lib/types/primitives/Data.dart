@@ -56,6 +56,8 @@ class Data extends Enum {
             _decodeData(registry, value)[0],
             _decodeData(registry, value)[1]);
 
+  static Data constructor(Registry registry, [dynamic value]) => Data(registry, value);
+
   Bytes get asRaw {
     return this.value as Bytes;
   }

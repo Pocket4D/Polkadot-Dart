@@ -7,6 +7,8 @@ class CodecType extends CodecText {
     this.setOverride(sanitize(this.value.toString()));
   }
 
+  static CodecType constructor(Registry registry, [dynamic value]) => CodecType(registry, value);
+
   /// @description Returns the base runtime type name for this instance
   String toRawType() {
     return 'Type';

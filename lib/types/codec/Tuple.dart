@@ -67,9 +67,12 @@ class Tuple extends AbstractArray<BaseCodec> {
 
   static Constructor<Tuple> withParams(dynamic types) => tupleWith(types);
 
+  static Tuple constructor(Registry registry, [dynamic types, dynamic value]) =>
+      Tuple(registry, types, value);
+
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
-    return this.values.fold(0, (length, entry) {
+    return this.value.fold(0, (length, entry) {
       length += entry.encodedLength;
       return length;
     });
@@ -101,6 +104,6 @@ class Tuple extends AbstractArray<BaseCodec> {
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixesinternal)
   Uint8List toU8a([dynamic isBare]) {
-    return u8aConcat([...this.values.map((entry) => entry.toU8a(isBare))]);
+    return u8aConcat([...this.value.map((entry) => entry.toU8a(isBare))]);
   }
 }

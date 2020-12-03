@@ -13,7 +13,7 @@ Uint8List _decodeU8a([dynamic value]) {
   return u8aToU8a(value);
 }
 
-class Raw implements IU8a {
+class Raw extends BaseCodec implements IU8a {
   Registry registry;
   Uint8List _value;
   Uint8List get value => _value;
@@ -22,6 +22,8 @@ class Raw implements IU8a {
     _value = _decodeU8a(value);
     this.registry = registry;
   }
+
+  static Raw constructor(Registry registry, [dynamic value]) => Raw(registry, value);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {

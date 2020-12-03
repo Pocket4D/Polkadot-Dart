@@ -5,7 +5,7 @@ import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 // ignore: non_constant_identifier_names
-final MAX_LENGTH = 10 * 1024 * 1024;
+final _MAX_LENGTH = 10 * 1024 * 1024;
 
 Uint8List _decodeBytesU8a(Uint8List value) {
   if (value.length == 0) {
@@ -18,7 +18,7 @@ Uint8List _decodeBytesU8a(Uint8List value) {
   final length = compact[1] as BigInt;
   final total = offset + length.toInt();
 
-  assert(length.toInt() <= (MAX_LENGTH), "Bytes length ${length.toString()} exceeds $MAX_LENGTH");
+  assert(length.toInt() <= (_MAX_LENGTH), "Bytes length ${length.toString()} exceeds $_MAX_LENGTH");
   assert(total <= value.length,
       "Bytes: required length less than remainder, expected at least $total, found ${value.length}");
 
@@ -40,6 +40,8 @@ dynamic _decodeBytes([dynamic value]) {
 class Bytes extends Raw {
   Bytes(Registry registry, [dynamic value]) : super(registry, _decodeBytes(value));
 
+  static Bytes constructor(Registry registry, [dynamic value]) => Bytes(registry, value);
+
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
     return this.length + compactToU8a(this.length).length;
@@ -53,6 +55,6 @@ class Bytes extends Raw {
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixes(internal)
   Uint8List toU8a([dynamic isBare]) {
-    return isBare ? super.toU8a(isBare) : compactAddLength(this.value);
+    return (isBare is bool && isBare) ? super.toU8a(isBare) : compactAddLength(this.value);
   }
 }

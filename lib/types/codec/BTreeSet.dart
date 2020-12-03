@@ -72,11 +72,11 @@ Set<V> _decodeSet<V extends BaseCodec>(Registry registry, dynamic valType, dynam
   throw 'BTreeSet: cannot decode type';
 }
 
-BTreeSet Function(Registry, dynamic) _bTreeSetWith(dynamic valType) {
-  return (Registry registry, dynamic value) => BTreeSet(registry, valType, value);
+BTreeSet<V> Function(Registry, dynamic) _bTreeSetWith<V extends BaseCodec>(dynamic valType) {
+  return (Registry registry, dynamic value) => BTreeSet<V>(registry, valType, value);
 }
 
-class BTreeSet<V extends BaseCodec> implements BaseCodec {
+class BTreeSet<V extends BaseCodec> extends BaseCodec {
   Registry registry;
 
   Constructor<V> _valClass;
@@ -91,6 +91,9 @@ class BTreeSet<V extends BaseCodec> implements BaseCodec {
 
   static Constructor<BTreeSet<V>> withParams<V extends BaseCodec>(dynamic valType) =>
       _bTreeSetWith(valType);
+
+  static BTreeSet constructor(Registry registry, [dynamic valType, dynamic rawValue]) =>
+      BTreeSet(registry, valType, rawValue);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
@@ -158,7 +161,7 @@ class BTreeSet<V extends BaseCodec> implements BaseCodec {
   Uint8List toU8a([dynamic isBare]) {
     var encoded = List<Uint8List>();
 
-    if (!isBare) {
+    if (isBare is bool && !isBare) {
       encoded.add(compactToU8a(this._value.length));
     }
 

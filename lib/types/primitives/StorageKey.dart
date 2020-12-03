@@ -8,11 +8,11 @@ import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-class Decoded {
+class DecodedStorageKey {
   dynamic key;
   String method;
   String section;
-  Decoded({this.key, this.method, this.section});
+  DecodedStorageKey({this.key, this.method, this.section});
 }
 
 class StorageKeyExtra {
@@ -55,22 +55,22 @@ String unwrapStorageType(StorageEntryTypeLatest type, [bool isOptional]) {
 }
 
 /// @internal */
-Decoded decodeStorageKey([dynamic value]) {
+DecodedStorageKey decodeStorageKey([dynamic value]) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   if (value is StorageKey) {
-    return Decoded(key: value, method: value.method, section: value.section);
+    return DecodedStorageKey(key: value, method: value.method, section: value.section);
   } else if (value == null || isString(value) || isU8a(value)) {
     // let Bytes handle these inputs
-    return Decoded(key: value);
+    return DecodedStorageKey(key: value);
   } else if (isFunction(value)) {
-    return Decoded(key: value(), method: value.method, section: value.section);
+    return DecodedStorageKey(key: value(), method: value.method, section: value.section);
   } else if ((value is List)) {
     final fn = value[0] as StorageEntry;
     final args = value.sublist(1);
 
     assert(isFunction(fn), 'Expected function input for key construction');
 
-    return Decoded(key: fn.call([...args]), method: fn.method, section: fn.section);
+    return DecodedStorageKey(key: fn.call([...args]), method: fn.method, section: fn.section);
   }
 
   throw "Unable to convert input $value to StorageKey";

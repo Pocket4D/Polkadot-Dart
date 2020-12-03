@@ -45,6 +45,7 @@ abstract class BaseCodec<T> {
 //   T newRegistry(Registry registry, Iterable<dynamic> value);
 // }
 
-typedef Constructor<T extends BaseCodec<dynamic>> = T Function(Registry registry, [dynamic value]);
+typedef Constructor<T extends BaseCodec> = T Function(Registry registry, [dynamic value]);
+// typedef Constructor3<T extends BaseCodec> = T Function(Registry registry, [List<dynamic> value]);
 
 // Type ArgsDef = Map<String, Constructor>;

@@ -9,13 +9,16 @@ Iterable<MapEntry<String, dynamic>> decodeJson([Map<String, dynamic> value]) {
   return value.entries;
 }
 
-class Json implements BaseCodec {
+class Json extends BaseCodec {
   Registry registry;
   Map<String, dynamic> _value;
   Json(Registry registry, [Map<String, dynamic> value]) {
     _value = Map.fromEntries(decodeJson(value));
     this.registry = registry;
   }
+
+  static Json constructor(Registry registry, [dynamic value]) =>
+      Json(registry, value as Map<String, dynamic>);
 
   /// @description Always 0, never encodes as a Uint8Array
   int get encodedLength {

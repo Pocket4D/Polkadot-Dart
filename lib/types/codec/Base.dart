@@ -3,12 +3,12 @@ import 'dart:typed_data';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-abstract class Base<T extends BaseCodec> implements BaseCodec {
+abstract class Base<T extends BaseCodec> extends BaseCodec {
   Registry registry;
 
   T _raw;
 
-  constructor(Registry registry, T value) {
+  Base(Registry registry, T value) {
     this.registry = registry;
     this._raw = value;
   }

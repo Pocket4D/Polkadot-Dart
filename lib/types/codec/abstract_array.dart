@@ -8,7 +8,7 @@ import 'package:polkadot_dart/utils/utils.dart';
 abstract class AbstractArray<T extends BaseCodec> implements BaseCodec<List> {
   Registry registry;
   List<T> _values;
-  List<T> get values => _values;
+  List<T> get value => _values;
 
   AbstractArray(Registry registry, List<T> values) {
     _values = List.from(values);
@@ -80,7 +80,9 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec<List> {
   /// @param isBare true when the value has none of the type-specific prefixes(internal)
   Uint8List toU8a([dynamic isBare]) {
     final encoded = this._values.map((entry) => entry.toU8a(isBare));
-    return isBare ? u8aConcat([...encoded]) : u8aConcat([compactToU8a(this.length), ...encoded]);
+    return isBare is bool && isBare == true
+        ? u8aConcat([...encoded])
+        : u8aConcat([compactToU8a(this.length), ...encoded]);
   }
 
   // Below are methods that we override. When we do a `new Vec(...).map()`,

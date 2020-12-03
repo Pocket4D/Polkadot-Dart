@@ -128,6 +128,14 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     });
   }
 
+  static Struct
+      constructor<S extends Map<String, dynamic>, V extends Map, E extends Map<dynamic, String>>(
+              Registry registry,
+              [dynamic types,
+              dynamic value,
+              Map<dynamic, String> jsonMap]) =>
+          Struct(registry, types as S, value, jsonMap);
+
   /// @description The available keys for this enum
   List<String> get defKeys {
     return this._types.keys;
@@ -225,7 +233,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
           // eslint-disable-next-line @typescript-eslint/unbound-method
           .takeWhile((entry) => isFunction(entry.value?.toU8a))
           .map((entry) =>
-              entry.value.toU8a(!isBare || isBoolean(isBare) ? isBare : isBare[entry.key]))
+              entry.value.toU8a((isBare is bool && !isBare) ? isBare : isBare[entry.key]))
     ]);
   }
 }

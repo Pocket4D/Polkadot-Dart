@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-class CodecNull implements BaseCodec {
+class CodecNull extends BaseCodec {
   Registry registry;
 
   CodecNull(Registry registry) {

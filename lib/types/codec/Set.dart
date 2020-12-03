@@ -72,7 +72,7 @@ CodecSet Function(Registry, dynamic) codecSetWith(Map<String, dynamic> setValues
   return (Registry registry, [dynamic value]) => CodecSet(registry, setValues, value, bitLength);
 }
 
-class CodecSet implements BaseCodec {
+class CodecSet extends BaseCodec {
   Registry registry;
 
   Map<String, dynamic> _allowed;
@@ -93,6 +93,10 @@ class CodecSet implements BaseCodec {
 
   static Constructor<CodecSet> withParams(Map<String, dynamic> setValues, [int bitLength]) =>
       codecSetWith(setValues, bitLength);
+
+  static CodecSet constructor(Registry registry,
+          [dynamic setValues, dynamic value, int bitLength = 8]) =>
+      CodecSet(registry, setValues as Map<String, dynamic>, value, bitLength);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {

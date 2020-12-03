@@ -17,7 +17,7 @@ T decodeOption<T extends BaseCodec>(Registry registry, dynamic typeName, [dynami
     return CodecNull(registry) as T;
   }
 
-  final type = typeToConstructor(registry, typeName as T);
+  final type = typeToConstructor(registry, typeName);
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   if (value is Option) {
@@ -33,11 +33,11 @@ T decodeOption<T extends BaseCodec>(Registry registry, dynamic typeName, [dynami
   return type(registry, value);
 }
 
-Option Function(Registry, Uint8List) optionWith(dynamic typeName) {
-  return (Registry registry, [dynamic value]) => Option(registry, typeName, value);
+Option<T> Function(Registry, Uint8List) optionWith<T extends BaseCodec>(dynamic typeName) {
+  return (Registry registry, [dynamic value]) => Option<T>(registry, typeName, value);
 }
 
-class Option<T extends BaseCodec> implements BaseCodec {
+class Option<T extends BaseCodec> extends BaseCodec {
   Registry registry;
 
   Constructor<T> _type;
@@ -51,6 +51,9 @@ class Option<T extends BaseCodec> implements BaseCodec {
   }
 
   static Constructor<Option<O>> withParams<O extends BaseCodec>(dynamic type) => optionWith(type);
+  static Option<T> constructor<T extends BaseCodec>(Registry registry,
+          [dynamic typeName, dynamic value]) =>
+      Option<T>(registry, typeName, value);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
@@ -124,7 +127,7 @@ class Option<T extends BaseCodec> implements BaseCodec {
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixes(internal)
   Uint8List toU8a([dynamic isBare]) {
-    if (isBare) {
+    if (isBare is bool && isBare == true) {
       return this._raw.toU8a(true);
     }
 

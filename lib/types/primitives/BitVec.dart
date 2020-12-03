@@ -33,6 +33,8 @@ Uint8List decodeBitVec([dynamic value]) {
 class BitVec extends Raw {
   BitVec(Registry registry, [dynamic value]) : super(registry, decodeBitVec(value));
 
+  static BitVec constructor(Registry registry, [dynamic value]) => BitVec(registry, value);
+
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
     return this.length + compactToU8a(this.bitLength).length;
@@ -48,6 +50,6 @@ class BitVec extends Raw {
   Uint8List toU8a([dynamic isBare]) {
     final bitVec = super.toU8a();
 
-    return isBare ? bitVec : u8aConcat([compactToU8a(this.bitLength), bitVec]);
+    return isBare is bool && isBare ? bitVec : u8aConcat([compactToU8a(this.bitLength), bitVec]);
   }
 }

@@ -78,7 +78,7 @@ Map<K, V> decodeMap<K extends BaseCodec, V extends BaseCodec>(
   throw 'Map: cannot decode type';
 }
 
-class CodecMap<K extends BaseCodec, V extends BaseCodec> implements BaseCodec<Map<K, V>> {
+class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec<Map<K, V>> {
   //  readonly registry: Registry;
 
   Registry registry;
@@ -105,6 +105,9 @@ class CodecMap<K extends BaseCodec, V extends BaseCodec> implements BaseCodec<Ma
     this._type = type;
   }
 
+  static CodecMap constructor(Registry registry,
+          [dynamic keyType, dynamic valType, dynamic rawValue, String type = 'HashMap']) =>
+      CodecMap(registry, keyType, valType, rawValue, type);
   // /**
   //  * @description The length of the value when encoded as a Uint8Array
   //  */

@@ -14,6 +14,9 @@ class CodecInt extends AbstractInt {
     _typeName = typeName;
     registry = registry;
   }
+  static CodecInt constructor(Registry registry,
+          [dynamic value = 0, int bitLength, String typeName]) =>
+      CodecInt(registry, value, bitLength, typeName);
 
   toRawType() {
     return _typeName ?? super.toRawType();

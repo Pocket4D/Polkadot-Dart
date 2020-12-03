@@ -6,13 +6,14 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 const BITLENGTH = 64;
 
-class CodecDate implements BaseCodec {
+class CodecDate extends BaseCodec {
   Registry registry;
   DateTime _value;
-  constructor(Registry registry, dynamic value) {
+  CodecDate(Registry registry, dynamic value) {
     this._value = CodecDate.decodeDate(value);
     this.registry = registry;
   }
+  static CodecDate constructor(Registry registry, [dynamic value]) => CodecDate(registry, value);
 
   static DateTime decodeDate(dynamic value) {
     if (value is DateTime) {

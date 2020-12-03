@@ -5,7 +5,7 @@ import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-const MAX_LENGTH = 128 * 1024;
+const _MAX_LENGTH = 128 * 1024;
 
 String decodeText([dynamic value]) {
   if (isHex(value)) {
@@ -26,17 +26,22 @@ String decodeText([dynamic value]) {
     final length = compact[1] as BigInt;
     final total = offset + length.toInt();
 
-    assert(length.toInt() <= (MAX_LENGTH), "Text length ${length.toString()} exceeds $MAX_LENGTH");
+    assert(
+        length.toInt() <= (_MAX_LENGTH), "Text length ${length.toString()} exceeds $_MAX_LENGTH");
     assert(total <= value.length,
         "Text: required length less than remainder, expected at least $total, found ${value.length}");
 
     return u8aToString(value.sublist(offset, total));
   }
 
-  return value ? value.toString() : '';
+  return value != null ? value.toString() : '';
 }
 
-class CodecText implements BaseCodec {
+CodecText Function(Registry, [dynamic]) textWith(Registry registry, [dynamic value]) {
+  return (Registry registry, [dynamic value]) => CodecText(registry, value);
+}
+
+class CodecText extends BaseCodec {
   Registry registry;
 
   String _override;
@@ -47,6 +52,8 @@ class CodecText implements BaseCodec {
 
     this.registry = registry;
   }
+
+  static CodecText constructor(Registry registry, [dynamic value]) => CodecText(registry, value);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
@@ -71,7 +78,11 @@ class CodecText implements BaseCodec {
 
   /// @description Compares the value of the input to see if there is a match
   bool eq([dynamic other]) {
-    return isString(other) ? this._value.toString() == other.toString() : false;
+    var compare = other;
+    if (other is CodecText) {
+      compare = other.value;
+    }
+    return isString(compare) ? this._value.toString() == compare.toString() : false;
   }
 
   /// @description Set an override value for this
@@ -113,6 +124,6 @@ class CodecText implements BaseCodec {
     // rather encoding the original value the string was constructed with)
     final encoded = stringToU8a(this._value.toString());
 
-    return isBare ? encoded : compactAddLength(encoded);
+    return isBare is bool && isBare ? encoded : compactAddLength(encoded);
   }
 }

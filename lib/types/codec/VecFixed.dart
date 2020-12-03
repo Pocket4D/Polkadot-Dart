@@ -7,8 +7,9 @@ import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-VecFixed Function(Registry, dynamic) vecFixedWith(dynamic type, int length) {
-  return (Registry registry, dynamic value) => VecFixed(registry, type, length, value);
+VecFixed<T> Function(Registry, dynamic) vecFixedWith<T extends BaseCodec>(
+    dynamic type, int length) {
+  return (Registry registry, dynamic value) => VecFixed<T>(registry, type, length, value);
 }
 
 class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
@@ -38,6 +39,9 @@ class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
     return values;
   }
 
+  static VecFixed constructor(Registry registry, [dynamic type, int length, dynamic value]) =>
+      VecFixed(registry, type, length, value);
+
   static Constructor<VecFixed<O>> withParams<O extends BaseCodec>(dynamic type, int length) =>
       vecFixedWith(type, length);
 
@@ -54,7 +58,7 @@ class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
   Uint8List toU8a([dynamic isBare]) {
     // we override, we don't add the length prefix for ourselves, and at the same time we
     // ignore isBare on entries, since they should be properly encoded at all times
-    final encoded = this.values.map((entry) => entry.toU8a());
+    final encoded = this.value.map((entry) => entry.toU8a());
 
     return encoded.length != 0 ? u8aConcat([...encoded]) : Uint8List.fromList([]);
   }

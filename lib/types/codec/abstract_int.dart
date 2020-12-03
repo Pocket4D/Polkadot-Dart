@@ -59,15 +59,16 @@ abstract class AbstractInt implements BaseCodec<BigInt> {
 
   bool _isSigned;
 
+  BigInt get value => _value;
+
   AbstractInt(Registry registry,
-      [num value = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
+      [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
     this._value = (decodeAbstractInt(value, bitLength, isSigned));
 
     this.registry = registry;
     this._bitLength = bitLength;
     this._isSigned = isSigned;
-
-    assert(isSigned || this._value > (BigInt.zero),
+    assert(isSigned || this._value >= (BigInt.zero),
         "${this.toRawType()}: Negative number passed to unsigned type");
     // assert(super.bitLength() <= bitLength, "${this.toRawType()}: Input too large. Found input with ${super.bitLength()} bits, expected ${bitLength}");
   }
@@ -173,7 +174,7 @@ abstract class AbstractInt implements BaseCodec<BigInt> {
 
   /// @description Returns the string representation of the value
   /// @param base The base to use for the conversion
-  String toString([int base]) {
+  String toString([int base = 10]) {
     // only included here since we do not inherit docs
     return this._value.toRadixString(base);
   }

@@ -36,6 +36,10 @@ class U8aFixed extends Raw {
   static Constructor<U8aFixed> withParams(int bitLength, String typeName) =>
       u8aFixedWith(bitLength, typeName);
 
+  static U8aFixed constructor(Registry registry,
+          [dynamic value, int bitLength = 256, String typeName]) =>
+      U8aFixed(registry, value as Uint8List, bitLength, typeName);
+
   /// @description Returns the base runtime type name for this instance
   String toRawType() {
     return this.typeName ?? "[u8;${this.length}]";

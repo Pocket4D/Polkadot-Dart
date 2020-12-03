@@ -7,11 +7,11 @@ import 'package:polkadot_dart/types/types/interfaces.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-Compact Function(Registry, dynamic) _compactWith(dynamic type) {
-  return (Registry registry, dynamic value) => Compact(registry, type, value);
+Compact<T> Function(Registry, dynamic) _compactWith<T extends CompactEncodable>(dynamic type) {
+  return (Registry registry, dynamic value) => Compact<T>(registry, type, value);
 }
 
-class Compact<T extends CompactEncodable> implements ICompact<T> {
+class Compact<T extends CompactEncodable> extends BaseCodec implements ICompact<T> {
   Registry registry;
 
   Constructor<T> _type;
@@ -23,6 +23,9 @@ class Compact<T extends CompactEncodable> implements ICompact<T> {
     this._type = typeToConstructor(registry, type);
     this._raw = Compact.decodeCompact<T>(registry, this._type, value) as T;
   }
+
+  static Compact constructor(Registry registry, [dynamic type, dynamic value]) =>
+      Compact(registry, type, value);
 
   static Constructor<Compact<T>> withParams<T extends CompactEncodable>(dynamic type) =>
       _compactWith(type);

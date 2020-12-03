@@ -13,10 +13,10 @@ typedef EnumConstructor<T extends BaseCodec<dynamic>> = T Function(Registry regi
 
 // type TypesDef = Record<string, Constructor>;
 
-class Decoded {
+class DecodedEnum {
   int index;
   BaseCodec value;
-  Decoded({this.index, this.value});
+  DecodedEnum({this.index, this.value});
   toMap() => {"index": this.index, "value": this.value};
 }
 
@@ -46,15 +46,15 @@ EnumDef extractDef(Registry registry, dynamic _def) {
   }
 }
 
-Decoded createFromValue(Registry registry, Map<String, Constructor> def,
+DecodedEnum createFromValue(Registry registry, Map<String, Constructor> def,
     [int index = 0, dynamic value]) {
   final clazz = (def.values).toList()[index];
 
   assert(clazz != null, "Unable to create Enum via index $index, in ${(def.keys).join(', ')}");
-  return Decoded(index: index, value: value is Constructor ? value : clazz(registry, value));
+  return DecodedEnum(index: index, value: value is Constructor ? value : clazz(registry, value));
 }
 
-Decoded decodeFromJSON(Registry registry, Map<String, Constructor> def, String key,
+DecodedEnum decodeFromJSON(Registry registry, Map<String, Constructor> def, String key,
     [dynamic value]) {
   // JSON comes in the form of { "<type (lowercased)>": "<value for type>" }, here we
   // additionally force to lower to ensure forward compat
@@ -71,14 +71,14 @@ Decoded decodeFromJSON(Registry registry, Map<String, Constructor> def, String k
   }
 }
 
-Decoded decodeFromString(Registry registry, Map<String, Constructor> def, String value) {
+DecodedEnum decodeFromString(Registry registry, Map<String, Constructor> def, String value) {
   return isHex(value)
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       ? decodeFromValue(registry, def, hexToU8a(value))
       : decodeFromJSON(registry, def, value);
 }
 
-Decoded decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
+DecodedEnum decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
   if (isU8a(value)) {
     return createFromValue(registry, def, value[0], value.subarray(1));
   } else if (isNumber(value)) {
@@ -93,7 +93,8 @@ Decoded decodeFromValue(Registry registry, Map<String, Constructor> def, [dynami
   return createFromValue(registry, def, 0);
 }
 
-Decoded decodeEnum(Registry registry, Map<String, Constructor> def, [dynamic value, int index]) {
+DecodedEnum decodeEnum(Registry registry, Map<String, Constructor> def,
+    [dynamic value, int index]) {
   // NOTE We check the index path first, before looking at values - this allows treating
   // the optional indexes before anything else, more-specific > less-specific
   if (isNumber(index)) {
@@ -111,7 +112,7 @@ Enum Function(Registry, [dynamic, int]) enumWith(dynamic types) {
   return (Registry registry, [dynamic value, int index]) => Enum(registry, types, value, index);
 }
 
-class Enum implements BaseCodec {
+class Enum extends BaseCodec {
   Registry registry;
 
   Map<String, Constructor> def;
@@ -139,6 +140,9 @@ class Enum implements BaseCodec {
     this._raw = decoded.value;
     _genKeys();
   }
+
+  static Enum constructor(Registry registry, [dynamic def, dynamic value, int index]) =>
+      Enum(registry, def, value, index);
 
   static withParams(dynamic types) => enumWith(types);
 
