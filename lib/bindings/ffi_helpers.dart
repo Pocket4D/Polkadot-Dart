@@ -8,12 +8,12 @@ final dylib = Platform.isAndroid
     : Platform.isIOS
         ? DynamicLibrary.process()
         : Platform.isMacOS
-            ? DynamicLibrary.open("../macos/libpolkadot_dart.dylib")
+            ? DynamicLibrary.open("macos/libpolkadot_dart.dylib")
             : Platform.isLinux
-                ? DynamicLibrary.open("../linux/libpolkadot_dart.dylib")
+                ? DynamicLibrary.open("linux/libpolkadot_dart.dylib")
                 : Platform.isWindows
-                    ? DynamicLibrary.open("../windows/libpolkadot_dart.dll")
-                    : DynamicLibrary.open("../rust/target/debug/libpolkadot_dart.dylib");
+                    ? DynamicLibrary.open("windows/libpolkadot_dart.dll")
+                    : DynamicLibrary.open("rust/target/debug/libpolkadot_dart.dylib");
 
 // // Must Fix Utf8 because QuickJS need end with terminator '\0'
 // class Utf8Fix extends Struct {
