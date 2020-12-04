@@ -84,7 +84,7 @@ jobs:
 
       - name: Install Android NDK
         if: steps.cache-ndk.outputs.cache-hit != 'true'
-        run: $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
+        run: $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.0.6113669"
 
       - name: Set Android NDK Env
         uses: allenevans/set-env@v2.0.0
