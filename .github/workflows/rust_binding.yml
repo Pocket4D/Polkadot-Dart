@@ -94,10 +94,10 @@ jobs:
 
       - name: Setup Android NDK list
         run: |
-          echo "::add-path::$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH"
-          echo "::add-path::$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH"
-          echo "::add-path::$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH"
-          echo "::add-path::$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH"
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
 
       - name: Install Android Targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
