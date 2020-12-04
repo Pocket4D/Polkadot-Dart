@@ -3,13 +3,6 @@ name: Rust Bindings
 on:
   push:
     branches:
-      - master
-      - main
-      - gh-actions
-  pull_request:
-    branches:
-      - master
-      - main
       - gh-actions
 
 jobs:
