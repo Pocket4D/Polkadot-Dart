@@ -72,7 +72,8 @@ bool compareMap(Map a, [dynamic b]) {
   if (b is List) {
     return compareMapArray(a, b);
   } else if (b is Map) {
-    return compareMapArray(a, b.entries.toList());
+    return compareMap2(a, b);
+    // return compareMapArray(a, b.entries.toList());
   }
   return false;
 }
@@ -84,4 +85,16 @@ bool compareArray(List a, dynamic b) {
     return (a.length == b.length) && result.isNotEmpty;
   }
   return false;
+}
+
+bool compareMap2<T, U>(Map<T, U> a, Map<T, U> b) {
+  if (a == null) return b == null;
+  if (b == null || a.length != b.length) return false;
+  if (identical(a, b)) return true;
+  for (final T key in a.keys) {
+    if (!b.containsKey(key) || b[key] != a[key]) {
+      return false;
+    }
+  }
+  return true;
 }

@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/definitions.dart';
 
 // ignore: camel_case_types
-abstract class u8 {}
 
 abstract class InterfaceTypes {}
 

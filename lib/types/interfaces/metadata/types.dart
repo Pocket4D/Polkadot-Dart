@@ -1,10 +1,5 @@
-import 'package:polkadot_dart/types/codec/Enum.dart';
-import 'package:polkadot_dart/types/codec/Option.dart';
-import 'package:polkadot_dart/types/codec/Struct.dart';
-import 'package:polkadot_dart/types/codec/Vec.dart';
-import 'package:polkadot_dart/types/primitives/Bytes.dart';
-import 'package:polkadot_dart/types/primitives/Text.dart';
-import 'package:polkadot_dart/types/primitives/Type.dart';
+import 'package:polkadot_dart/types/codec/codec.dart';
+import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
 // /** @name DoubleMapTypeLatest */

@@ -33,7 +33,7 @@ Map<K, V> decodeMapFromMap<K extends BaseCodec, V extends BaseCodec>(
     Registry registry, Constructor<K> keyClass, Constructor<V> valClass, Map value) {
   final output = Map<K, V>();
 
-  value.forEach((val, key) {
+  value.forEach((key, val) {
     try {
       output[key is K ? key : keyClass(registry, key)] = val is V ? val : valClass(registry, val);
     } catch (error) {
@@ -63,10 +63,10 @@ Map<K, V> decodeMapFromMap<K extends BaseCodec, V extends BaseCodec>(
 Map<K, V> decodeMap<K extends BaseCodec, V extends BaseCodec>(
     Registry registry, dynamic keyType, dynamic valType,
     [dynamic value]) {
-  final keyClass = typeToConstructor(registry, (keyType as K));
-  final vClass = typeToConstructor(registry, (valType as V));
+  final keyClass = typeToConstructor(registry, (keyType));
+  final vClass = typeToConstructor(registry, (valType));
 
-  if (!value) {
+  if (value == null) {
     return new Map<K, V>();
   } else if (isHex(value)) {
     return decodeMap(registry, keyClass, vClass, hexToU8a(value));
@@ -100,8 +100,8 @@ class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec {
     _value = decodeMap(registry, keyType, valType, rawValue);
 
     this.registry = registry;
-    this._keyClass = typeToConstructor(registry, (keyType as K));
-    this._valClass = typeToConstructor(registry, (valType as V));
+    this._keyClass = typeToConstructor(registry, (keyType));
+    this._valClass = typeToConstructor(registry, (valType));
     this._type = type;
   }
 
