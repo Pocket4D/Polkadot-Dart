@@ -14,14 +14,14 @@ jobs:
         id: cache-llvm
         uses: actions/cache@v2
         with:
-          path: ${{ runner.temp }}/llvm/10.0
-          key: ${{ runner.os }}-cached-llvm-10.0
+          path: ${{ runner.temp }}/llvm/11.0
+          key: ${{ runner.os }}-cached-llvm-11.0
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: '10.0'
-          directory: ${{ runner.temp }}/llvm/10.0
+          directory: ${{ runner.temp }}/llvm/11.0
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
       - name: Checkout sources
@@ -84,13 +84,13 @@ jobs:
 
       - name: Install Android NDK
         if: steps.cache-ndk.outputs.cache-hit != 'true'
-        run: $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
+        run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
 
       - name: Set Android NDK Env
         uses: allenevans/set-env@v2.0.0
         with:
-          ANDROID_NDK_HOME: '/Users/runner/android/ndk-bundle'
-          NDK_HOME: '/Users/runner/android/ndk-bundle'
+          ANDROID_NDK_HOME: $ANDROID_SDK_ROOT/ndk-bundle
+          NDK_HOME: $ANDROID_SDK_ROOT/ndk-bundle'
 
       - name: Setup Android NDK list
         run: |
