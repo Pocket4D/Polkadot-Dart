@@ -45,34 +45,39 @@ jobs:
       - name: Install WASM Target
         run: rustup target add wasm32-unknown-unknown
 
-      - name: Cache Cargo
+      - name: Install Cargo Tools (cbindgen)
+        uses: actions-rs/cargo@v1
+        continue-on-error: true
+        with:
+          command: install
+          args: --force cbindgen
+
+      - name: Install Cargo Tools (lipo)
+        uses: actions-rs/cargo@v1
+        continue-on-error: true
+        with:
+          command: install
+          args: cargo-lipo
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v1
+
+      - name: Cache NDK
+        id: cache-ndk
         uses: actions/cache@v2
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ~/.cargo/bin
-            target/aarch64-linux-android
-            target/armv7-linux-androideabi
-            target/x86_64-linux-android
-            target/i686-linux-android
-            target/aarch64-apple-ios
-            target/x86_64-apple-ios
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: /Users/runner/android/ndk-bundle
+          key: ${{ runner.os }}-cached-ndk
 
-      - name: Install Cargo Tools (cargo-make)
-        uses: actions-rs/cargo@v1
-        continue-on-error: true
-        with:
-          command: install
-          args: cargo-make
+      - name: Install Android NDK
+        if: steps.cache-ndk.outputs.cache-hit != 'true'
+        run: $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
 
-      - name: Install Cargo Tools (cbindgen, v0.14.4)
-        uses: actions-rs/cargo@v1
-        continue-on-error: true
-        with:
-          command: install
-          args: cbindgen --version 0.14.4
+      - name: Set Android NDK Env
+        run: echo '::set-env name=ANDROID_NDK_HOME::/Users/runner/android/ndk-bundle'
+
+      - name: Install Android Targets
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
 
       - name: Execute cargo test
         run: |
