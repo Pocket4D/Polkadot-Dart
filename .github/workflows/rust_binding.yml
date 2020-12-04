@@ -96,7 +96,15 @@ jobs:
       - name: Set Android NDK Env
         uses: allenevans/set-env@v2.0.0
         with:
-          ANDROID_NDK_HOME: '/Users/runner/android/ndk-bundle'
+          ANDROID_NDK_HOME: /Users/runner/android/ndk-bundle
+          NDK_HOME: /Users/runner/android/ndk-bundle
+
+      - name: Setup Android NDK list
+        run: |
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
 
       - name: Install Android Targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
