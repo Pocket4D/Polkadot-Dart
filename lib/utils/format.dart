@@ -7,7 +7,7 @@ String zeroPad(int value) {
 
 String formatDate(DateTime date) {
   final year = date.year.toString();
-  final month = zeroPad((date.month + 1));
+  final month = zeroPad((date.month));
   final day = zeroPad(date.day);
   final hour = zeroPad(date.hour);
   final minute = zeroPad(date.minute);
