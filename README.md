@@ -15,7 +15,7 @@ This library contains a set of crypto libraries and implementations of utils.
 | &#9745; | 2      | util_crypto     | Porting and implements `@polkadot/util-crypto` |
 | &#9745; | 3      | utils           | Porting and implements `@polkadot/utils`       |
 | &#9745; | 4      | keyring         | Porting and implements `@polkadot/keyring`     |
-| &#9745; | 5      | network         | Porting and implements `@polkadot/network`     |
+| &#9745; | 5      | networks        | Porting and implements `@polkadot/networks`    |
 | &#9745; | 6      | tests           | Unit tests for deliverables above              |
 
 ### Milestone 2: Under development
