@@ -6,7 +6,6 @@ This library contains a set of crypto libraries and implementations of utils.
 
 ---
 ## Table of content
-
 1. [Polkadot-Dart](#polkadot-dart)
    1. [Table of content](#table-of-content)
    2. [Status](#status)
@@ -20,7 +19,13 @@ This library contains a set of crypto libraries and implementations of utils.
       4. [NDK and Android SDK](#ndk-and-android-sdk)
       5. [Everything you need for rust](#everything-you-need-for-rust)
       6. [Build rust lib to `.so` and `.a` manually](#build-rust-lib-to-so-and-a-manually)
-
+   4. [Testing Guide](#testing-guide)
+      1. [Run a single unit test](#run-a-single-unit-test)
+      2. [Run all tests](#run-all-tests)
+      3. [Coverage and null-safe tests](#coverage-and-null-safe-tests)
+      4. [Integration tests](#integration-tests)
+      5. [Mobile phone tests example](#mobile-phone-tests-example)
+      6. [Generate coverage](#generate-coverage)
 
 ---
 ## Status
@@ -125,8 +130,47 @@ brew upgrade && brew install llvm
    * iOS:  `ios`
    * MacOS: `macos` (**Caution: for testing dart vm only**)
    * Linux: `linux` (**Caution: for testing dart vm only**)
-   * Windows: `windows` (Not available for now)
+   * Windows: `windows` (unavailable for now)
 
+---
+## Testing Guide
+**Caution!! Do Not use `flutter test` directly**
+
+### Run a single unit test
+All test scripts are in `/test` folder. The folder structure matches the `lib` struture.
+
+For example:
+A `.dart` file name `hex.dart` 
+In lib folder, that is `lib/utils/hex.dart`
+In test folder, that is  `test/utils/hex.dart`
+To test it, in root folder run `flutter test test/utils/hex.dart`
+
+| lib folder           | test folder           | test script                        |
+| -------------------- | --------------------- | ---------------------------------- |
+| `lib/utils/hex.dart` | `test/utils/hex.dart` | `flutter test test/utils/hex.dart` |
+
+
+### Run all tests
+The `polkadot_dart_test.dart` is the entry of all unit tests, simply run:
+
+`flutter test test/polkadot_dart_test.dart` 
+
+### Coverage and null-safe tests
+TODO
+
+### Integration tests
+TODO
+
+### Mobile phone tests example
+Later
+
+
+### Generate coverage
+```bash
+$ flutter test --coverage test/polkadot_dart_test.dart
+$ genhtml -o coverage coverage/lcov.info
+$ open coverage/index-sort-l.html
+```
 
 
 
