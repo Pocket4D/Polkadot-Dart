@@ -41,20 +41,73 @@ This library contains a set of crypto libraries and implementations of utils.
 | 0%     | 3      | pub.dev        | Publish to pub.dev for v1.0.0        |
 
 
-## Development enviorment
+## Enviorment Settings
 * dart sdk: '>=2.7.0 < 3.0.0'
 * flutter: '>=1.20.0 < 2.0.0'
 * rust nightly latest
 * MacOs or Linux
+  
+There are a few settings that needed before manually build, here is the guide.
+We will try to make a `.make` file afterwards to simply the process.
 
+### LLVM and clang
 
-## Build manually  
-* Build rust binding
+With Macos (because we need to build iOS)
+
+```bash
+brew upgrade && brew install llvm
+```
+
+### Flutter and Dart
+1. Follow [Download and Install guide](https://flutter.dev/docs/get-started/install)
+2. Verify your flutter version and env settings, make sure everything works
+   
+    ```bash
+    flutter doctor -v
+    ```
+
+### NDK and Android SDK
+1. Android SDK(After Flutter is installed)
+2. Download [NDK](https://developer.android.com/ndk/downloads) and set `NDK_HOME` to env.
+   
+    ```bash
+    export NDK_HOME=~/ndk/android-ndk-r21b
+    # or if you use `ndk-bundle` of Android SDK locally, for macos:
+    export ANDROID_HOME=~/Library/Android/sdk
+    export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk-bundle
+    export NDK_HOME=~/Library/Android/sdk/ndk-bundle
+
+    # and for linux, its like
+    export NDK_HOME=/home/${User}/dev/android/ndk-bundle
+    ```
+
+### Everything you need for rust
+1. Install rust-lang and cargo, [install here](https://www.rust-lang.org/tools/install)
+2. All others are in `/scripts` folder, the steps below are not neccesary , just in-case something's missing.
+   
+   * Install cargo-lipo(for ios building) and cbindgen
+   ```bash
+   cargo install cargo-lipo && cargo install --force cbindgen
+   ```
+
+   * Install Android and iOS targets:
+   ```bash
+   rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android aarch64-apple-ios x86_64-apple-ios
+   ```
+
+## Build rust lib to `.so` and `.a` manually  
+1. Build rust binding
 ```bash
 ./scripts/clean.sh && ./scripts/init.sh && ./scripts/build.sh
 ```
+2. You can locate files in the android and ios folder.
+   Android: `android/src/main/jniLibs/`
+   iOS:  `ios`
+   MacOS: `macos` (**Caution: for testing dart vm only**)
+   Linux: `linux` (**Caution: for testing dart vm only**)
+   Windows: `windows` (unavailable for now)
 
-## Unit Tests
+## Testing Guide
 **Caution!! Do Not use `flutter test` directly**
 
 ### Run a single unit test
