@@ -4,6 +4,25 @@
 
 This library contains a set of crypto libraries and implementations of utils.
 
+---
+## Table of content
+
+1. [Polkadot-Dart](#polkadot-dart)
+   1. [Table of content](#table-of-content)
+   2. [Status](#status)
+      1. [Milestone 1: finished](#milestone-1-finished)
+      2. [Milestone 2: Under development](#milestone-2-under-development)
+      3. [Milestone 3: Awaits](#milestone-3-awaits)
+   3. [Manually Build](#manually-build)
+      1. [Enviorment Settings](#enviorment-settings)
+      2. [LLVM and clang](#llvm-and-clang)
+      3. [Flutter and Dart](#flutter-and-dart)
+      4. [NDK and Android SDK](#ndk-and-android-sdk)
+      5. [Everything you need for rust](#everything-you-need-for-rust)
+      6. [Build rust lib to `.so` and `.a` manually](#build-rust-lib-to-so-and-a-manually)
+
+
+---
 ## Status
 
 ### Milestone 1: finished
@@ -40,8 +59,9 @@ This library contains a set of crypto libraries and implementations of utils.
 | 0%     | 2      | documentations | Documentations for all packages      |
 | 0%     | 3      | pub.dev        | Publish to pub.dev for v1.0.0        |
 
-
-## Enviorment Settings
+---
+## Manually Build
+### Enviorment Settings
 * dart sdk: '>=2.7.0 < 3.0.0'
 * flutter: '>=1.20.0 < 2.0.0'
 * rust nightly latest
@@ -95,7 +115,7 @@ brew upgrade && brew install llvm
    rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android aarch64-apple-ios x86_64-apple-ios
    ```
 
-## Build rust lib to `.so` and `.a` manually  
+### Build rust lib to `.so` and `.a` manually  
 1. Build rust binding
 ```bash
 ./scripts/clean.sh && ./scripts/init.sh && ./scripts/build.sh
@@ -107,44 +127,6 @@ brew upgrade && brew install llvm
    Linux: `linux` (**Caution: for testing dart vm only**)
    Windows: `windows` (unavailable for now)
 
-## Testing Guide
-**Caution!! Do Not use `flutter test` directly**
-
-### Run a single unit test
-All test scripts are in `/test` folder. The folder structure matches the `lib` struture.
-
-For example:
-A `.dart` file name `hex.dart` 
-In lib folder, that is `lib/utils/hex.dart`
-In test folder, that is  `test/utils/hex.dart`
-To test it, in root folder run `flutter test test/utils/hex.dart`
-
-| lib folder           | test folder           | test script                        |
-| -------------------- | --------------------- | ---------------------------------- |
-| `lib/utils/hex.dart` | `test/utils/hex.dart` | `flutter test test/utils/hex.dart` |
-
-
-### Run all tests
-The `polkadot_dart_test.dart` is the entry of all unit tests, simply run:
-
-`flutter test test/polkadot_dart_test.dart` 
-
-### Coverage and null-safe tests
-TODO
-
-### Integration tests
-TODO
-
-### Mobile phone tests example
-Later
-
-
-### Generate coverage
-```bash
-$ flutter test --coverage test/polkadot_dart_test.dart
-$ genhtml -o coverage coverage/lcov.info
-$ open coverage/index-sort-l.html
-```
 
 
 
