@@ -121,11 +121,11 @@ brew upgrade && brew install llvm
 ./scripts/clean.sh && ./scripts/init.sh && ./scripts/build.sh
 ```
 2. You can locate files in the android and ios folder.
-   Android: `android/src/main/jniLibs/`
-   iOS:  `ios`
-   MacOS: `macos` (**Caution: for testing dart vm only**)
-   Linux: `linux` (**Caution: for testing dart vm only**)
-   Windows: `windows` (unavailable for now)
+   * Android: `android/src/main/jniLibs/`
+   * iOS:  `ios`
+   * MacOS: `macos` (**Caution: for testing dart vm only**)
+   * Linux: `linux` (**Caution: for testing dart vm only**)
+   * Windows: `windows` (Not available for now)
 
 
 
