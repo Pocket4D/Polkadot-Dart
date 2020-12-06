@@ -31,14 +31,20 @@ class EnumDef {
 // { def: TypesDef; isBasic: boolean }
 
 EnumDef extractDef(Registry registry, dynamic _def) {
-  if (!(_def is List)) {
-    final def = mapToTypeMap(registry, _def as Map<String, dynamic>);
+  if (!(_def is List) && _def is Map) {
+    /// force new key as string, CodecText cannot extends String directly
+    Map<String, dynamic> newDef = {};
+    _def.forEach((key, value) {
+      newDef.putIfAbsent(key.toString(), () => value);
+    });
+
+    final def = mapToTypeMap(registry, Map<String, dynamic>.from(newDef));
     final isBasic = !(def).values.any((type) => !(type is CodecNull));
 
     return EnumDef(def: def, isBasic: isBasic);
   } else {
-    final def = (_def as List).fold({}, (def, key) {
-      def[key] = CodecNull;
+    final Map<String, Constructor> def = (_def as List).fold({}, (def, key) {
+      def[key] = CodecNull.constructor;
       return def;
     });
     final isBasic = true;
@@ -49,7 +55,6 @@ EnumDef extractDef(Registry registry, dynamic _def) {
 DecodedEnum createFromValue(Registry registry, Map<String, Constructor> def,
     [int index = 0, dynamic value]) {
   final clazz = (def.values).toList()[index];
-
   assert(clazz != null, "Unable to create Enum via index $index, in ${(def.keys).join(', ')}");
   return DecodedEnum(index: index, value: value is Constructor ? value : clazz(registry, value));
 }
@@ -79,8 +84,8 @@ DecodedEnum decodeFromString(Registry registry, Map<String, Constructor> def, St
 }
 
 DecodedEnum decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
-  if (isU8a(value)) {
-    return createFromValue(registry, def, value[0], value.subarray(1));
+  if (value is Uint8List) {
+    return createFromValue(registry, def, value[0], value.sublist(1));
   } else if (isNumber(value)) {
     return createFromValue(registry, def, value);
   } else if (isString(value)) {
@@ -109,7 +114,11 @@ DecodedEnum decodeEnum(Registry registry, Map<String, Constructor> def,
 }
 
 Enum Function(Registry, [dynamic, int]) enumWith(dynamic types) {
-  return (Registry registry, [dynamic value, int index]) => Enum(registry, types, value, index);
+  return (Registry registry, [dynamic value, int index]) {
+    var result = Enum(registry, types, value, index);
+    result.genKeys();
+    return result;
+  };
 }
 
 class Enum extends BaseCodec {
@@ -138,13 +147,12 @@ class Enum extends BaseCodec {
     this._indexes = defList.map((def) => defList.indexOf(def)).toList();
     this._index = this._indexes.indexOf(decoded.index) ?? 0;
     this._raw = decoded.value;
-    _genKeys();
   }
 
   static Enum constructor(Registry registry, [dynamic def, dynamic value, int index]) =>
       Enum(registry, def, value, index);
 
-  static withParams(dynamic types) => enumWith(types);
+  static Constructor<Enum> withParams(dynamic types) => enumWith(types);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
@@ -230,20 +238,12 @@ class Enum extends BaseCodec {
 
   /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
   dynamic toHuman([bool isExtended]) {
-    return this._isBasic
-        ? this.type
-        : {
-            [this.type]: this._raw.toHuman(isExtended)
-          };
+    return this._isBasic ? this.type : {this.type: this._raw.toHuman(isExtended)};
   }
 
   /// @description Converts the Object to JSON, typically used for RPC transfers
   dynamic toJSON() {
-    return this._isBasic
-        ? this.type
-        : {
-            [this.type]: this._raw.toJSON()
-          };
+    return this._isBasic ? this.type : {this.type: this._raw.toJSON()};
   }
 
   /// @description Returns the number representation for the value
@@ -276,7 +276,8 @@ class Enum extends BaseCodec {
   }
 
   bool isKey(String name) {
-    return iskeys.any((element) => element == this.type);
+    var found = iskeys.singleWhere((element) => element == "is${this.type}");
+    return found != null && found == "is$name";
   }
 
   BaseCodec askey(String typeName) {
@@ -284,7 +285,7 @@ class Enum extends BaseCodec {
     return this.value;
   }
 
-  _genKeys() {
+  genKeys() {
     this.def.keys.toList().forEach((_key) {
       final name = stringUpperFirst(stringCamelCase(_key.replaceAll(' ', '_')));
       final iskey = "is$name";

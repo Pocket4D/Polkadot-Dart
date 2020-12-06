@@ -1,5 +1,7 @@
 import 'dart:typed_data';
+import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -23,7 +25,7 @@ Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> in
 List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   final types = _types is List ? _types : (_types as Map<String, Constructor>).entries.toList();
 
-  if (types.length != 0) {
+  if (types.length == 0) {
     return [];
   }
   final constructor = types[0] as Constructor;
@@ -38,15 +40,28 @@ bool compareSetArray(Set a, List<dynamic> b) {
   return (a.length == b.length) && !b.any((entry) => !a.contains(entry));
 }
 
+bool compareSets(Set a, Set b) {
+  final setCompare = SetEquality();
+  return setCompare.equals(a, b);
+}
+
+bool compareList(List a, List b) {
+  final listCompare = DeepCollectionEquality.unordered();
+  return listCompare.equals(a, b);
+}
+
 // NOTE These are used internally and when comparing objects, expects that
 // when the second is an Set<string, Codec> that the first has to be as well
 bool compareSet(Set a, [dynamic b]) {
   if ((b) is List) {
-    return compareSetArray(a, b);
+    // return compareSets(a, b.toSet());
+    return compareList(a.toList(), b);
   } else if (b is Set) {
-    return compareSetArray(a, b.toList());
+    // return compareSets(a, b);
+    return compareList(a.toList(), b.toList());
   } else if (b is Map) {
-    return compareSetArray(a, b.values);
+    // return compareSets(a, b.values.toSet());
+    return compareList(a.toList(), b.values.toList());
   }
 
   return false;

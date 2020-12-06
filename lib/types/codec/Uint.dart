@@ -1,4 +1,5 @@
 import 'package:polkadot_dart/types/codec/abstract_int.dart';
+import 'package:polkadot_dart/types/codec/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 

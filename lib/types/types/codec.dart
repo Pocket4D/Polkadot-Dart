@@ -7,6 +7,8 @@ class H256 {}
 abstract class BaseCodec {
   static BaseCodec constructor;
 
+  dynamic get value;
+
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength;
 
@@ -40,6 +42,14 @@ abstract class BaseCodec {
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixes(internal)
   Uint8List toU8a([dynamic isBare]);
+
+  bool operator ==(Object other) {
+    return eq(other);
+  }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
 }
 
 // abstract class Constructor<T extends BaseCodec> {

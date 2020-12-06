@@ -80,6 +80,8 @@ class CodecSet extends BaseCodec {
   int _byteLength;
 
   Set<String> _value;
+
+  Set<String> get value => _value;
   List<String> iskeys = [];
   List<String> askeys = [];
 

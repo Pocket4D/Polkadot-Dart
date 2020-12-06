@@ -55,25 +55,26 @@ Set<V> _decodeSetFromSet<V extends BaseCodec>(
 /// @param jsonSet
 /// @internal
 Set<V> _decodeSet<V extends BaseCodec>(Registry registry, dynamic valType, dynamic value) {
-  if (!value) {
-    return new Set<V>();
+  if (value == null) {
+    return Set<V>();
   }
 
-  final valClass = typeToConstructor(registry, (valType as V));
+  final valClass = typeToConstructor(registry, (valType));
 
   if (isHex(value)) {
     return _decodeSet(registry, valClass, hexToU8a(value));
   } else if (isU8a(value)) {
     return _decodeSetFromU8a<V>(registry, valClass, u8aToU8a(value));
   } else if ((value is List) || value is Set) {
+    // print(value);
     return _decodeSetFromSet<V>(registry, valClass, value);
   }
 
   throw 'BTreeSet: cannot decode type';
 }
 
-BTreeSet<V> Function(Registry, dynamic) _bTreeSetWith<V extends BaseCodec>(dynamic valType) {
-  return (Registry registry, dynamic value) => BTreeSet<V>(registry, valType, value);
+BTreeSet<V> Function(Registry, [dynamic]) _bTreeSetWith<V extends BaseCodec>(dynamic valType) {
+  return (Registry registry, [dynamic value]) => BTreeSet<V>(registry, valType, value);
 }
 
 class BTreeSet<V extends BaseCodec> extends BaseCodec {
@@ -81,6 +82,8 @@ class BTreeSet<V extends BaseCodec> extends BaseCodec {
 
   Constructor<V> _valClass;
   Set<V> _value;
+
+  Set<V> get value => _value;
 
   BTreeSet(Registry registry, dynamic valType, [dynamic rawValue]) {
     _value = (_decodeSet(registry, valType, rawValue));
@@ -161,7 +164,7 @@ class BTreeSet<V extends BaseCodec> extends BaseCodec {
   Uint8List toU8a([dynamic isBare]) {
     var encoded = List<Uint8List>();
 
-    if (isBare is bool && !isBare) {
+    if ((isBare is bool && !isBare) || isBare == null) {
       encoded.add(compactToU8a(this._value.length));
     }
 

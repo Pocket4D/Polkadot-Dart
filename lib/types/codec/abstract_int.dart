@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/codec/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -28,10 +29,10 @@ BigInt decodeAbstracIntU8a(Uint8List value, int bitLength, bool isNegative) {
     return BigInt.from(0);
   }
 
+  final subLength = value.length <= (bitLength / 8).ceil() ? value.length : (bitLength / 8).ceil();
   try {
     // NOTE When passing u8a in(typically from decoded data), it is always Little Endian
-    return u8aToBn(value.sublist(0, (bitLength / 8).ceil()),
-        endian: Endian.little, isNegative: isNegative);
+    return u8aToBn(value.sublist(0, subLength), endian: Endian.little, isNegative: isNegative);
   } catch (error) {
     throw "AbstractInt: failed on ${jsonEncode(value)}:: $error";
   }
@@ -48,10 +49,10 @@ BigInt decodeAbstractInt(dynamic value, int bitLength, bool isNegative) {
   } else if (isString(value)) {
     return BigInt.parse(value.toString(), radix: 10);
   }
-  return bnToBn(value);
+  return bnToBn(value is BaseCodec ? value.value : value);
 }
 
-abstract class AbstractInt implements BaseCodec {
+abstract class AbstractInt implements BaseCodec, CompactEncodable {
   Registry registry;
   BigInt _value;
 
@@ -105,7 +106,9 @@ abstract class AbstractInt implements BaseCodec {
     // number and BN inputs (no `.eqn` needed) - numbers will be converted
     var otherBn = isHex(other)
         ? hexToBn(other.toString(), endian: Endian.big, isNegative: this._isSigned)
-        : bnToBn(other);
+        : other is AbstractInt
+            ? other.value
+            : bnToBn(other);
     return this._value == otherBn;
   }
 
@@ -185,5 +188,17 @@ abstract class AbstractInt implements BaseCodec {
   Uint8List toU8a([dynamic isBare]) {
     return bnToU8a(this._value,
         bitLength: this.bitLength, endian: Endian.little, isNegative: !this.isUnsigned);
+  }
+
+  @override
+  int toInt() {
+    // TODO: implement toInt
+    return this._value.toInt();
+  }
+
+  @override
+  int toNumber() {
+    // TODO: implement toNumber
+    return this.toInt();
   }
 }

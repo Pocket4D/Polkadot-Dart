@@ -126,4 +126,12 @@ class CodecText extends BaseCodec {
 
     return isBare is bool && isBare ? encoded : compactAddLength(encoded);
   }
+
+  bool operator ==(Object other) {
+    return eq(other);
+  }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => this.value.hashCode;
 }

@@ -16,6 +16,7 @@ bool _decodeBool(dynamic value) {
 class CodecBool extends BaseCodec {
   Registry registry;
   bool _value;
+  bool get value => _value;
   // eslint-disable-next-line @typescript-eslint/ban-types
   CodecBool(Registry registry, [dynamic value = false]) {
     _value = _decodeBool(value);

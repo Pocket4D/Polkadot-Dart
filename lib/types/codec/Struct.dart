@@ -112,6 +112,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     extends BaseCodec {
   Registry registry;
   Map<dynamic, BaseCodec> _value;
+  Map<dynamic, BaseCodec> get value => _value;
   Map<dynamic, String> _jsonMap;
   Map<String, Constructor<BaseCodec>> _types;
   Struct(Registry registry, S types, [dynamic value, Map<dynamic, String> jsonMap]) {
@@ -235,5 +236,9 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
           .map((entry) =>
               entry.value.toU8a((isBare is bool && !isBare) ? isBare : isBare[entry.key]))
     ]);
+  }
+
+  void put(dynamic key, BaseCodec value) {
+    this._value.putIfAbsent(key, () => value);
   }
 }

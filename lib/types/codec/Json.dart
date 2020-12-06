@@ -12,6 +12,8 @@ Iterable<MapEntry<String, dynamic>> decodeJson([Map<String, dynamic> value]) {
 class Json extends BaseCodec {
   Registry registry;
   Map<String, dynamic> _value;
+
+  Map<String, dynamic> get value => _value;
   Json(Registry registry, [Map<String, dynamic> value]) {
     _value = Map.fromEntries(decodeJson(value));
     this.registry = registry;

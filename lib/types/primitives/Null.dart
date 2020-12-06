@@ -6,9 +6,13 @@ import 'package:polkadot_dart/types/types/registry.dart';
 class CodecNull extends BaseCodec {
   Registry registry;
 
+  Null get value => null;
+
   CodecNull(Registry registry) {
     this.registry = registry;
   }
+
+  static CodecNull constructor(Registry registry, [dynamic value]) => CodecNull(registry);
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {

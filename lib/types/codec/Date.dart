@@ -1,14 +1,16 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/codec/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 const BITLENGTH = 64;
 
-class CodecDate extends BaseCodec {
+class CodecDate extends BaseCodec implements CompactEncodable {
   Registry registry;
   DateTime _value;
+  DateTime get value => _value;
   CodecDate(Registry registry, dynamic value) {
     this._value = CodecDate.decodeDate(value);
     this.registry = registry;
@@ -22,9 +24,13 @@ class CodecDate extends BaseCodec {
       value = u8aToBn(value.subarray(0, BITLENGTH / 8), endian: Endian.little);
     } else if (isString(value)) {
       value = value.toString().toU8a().toBn();
+    } else if (value is CodecDate) {
+      return value.value;
+    } else if (value is BaseCodec) {
+      value = value.value;
     }
 
-    return DateTime(bnToBn(value as BigInt).toInt() * 1000);
+    return DateTime.fromMillisecondsSinceEpoch(bnToBn(value).toInt() * 1000);
   }
 
   /// @description The length of the value when encoded as a Uint8Array
@@ -44,7 +50,7 @@ class CodecDate extends BaseCodec {
 
   /// @description Compares the value of the input to see if there is a match
   bool eq([dynamic other]) {
-    return CodecDate.decodeDate(other).microsecond == this._value.microsecond;
+    return CodecDate.decodeDate(other).millisecondsSinceEpoch == this._value.millisecondsSinceEpoch;
   }
 
   /// @description Returns the number of bits in the value
@@ -52,14 +58,22 @@ class CodecDate extends BaseCodec {
     return BITLENGTH;
   }
 
+  int getTime() {
+    return this._value.millisecondsSinceEpoch;
+  }
+
+  int get secondsSinceEpoch {
+    return (this._value.millisecondsSinceEpoch / 1000).ceil();
+  }
+
   /// @description Returns a BigInt representation of the number
   BigInt toBigInt() {
-    return BigInt.from(this._value.millisecond);
+    return BigInt.from(this.secondsSinceEpoch);
   }
 
   /// @description Returns the BN representation of the timestamp
   BigInt toBn() {
-    return BigInt.from(this._value.millisecond);
+    return BigInt.from(this.secondsSinceEpoch);
   }
 
   /// @description Returns a hex string representation of the value
@@ -77,12 +91,12 @@ class CodecDate extends BaseCodec {
   dynamic toJSON() {
     // FIXME Return type should be number, but conflicts with Date.toJSON()
     // which returns string
-    return this._value.millisecond;
+    return this.secondsSinceEpoch;
   }
 
   /// @description Returns the number representation for the timestamp
   int toNumber() {
-    return (this._value.millisecond / 1000).ceil();
+    return this.secondsSinceEpoch;
   }
 
   /// @description Returns the base runtime type name for this instance
@@ -96,10 +110,20 @@ class CodecDate extends BaseCodec {
     return this._value.toString();
   }
 
+  String toISOString() {
+    return this._value.toUtc().toIso8601String();
+  }
+
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixes(internal)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Uint8List toU8a([dynamic isBare]) {
     return bnToU8a(BigInt.from(this.toNumber()), bitLength: BITLENGTH, endian: Endian.little);
+  }
+
+  @override
+  int toInt() {
+    // TODO: implement toInt
+    return this.toNumber();
   }
 }

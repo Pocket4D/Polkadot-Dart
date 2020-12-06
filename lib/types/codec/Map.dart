@@ -90,6 +90,7 @@ class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec {
   String _type;
 
   // readonly #type: string;
+  Map<K, V> get value => _value;
 
   Map<K, V> _value;
 
