@@ -9,13 +9,14 @@ CodecInt Function(Registry, [int]) intWith(int bitLength, [String typeName]) {
 class CodecInt extends AbstractInt {
   String _typeName;
   Registry registry;
-  CodecInt(Registry registry, [int value = 0, int bitLength, String typeName])
+  CodecInt(Registry registry,
+      [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, String typeName])
       : super(registry, value, bitLength, true) {
     _typeName = typeName;
     registry = registry;
   }
   static CodecInt constructor(Registry registry,
-          [dynamic value = 0, int bitLength, String typeName]) =>
+          [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, String typeName]) =>
       CodecInt(registry, value, bitLength, typeName);
 
   toRawType() {

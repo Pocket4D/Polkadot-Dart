@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/utils/bn.dart';
 import 'package:polkadot_dart/utils/compact.dart';
+import 'package:polkadot_dart/utils/hex.dart';
 import 'package:polkadot_dart/utils/u8a.dart';
 
 void main() {
@@ -101,5 +102,42 @@ void compactTest() {
       [12, 13]
     ]); // [8, 12, 13]
     // print("\n");
+  });
+  group('compactFromU8a', () {
+    test('decoded u8 value', () {
+      expect(compactFromU8a(Uint8List.fromList([int.parse("11111100", radix: 2)])),
+          [1, BigInt.from(63)]);
+    });
+
+    test('decodes from same u16 encoded value', () {
+      expect(
+          compactFromU8a(
+              Uint8List.fromList(
+                  [int.parse('11111101', radix: 2), int.parse('00000111', radix: 2)]),
+              bitLength: 32),
+          [2, BigInt.from(511)]);
+    });
+
+    test('decodes from same u32 encoded value (short)', () {
+      expect(compactFromU8a(Uint8List.fromList([254, 255, 3, 0]), bitLength: 32),
+          [4, BigInt.from(0xffff)]);
+    });
+
+    test('decodes from same u32 encoded value (full)', () {
+      expect(compactFromU8a(Uint8List.fromList([3, 249, 255, 255, 255]), bitLength: 32),
+          [5, BigInt.from(0xfffffff9)]);
+    });
+
+    test('decodes from same u32 as u64 encoded value (full, default)', () {
+      expect(
+          compactFromU8a(Uint8List.fromList([3 + ((4 - 4) << 2), 249, 255, 255, 255]),
+              bitLength: 64),
+          [5, BigInt.from(0xfffffff9)]);
+    });
+
+    test('decodes an actual value', () {
+      expect(compactFromU8a(hexToU8a('0x0b00407a10f35a')),
+          [7, BigInt.parse('5af3107a4000', radix: 16)]);
+    });
   });
 }

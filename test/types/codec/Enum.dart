@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
@@ -266,6 +267,74 @@ void enumTest() {
       expect((test.value as Enum).type, 'D');
       expect(((test.value as Enum).value as u32).toNumber(), 123);
     });
+  });
+  group('toRawType', () {
+    test('has a sane output for basic enums', () {
+      expect(
+          new Enum(registry, ['foo', 'bar']).toRawType(),
+          jsonEncode({
+            "_enum": ['foo', 'bar']
+          }));
+    });
+
+    // test('has a sane output for typed enums', () {
+    //   expect(
+    //       // eslint-disable-next-line sort-keys
+    //       new Enum(registry, {"foo": CodecText.constructor, "bar": u32.constructor}).toRawType()
+    //       // eslint-disable-next-line sort-keys
+    //       ,
+    //       jsonEncode({
+    //         "_enum": {"foo": 'Text', "bar": 'u32'}
+    //       }));
+    // });
+
+    // test('re-creates via rawType (c-like)', () {
+    //   final type = new Enum(registry, ['foo', 'bar']).toRawType() as 'Raw';
+
+    //   expect(registry.createType(type, 1).toString(),'bar');
+    // });
+
+    // test('re-creates via rawType (types)', () {
+    //   final type = new Enum(registry, { A: Text, B: U32, C: U32 }).toRawType() as 'Raw';
+    //   final value = registry.createType(type, { B: 123 }) as unknown as { isB: true, asB: U32 };
+
+    //   expect(value.isB,true);
+    //   expect(value.asB.toNumber(),123);
+    // });
+  });
+
+  group('toHex', () {
+    test('has a proper hex representation & length', () {
+      final Test = enumWith({"A": CodecText.constructor, "B": u32.constructor});
+      final test = Test(registry, 123, 1);
+
+      expect(test.toHex(), '0x017b000000');
+      expect(test.encodedLength, 1 + 4);
+    });
+
+    // test('encodes a single entry correctly', () {
+    //   final Test = enumWith({"A": 'u32'});
+    //   final test = Test(registry, 0x44332211, 0);
+
+    //   expect(
+    //       test.toHex(),
+    //       '0x' +
+    //           '00' + // index
+    //           '11223344' // u32 LE encoded
+    //       );
+    // });
+
+    // test('encodes a single entry correctly (with embedded encoding)', () {
+    //   final Test = enumWith({ A: 'Address' });
+    //   final test = Test(registry, registry.createType('AccountId', '0x0001020304050607080910111213141516171819202122232425262728293031'), 0);
+
+    //   expect(test.toHex(),
+    //     '0x' +
+    //     '00' + // index
+    //     'ff' + // Address indicating an embedded AccountId
+    //     '0001020304050607080910111213141516171819202122232425262728293031' // AccountId
+    //   );
+    // });
   });
 }
 

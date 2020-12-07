@@ -65,7 +65,6 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
   AbstractInt(Registry registry,
       [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
     this._value = (decodeAbstractInt(value, bitLength, isSigned));
-
     this.registry = registry;
     this._bitLength = bitLength;
     this._isSigned = isSigned;
@@ -132,6 +131,7 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
   /// @description Returns a hex string representation of the value
   String toHex([bool isLe = false]) {
     // For display/JSON, this is BE, for compare, use isLe
+
     return bnToHex(this._value,
         bitLength: this.bitLength,
         endian: isLe ? Endian.little : Endian.big,

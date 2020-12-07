@@ -48,8 +48,10 @@ Uint8List compactAddLength(Uint8List input) {
 /// result : [int, BN]
 List<dynamic> compactFromU8a(dynamic _input, {int bitLength = 32}) {
   var input = u8aToU8a(_input);
+  if (input.isEmpty) {
+    input = Uint8List.fromList([0]);
+  }
   var flag = input[0] & 3;
-
   if (flag == 0) {
     return [1, BigInt.from(input[0]) >> (2)];
   } else if (flag == 1) {

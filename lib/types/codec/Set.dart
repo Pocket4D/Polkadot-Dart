@@ -30,20 +30,19 @@ List<String> decodeSetArray(Map<String, dynamic> setValues, List<String> value) 
 
 List<String> decodeSetNumber(Map<String, dynamic> setValues, dynamic _value) {
   final bn = bnToBn(_value);
-  final result = (setValues.keys.toList()).fold([], (result, key) {
+  final result = (setValues.keys.toList()).fold([], (arr, key) {
     if ((bn & (bnToBn(setValues[key]))) == (bnToBn(setValues[key]))) {
-      result.push(key);
+      arr.add(key);
     }
-
-    return result;
+    return arr;
   });
 
-  final computed = encodeSet(setValues, result);
+  final computed = encodeSet(setValues, List<String>.from(result));
 
   assert(bn == (computed),
       "Set: Mismatch decoding '${bn.toString()}', computed as '${computed.toString()}' with ${result.join(', ')}");
 
-  return result;
+  return List<String>.from(result);
 }
 
 List<String> decodeSet(Map<String, dynamic> setValues, dynamic value, int bitLength) {
@@ -60,7 +59,7 @@ List<String> decodeSet(Map<String, dynamic> setValues, dynamic value, int bitLen
         ? []
         : decodeSetNumber(setValues, u8aToBn(value.subList(0, byteLength), endian: Endian.little));
   } else if (value is Set || (value is List)) {
-    final input = (value is List) ? value : [...value.values()];
+    final input = (value is List) ? List<String>.from(value) : [...value.values()];
 
     return decodeSetArray(setValues, input);
   }
@@ -142,13 +141,17 @@ class CodecSet extends BaseCodec {
   bool eq([dynamic other]) {
     if ((other is List)) {
       // we don't actually care about the order, sort the values
-      this.strings.sort((a, b) => a.length.compareTo(b.length));
+      var sorted = this.strings;
+      sorted.sort((a, b) => a.length.compareTo(b.length));
       other.sort((a, b) => a.length.compareTo(b.length));
-      return compareArray(this.strings, other);
+      return compareArray(sorted, other);
+      // return compareList(this.strings, other);
     } else if (other is Set) {
       return this.eq([...other]);
-    } else if (isNumber(other) || isBn(other as String)) {
-      return this.valueEncoded == (bnToBn(other as String));
+    } else if (isNumber(other) || isBn(other)) {
+      return this.valueEncoded == (bnToBn(other));
+    } else if (other is CodecSet) {
+      return this.eq(other.value);
     }
 
     return false;

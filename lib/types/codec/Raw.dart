@@ -3,14 +3,16 @@ import 'dart:typed_data';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/interfaces.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
-import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/utils/utils.dart' as utils;
 
 Uint8List _decodeU8a([dynamic value]) {
-  if (isU8a(value)) {
+  if (utils.isU8a(value)) {
     return value;
+  } else if (value is Raw) {
+    return value.value;
   }
 
-  return u8aToU8a(value);
+  return utils.u8aToU8a(value);
 }
 
 class Raw extends BaseCodec implements IU8a {
@@ -37,7 +39,7 @@ class Raw extends BaseCodec implements IU8a {
 
   /// @description Returns true if the wrapped value contains only ASCII printable characters
   get isAscii {
-    return isAscii(this._value);
+    return utils.isAscii(this._value);
   }
 
   /// @description Returns true if the type wraps an empty/default all-0 value
@@ -47,7 +49,7 @@ class Raw extends BaseCodec implements IU8a {
 
   /// @description Returns true if the wrapped value contains only utf8 characters
   get isUtf8 {
-    return isUtf8(this._value);
+    return utils.isUtf8(this._value);
   }
 
   /// @description The length of the value
@@ -64,7 +66,7 @@ class Raw extends BaseCodec implements IU8a {
   /// @description Compares the value of the input to see if there is a match
   bool eq([dynamic other]) {
     if (other is Uint8List) {
-      return u8aEq(this._value, other);
+      return utils.u8aEq(this._value, other);
     }
     return this.eq(_decodeU8a(other));
   }
@@ -87,7 +89,7 @@ class Raw extends BaseCodec implements IU8a {
 
   /// @description Returns a hex string representation of the value
   String toHex([bool isLe]) {
-    return u8aToHex(this._value);
+    return utils.u8aToHex(this._value);
   }
 
   /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
@@ -120,6 +122,6 @@ class Raw extends BaseCodec implements IU8a {
   /// @description Returns the wrapped data as a UTF-8 string
   String toUtf8() {
     assert(this.isUtf8, 'The character sequence is not a valid Utf8 string');
-    return u8aToString(this._value);
+    return utils.u8aToString(this._value, useDartEncode: true);
   }
 }

@@ -12,7 +12,6 @@ Uint8List convertString(String str, {bool useDartEncode = true}) {
   // return isHexString(str)
   //     ? stringToU8a(strip0xHex(str), useDartEncode: useDartEncode)
   //     : stringToU8a(str, useDartEncode: useDartEncode);
-
   return isHex(str) ? hexToU8a(str) : stringToU8a(str, useDartEncode: useDartEncode);
 }
 
@@ -34,6 +33,7 @@ Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
 
 Uint8List u8aConcat(List<dynamic> list) {
   var u8as = List<Uint8List>(list.length);
+
   for (var i = 0; i < list.length; i += 1) {
     u8as[i] = u8aToU8a(list[i]);
   }

@@ -23,7 +23,7 @@ BigInt bitnot(BigInt bn, {int bitLength}) {
   // JavaScript's bitwise not doesn't work on negative BigInts (bn = ~bn; // WRONG!)
   // so we manually implement our own two's compliment (flip bits, add one)
   bn = -bn;
-  var bin = (bn).toRadixString(2);
+  var bin = (bn).toRadixString(2).replaceAll("-", "");
 
   var prefix = '';
   while (bin.length % 8 != 0) {
@@ -104,8 +104,16 @@ Uint8List bnToU8a(BigInt value,
     }
   }
 
-  var newU8a = encodeBigInt(isNegative ? bitnot(value, bitLength: byteLength * 8) : value,
-      endian: endian, bitLength: byteLength * 8);
+  // print((0x80 & valueBn.toInt()) > 0);
+
+  var newU8a = encodeBigInt(
+      isNegative
+          ? (0x80 & valueBn.toInt()) > 0
+              ? bitnot(valueBn, bitLength: byteLength * 8)
+              : valueBn
+          : valueBn,
+      endian: endian,
+      bitLength: byteLength * 8);
 
   var ret = Uint8List(byteLength);
 

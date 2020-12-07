@@ -9,9 +9,11 @@ UInt Function(Registry, [dynamic]) uintWith(int bitLength, [String typeName]) {
 
 class UInt extends AbstractInt {
   String _typeName;
-  UInt(Registry registry, [dynamic value = 0, int bitLength]) : super(registry, value, bitLength);
+  UInt(Registry registry, [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS])
+      : super(registry, value, bitLength);
 
-  static UInt constructor(Registry registry, [dynamic value = 0, int bitLength]) =>
+  static UInt constructor(Registry registry,
+          [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS]) =>
       UInt(registry, value, bitLength);
 
   static Constructor<UInt> withParams(int bitLength, [String typeName]) =>

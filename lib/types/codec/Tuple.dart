@@ -24,16 +24,16 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
     return decodeTuple(registry, _types, hexToU8a(value));
   }
 
-  final types = (_types is List)
-      ? _types as List<Constructor>
+  final types = (_types is Iterable<Constructor>)
+      ? _types.toList()
       : (_types as Map<String, Constructor>).values.toList();
 
-  return types.map((type) {
+  final List<BaseCodec> result = types.map<BaseCodec>((type) {
     var index = types.indexOf(type);
     try {
       var entry = value != null ? value[index] : null;
 
-      if (entry is Constructor) {
+      if (entry is BaseCodec) {
         return entry;
       }
 
@@ -41,7 +41,8 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
     } catch (error) {
       throw "Tuple: failed on $index:: $error";
     }
-  });
+  }).toList();
+  return result;
 }
 
 Tuple Function(Registry, dynamic) tupleWith(dynamic types) {
@@ -57,11 +58,11 @@ class Tuple extends AbstractArray<BaseCodec> {
             decodeTuple(
                 registry,
                 (types is List)
-                    ? types.map((type) => typeToConstructor(registry, type as BaseCodec))
+                    ? types.map((type) => typeToConstructor(registry, type)).toList()
                     : mapToTypeMap(registry, types),
                 value)) {
     this._types = (types is List)
-        ? types.map((type) => typeToConstructor(registry, type as BaseCodec))
+        ? types.map((type) => typeToConstructor(registry, type)).toList()
         : mapToTypeMap(registry, types);
   }
 
@@ -80,9 +81,13 @@ class Tuple extends AbstractArray<BaseCodec> {
 
   /// @description The types definition of the tuple
   List<String> get types {
-    return (this._types is List<Constructor>)
-        ? this._types.map((type) => type(this.registry).toRawType())
-        : (this._types as Map).keys;
+    if (this._types is List<Constructor>) {
+      return (this._types as List<Constructor>)
+          .map((type) => type(this.registry).toRawType())
+          .toList();
+    } else {
+      return (this._types as Map<String, dynamic>).keys.toList();
+    }
   }
 
   /// @description Returns the base runtime type name for this instance

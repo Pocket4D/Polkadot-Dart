@@ -60,7 +60,7 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
 
   /// @description Converts the Object to JSON, typically used for RPC transfers
   dynamic toJSON() {
-    return this._values.map((entry) => entry.toJSON());
+    return this._values.map((entry) => entry.toJSON()).toList();
   }
 
   /**
@@ -101,7 +101,7 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   //  */
   List<T> filter(bool Function(T value, [int index, List<T> array]) callbackfn, [dynamic thisArg]) {
     var newArr = this.toArray();
-    return newArr.where((val) => callbackfn(val, newArr.indexOf(val), newArr));
+    return newArr.where((val) => callbackfn(val, newArr.indexOf(val), newArr)).toList();
   }
 
   // /**
@@ -109,7 +109,7 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   //  */
   List<U> map<U>(U Function(T value, [int index, List<T> array]) callbackfn, [dynamic thisArg]) {
     var newArr = this.toArray();
-    return newArr.map((val) => callbackfn(val, newArr.indexOf(val), newArr));
+    return newArr.map((val) => callbackfn(val, newArr.indexOf(val), newArr)).toList();
   }
 
   // /**

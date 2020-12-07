@@ -17,13 +17,13 @@ class TypeRegistry implements Registry {
   String get chainToken => throw UnimplementedError();
 
   @override
-  createClass<T extends BaseCodec>(T type) {
+  Constructor<T> createClass<T extends BaseCodec>(String type) {
     // TODO: implement createClass
     throw UnimplementedError();
   }
 
   @override
-  T createType<T extends BaseCodec>(T type, [params]) {
+  T createType<T extends BaseCodec>(String type, [params]) {
     // TODO: implement createType
     throw UnimplementedError();
   }

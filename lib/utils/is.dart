@@ -3,8 +3,12 @@ import 'package:validators/validators.dart' as validators;
 
 import 'dart:typed_data';
 
+const FORMAT = [9, 10, 13];
+
 bool isAscii(dynamic value) {
-  return validators.isAscii(value.toString());
+  return value != null
+      ? !u8aToU8a(value).any((byte) => (byte >= 127) || (byte < 32 && !FORMAT.contains(byte)))
+      : isString(value);
 }
 
 bool isString(dynamic value) {

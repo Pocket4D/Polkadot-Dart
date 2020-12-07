@@ -143,10 +143,10 @@ abstract class Registry {
   Constructor<dynamic> findMetaEvent(Uint8List eventIndex);
 
   // createClass(type: K): Constructor<InterfaceTypes[K]>;
-  Constructor<T> createClass<T extends BaseCodec>(T type);
+  Constructor<T> createClass<T extends BaseCodec>(String type);
 
   // createType <K extends keyof InterfaceTypes>(type: K, ...params: unknown[]): InterfaceTypes[K];
-  T createType<T extends BaseCodec>(T type, [dynamic params]);
+  T createType<T extends BaseCodec>(String type, [dynamic params]);
 
   Constructor<T> getConstructor<T extends BaseCodec>(String name, [bool withUnknown]);
 

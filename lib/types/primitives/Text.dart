@@ -123,7 +123,6 @@ class CodecText extends BaseCodec {
     // NOTE Here we use the super toString (we are not taking overrides into account,
     // rather encoding the original value the string was constructed with)
     final encoded = stringToU8a(this._value.toString());
-
     return isBare is bool && isBare ? encoded : compactAddLength(encoded);
   }
 

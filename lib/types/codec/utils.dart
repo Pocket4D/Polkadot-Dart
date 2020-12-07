@@ -8,11 +8,12 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 bool hasEq(dynamic o) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return isFunction((o as dynamic).eq);
+
+  return o is BaseCodec ? isFunction((o as dynamic).eq) : false;
 }
 
 Constructor<T> typeToConstructor<T extends BaseCodec>(Registry registry, dynamic type) {
-  return (isString(type) ? registry.createClass(type as T) : type) as Constructor<T>;
+  return (isString(type) ? registry.createClass(type) : type) as Constructor<T>;
 }
 
 Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> input) {
@@ -97,7 +98,8 @@ bool compareArray(List a, dynamic b) {
   if (b is List) {
     var result = a.where(
         (value) => hasEq(value) ? !value.eq(b[a.indexOf(value)]) : value != b[a.indexOf(value)]);
-    return (a.length == b.length) && result.isNotEmpty;
+
+    return (a.length == b.length) && result.isEmpty;
   }
   return false;
 }

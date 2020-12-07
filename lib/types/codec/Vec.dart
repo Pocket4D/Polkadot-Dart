@@ -7,15 +7,16 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 const MAX_LENGTH = 64 * 1024;
 
-Vec<T> Function(Registry, List<dynamic>) vecWith<T extends BaseCodec>(dynamic type) {
-  return (Registry registry, List<dynamic> value) => Vec<T>(registry, type, value);
+Vec<T> Function(Registry, [dynamic]) vecWith<T extends BaseCodec>(dynamic type) {
+  return (Registry registry, [dynamic value]) => Vec<T>(registry, type, value);
 }
 
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
 
   Vec(Registry registry, dynamic type, [dynamic value])
-      : super(registry, Vec.decodeVec(registry, typeToConstructor<T>(registry, type), value)) {
+      : super(
+            registry, Vec.decodeVec(registry, typeToConstructor<T>(registry, type), value ?? [])) {
     if (value == null) {
       value = [];
     }
@@ -29,22 +30,25 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   /// @internal */
   static List<T> decodeVec<T extends BaseCodec>(
       Registry registry, Constructor<T> type, dynamic value) {
-    if (value is List) {
+    if (value is List<T>) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return (value).map((entry) {
         final index = value.indexOf(entry);
         try {
-          return entry is Constructor ? entry : type(registry, entry);
+          return entry is Constructor<T> ? entry : type(registry, entry);
         } catch (error) {
           throw "Unable to decode on index $index $error";
         }
-      });
+      }).toList();
     }
 
     final u8a = u8aToU8a(value);
+
     final compact = compactFromU8a(u8a);
+
     final offset = compact[0] as int;
     final length = compact[1] as BigInt;
+
     assert(length.toInt() <= (MAX_LENGTH), "Vec length ${length.toString()} exceeds $MAX_LENGTH");
     return decodeU8a(registry, u8a.sublist(offset), List.filled(length.toInt(), type));
   }

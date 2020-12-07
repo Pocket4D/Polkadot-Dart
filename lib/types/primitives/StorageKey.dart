@@ -88,8 +88,8 @@ List<BaseCodec> decodeHashers(Registry registry, Uint8List value, List<dynamic> 
     final canDecode = hashMap[1] as bool;
 
     final decoded = canDecode
-        ? registry.createType<Raw>(type as Raw, value.sublist(offset + hashLen))
-        : registry.createType<Raw>('Raw' as Raw, value.sublist(offset, offset + hashLen));
+        ? registry.createType<Raw>(type, value.sublist(offset + hashLen))
+        : registry.createType<Raw>('Raw', value.sublist(offset, offset + hashLen));
 
     offset += hashLen + (canDecode ? decoded.encodedLength : 0);
     result.add(decoded);
