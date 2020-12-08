@@ -15,10 +15,21 @@
 
 import 'dart:convert';
 
+import 'package:polkadot_dart/types/create/getTypeDef.dart';
 import 'package:polkadot_dart/types/create/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/utils/utils.dart';
+
+Constructor<T> createClass<T extends BaseCodec>(Registry registry, String type) {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  return getTypeClass<T>(registry, getTypeDef(type));
+}
+
+// ignore: non_constant_identifier_names
+Constructor<T> ClassOf<T extends BaseCodec>(Registry registry, String type) {
+  return createClass(registry, type);
+}
 
 List<TypeDef> getSubDefArray(TypeDef value) {
   assert(value.sub && (value.sub is List), "Expected subtype as TypeDef[] in ${jsonEncode(value)}");
@@ -92,22 +103,22 @@ final Map<TypeDefInfo, Constructor Function(Registry registry, TypeDef value)> i
   TypeDefInfo.Int: (Registry registry, TypeDef value) => createInt(value, CodecInt),
 
   // We have circular deps between Linkage & Struct
-  // TypeDefInfo.Linkage: (Registry registry, TypeDef value) {
-  //   final type = "Option<${getSubType(value)}>";
-  //   // eslint-disable-next-line sort-keys
-  //   final Clazz = Struct.withParams({ previous: type, next: type } as any);
+  TypeDefInfo.Linkage: (Registry registry, TypeDef value) {
+    final type = "Option<${getSubType(value)}>";
+    // TODO: use Linkage.withParams instead
+    final clazz = Linkage.linkWith(type);
 
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //   // Clazz.prototype.toRawType = function (): string {
-  //   //   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-  //   //   return `Linkage<${this.next.toRawType(true)}>`;
-  //   // };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // Clazz.prototype.toRawType = function (): string {
+    //   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+    //   return `Linkage<${this.next.toRawType(true)}>`;
+    // };
 
-  //   return Clazz;
-  // },
+    return clazz;
+  },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // TypeDefInfo.Null: (Registry registry, TypeDef _ ) => createClass(registry, 'Null'),
+  TypeDefInfo.Null: (Registry registry, TypeDef _) => createClass(registry, 'Null'),
 
   TypeDefInfo.Option: (Registry registry, TypeDef value) => Option.withParams(getSubType(value)),
 
@@ -132,40 +143,36 @@ final Map<TypeDefInfo, Constructor Function(Registry registry, TypeDef value)> i
         value.length);
   },
 
-  // TypeDefInfo.Struct: (Registry registry, TypeDef value) => Struct.withParams(getTypeClassMap(value), value.alias),
+  TypeDefInfo.Struct: (Registry registry, TypeDef value) =>
+      Struct.withParams(getTypeClassMap(value), value.alias),
 
   TypeDefInfo.Tuple: (Registry registry, TypeDef value) =>
       Tuple.withParams(getTypeClassArray(value)),
 
   TypeDefInfo.UInt: (Registry registry, TypeDef value) => createInt(value, UInt),
 
-  // TypeDefInfo.Vec: (Registry registry, TypeDef value)  {
-  //   final subType = getSubType(value);
+  TypeDefInfo.Vec: (Registry registry, TypeDef value) {
+    final subType = getSubType(value);
 
-  //   return (
-  //     subType == 'u8'
-  //       ? createClass(registry, 'Bytes')
-  //       : Vec.withParams(subType)
-  //   );
-  // },
+    return (subType == 'u8' ? createClass(registry, 'Bytes') : Vec.withParams(subType));
+  },
 
-  // TypeDefInfo.VecFixed: (registry: Registry, { displayName, length, sub }: TypeDef): Constructor => {
-  //   assert(isNumber(length) && !isUndefined(sub), 'Expected length & type information for fixed vector');
+  TypeDefInfo.VecFixed: (Registry registry, TypeDef value) {
+    assert(isNumber(value.length) && (value.sub != null),
+        'Expected length & type information for fixed vector');
 
-  //   return (
-  //     (sub as TypeDef).type === 'u8'
-  //       ? U8aFixed.withParams((length * 8) as U8aBitLength, displayName)
-  //       : VecFixed.withParams((sub as TypeDef).type as keyof InterfaceTypes, length)
-  //   );
-  // }
+    return ((value.sub as TypeDef).type == 'u8'
+        ? U8aFixed.withParams((value.length * 8), value.displayName)
+        : VecFixed.withParams((value.sub as TypeDef).type, value.length));
+  }
 };
 
 Constructor<T> getTypeClass<T extends BaseCodec>(Registry registry, TypeDef value) {
-  // const Type = registry.get<T>(value.type);
+  final theType = registry.getConstructor(value.type);
 
-  // if (Type) {
-  //   return Type;
-  // }
+  if (theType != null) {
+    return theType;
+  }
 
   final getFn = infoMapping[value.info];
 

@@ -4,11 +4,12 @@ import 'package:polkadot_dart/types/codec/Option.dart';
 import 'package:polkadot_dart/types/codec/Struct.dart';
 import 'package:polkadot_dart/types/codec/Tuple.dart';
 import 'package:polkadot_dart/types/codec/Vec.dart';
+import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
 Linkage<T> Function(Registry, Uint8List) linkageWith<T extends BaseCodec>(dynamic type) {
-  return (Registry registry, [dynamic value]) => Linkage<T>(registry, type, value);
+  return (Registry registry, [dynamic value, dynamic value2]) => Linkage<T>(registry, type, value);
 }
 
 class Linkage<T extends BaseCodec> extends Struct {
@@ -22,7 +23,21 @@ class Linkage<T extends BaseCodec> extends Struct {
             },
             value as String);
 
+  Linkage.withParams(Registry registry, dynamic type, [dynamic value])
+      : super(
+            registry,
+            {
+              "previous": type,
+              // eslint-disable-next-line sort-keys
+              "next": type
+            },
+            value as String);
+
   static Constructor<Linkage<O>> withKey<O extends BaseCodec>(dynamic type) => linkageWith(type);
+
+  static Constructor<Linkage<O>> linkWith<O extends BaseCodec>(dynamic type) {
+    return (Registry registry, [dynamic value]) => Linkage.withParams(registry, type, value);
+  }
 
   static Linkage constructor(Registry registry, [dynamic type, dynamic value]) =>
       Linkage(registry, type, value);

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:polkadot_dart/types/create/sanitize.dart';
 import 'package:polkadot_dart/types/create/types.dart';
 
@@ -5,6 +7,11 @@ class TypeDefOptions {
   String name;
   String displayName;
   TypeDefOptions({this.name, this.displayName});
+  @override
+  String toString() {
+    // TODO: implement toString
+    return jsonEncode({"name": this.name, "displayName": this.displayName});
+  }
 }
 
 const MAX_NESTED = 64;
@@ -77,7 +84,10 @@ TypeDef _decodeTuple(TypeDef value, String _, String subType, int count) {
   value.sub = subType.length == 0
       ? []
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      : typeSplit(subType).map((inner) => getTypeDef(inner, TypeDefOptions(), count));
+      : typeSplit(subType).map((inner) {
+          var subDef = getTypeDef(inner, TypeDefOptions(), count);
+          return subDef.removeNull(subDef.toMap());
+        }).toList();
 
   return value;
 }
@@ -118,7 +128,9 @@ TypeDef _decodeDoNotConstruct(TypeDef value, String type, String _) {
 }
 
 bool hasWrapper(String type, List wrapper) {
-  return (type.substring(0, (wrapper[0] as String).length) == (wrapper[0] as String)) &&
+  var end =
+      (wrapper[0] as String).length > type.length ? type.length : (wrapper[0] as String).length;
+  return (type.substring(0, end) == (wrapper[0] as String)) &&
       (type.substring(type.length - 1 * (wrapper[1] as String).length) == (wrapper[1] as String));
 }
 
@@ -148,10 +160,13 @@ String extractSubType(String type, List wrapper) {
 }
 
 /// eslint-disable-next-line @typescript-eslint/ban-types
-TypeDef getTypeDef(String _type, TypeDefOptions options, [count = 0]) {
+TypeDef getTypeDef(String _type, [TypeDefOptions options, count = 0]) {
   // create the type via Type, allowing types to be sanitized
+  if (options == null) {
+    options = TypeDefOptions();
+  }
   var type = sanitize(_type);
-  final value = TypeDef.fromMap({
+  final typedefValue = TypeDef.fromMap({
     "displayName": options.displayName,
     "info": TypeDefInfo.Plain,
     "name": options.name,
@@ -160,20 +175,21 @@ TypeDef getTypeDef(String _type, TypeDefOptions options, [count = 0]) {
 
   assert(++count != MAX_NESTED, 'getTypeDef: Maximum nested limit reached');
 
-  final nested = nestedExtraction.where((nested) => hasWrapper(type, nested)).toList();
+  final nested = nestedExtraction.singleWhere((val) {
+    return hasWrapper(type, val);
+  }, orElse: () => []);
 
-  if (nested != null) {
-    value.info = nested[2] as TypeDefInfo;
+  if (nested.isNotEmpty) {
+    typedefValue.info = nested[2] as TypeDefInfo;
 
-    return (nested[3] as Function)(value, type, extractSubType(type, nested), count);
+    return (nested[3] as Function)(typedefValue, type, extractSubType(type, nested), count);
   }
 
-  final wrapped = wrappedExtraction.where((wrapped) => hasWrapper(type, wrapped)).toList();
+  final wrapped = wrappedExtraction.singleWhere((val) => hasWrapper(type, val), orElse: () => []);
 
-  if (wrapped != null) {
-    value.info = wrapped[2] as TypeDefInfo;
-    value.sub = getTypeDef(extractSubType(type, wrapped), TypeDefOptions(), count);
+  if (wrapped.isNotEmpty) {
+    typedefValue.info = wrapped[2] as TypeDefInfo;
+    typedefValue.sub = getTypeDef(extractSubType(type, wrapped), TypeDefOptions(), count);
   }
-
-  return value;
+  return typedefValue;
 }

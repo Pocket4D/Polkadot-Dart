@@ -7,14 +7,6 @@ void main() {
 }
 
 void sanitizeTest() {
-  group('groupTitle', () {
-    // group global var // use for global setting for serial tests
-    test("TestTitle", () {
-      // expect(a,b); // normal expect, left(actual) right(expected)
-      // expect(()=>a, throwsA(contains(''))); // normal throws eg: throw "";
-      // expect(()=>a, throwsA(assertionThrowsContains(''))); // assert throws eg: assert(someTrue, "error message");
-    });
-  });
   group('alias', () {
     final exec = alias(['String'], 'Text');
     test('replaces all occurrences for types', () {

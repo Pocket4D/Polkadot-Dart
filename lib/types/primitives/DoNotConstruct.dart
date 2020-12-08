@@ -2,8 +2,8 @@ import 'package:polkadot_dart/types/primitives/Null.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-DoNotConstruct Function(Registry) doNotConstructWith([String typeName]) {
-  return (Registry registry) => DoNotConstruct(registry, typeName);
+DoNotConstruct Function(Registry, [dynamic]) doNotConstructWith([String typeName]) {
+  return (Registry registry, [dynamic nullVal]) => DoNotConstruct(registry, typeName);
 }
 
 class DoNotConstruct extends CodecNull {

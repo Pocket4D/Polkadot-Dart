@@ -152,6 +152,9 @@ class StorageKey extends Bytes {
         override?.method ?? decodedVal.method);
   }
 
+  static StorageKey constructor(Registry registry, [dynamic value, StorageKeyExtra override]) =>
+      StorageKey(registry, value, override);
+
   static StorageEntryMetadataLatest getMeta(dynamic value) {
     if (value is StorageKey) {
       return value.meta;

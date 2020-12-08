@@ -32,7 +32,7 @@ int findClosing(String value, int start) {
 
   for (var index = start; index < value.length; index++) {
     if (value[index] == '>') {
-      if (depth != 0) {
+      if (depth == 0) {
         return index;
       }
 
@@ -47,7 +47,7 @@ int findClosing(String value, int start) {
 
 Mapper alias(List<String> src, String dest, [bool withChecks = true]) {
   return (String value, [SanitizeOptions options]) {
-    return src.fold<String>(value, (value, srcString) {
+    return src.fold<String>(value, (thisValue, srcString) {
       var boxMap = BOX_PRECEDING.map((box) => "\\$box$srcString").join('|');
 
       var regText = RegExp('(^$srcString|$boxMap)');
@@ -56,8 +56,7 @@ Mapper alias(List<String> src, String dest, [bool withChecks = true]) {
         var m = srcString2[0];
         return withChecks && BOX_PRECEDING.contains(m[0]) ? "${m[0]}$dest" : dest;
       };
-
-      return value.replaceAllMapped(regText, replaceVal);
+      return thisValue.replaceAllMapped(regText, replaceVal);
     });
   };
 }
@@ -68,11 +67,13 @@ Mapper cleanupCompact() {
       if (value[index] != '<') {
         continue;
       }
+
       var end = findClosing(value, index + 1) - 14;
-      if (value.substring(end, end + 14) == ' as HasCompact') {
+      if (value.substring(end < 0 ? 0 : end, end + 14) == ' as HasCompact') {
         value = "Compact<${value.substring(index + 1, end)}>";
       }
     }
+
     return value;
   };
 }
@@ -116,17 +117,17 @@ Mapper removeGenerics() {
     for (var index = 0; index < value.length; index++) {
       if (value[index] == '<') {
         // check against the allowed wrappers, be it Vec<..>, Option<...> ...
-        var box = ALLOWED_BOXES.where((box) {
+        var box = ALLOWED_BOXES.singleWhere((box) {
           var start = index - box.length;
 
           return (start >= 0 && value.substring(start, start + box.length) == box) &&
               (
                   // make sure it is stand-alone, i.e. don't catch ElectionResult<...> as Result<...>
                   start == 0 || BOX_PRECEDING.contains(value[start - 1]));
-        });
+        }, orElse: () => null);
 
         // we have not found anything, unwrap generic innards
-        if (box != null) {
+        if (box == null) {
           var end = findClosing(value, index + 1);
 
           value = "${value.substring(0, index)}${value.substring(end + 1)}";
@@ -141,7 +142,8 @@ Mapper removeGenerics() {
 Mapper removePairOf() {
   return (String value, [SanitizeOptions options]) {
     for (var index = 0; index < value.length; index++) {
-      if (value.substring(index, index + 7) == 'PairOf<') {
+      if (value.substring(index, index + 7 > value.length ? value.length : index + 7) ==
+          'PairOf<') {
         var start = index + 7;
         var end = findClosing(value, start);
         var type = value.substring(start, end);

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 enum TypeDefInfo {
   BTreeMap,
   BTreeSet,
@@ -50,6 +52,30 @@ class TypeDef {
       namespace: map["namespace"],
       sub: map["sub"],
       type: map["type"]);
+
+  Map<String, dynamic> toMap() {
+    // TODO: implement toString
+    return {
+      "alias": this.alias,
+      "info": this.info,
+      "index": this.index,
+      'displayName': this.displayName,
+      "length": this.length,
+      "namespace": this.namespace,
+      "sub": this.sub,
+      "type": this.type
+    };
+  }
+
+  removeNull(Map<String, dynamic> map) {
+    Map<String, dynamic> newMap = Map<String, dynamic>();
+    map.forEach((key, value) {
+      if (value != null) {
+        newMap[key] = value;
+      }
+    });
+    return newMap;
+  }
 }
 
 bool isNotNested(Iterable<int> counters) {

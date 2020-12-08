@@ -24,7 +24,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
     this._type = clazz;
   }
 
-  static Vec constructor(Registry registry, [dynamic type, dynamic value]) =>
+  static constructor(Registry registry, [dynamic type, dynamic value]) =>
       Vec(registry, type, value);
 
   /// @internal */
