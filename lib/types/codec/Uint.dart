@@ -1,10 +1,13 @@
 import 'package:polkadot_dart/types/codec/abstract_int.dart';
-import 'package:polkadot_dart/types/codec/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-UInt Function(Registry, [dynamic]) uintWith(int bitLength, [String typeName]) {
-  return (Registry registry, [dynamic value]) => UInt(registry, value, bitLength);
+UInt Function(Registry, [dynamic, int]) uintWith(int bitLength, [String typeName]) {
+  return (Registry registry, [dynamic value, int bitLength = DEFAULT_UINT_BITS]) {
+    var result = UInt(registry, value, bitLength);
+    result.setRawType(typeName);
+    return result;
+  };
 }
 
 class UInt extends AbstractInt {
@@ -21,5 +24,9 @@ class UInt extends AbstractInt {
 
   toRawType() {
     return _typeName ?? super.toRawType();
+  }
+
+  setRawType(String typeName) {
+    _typeName = typeName;
   }
 }

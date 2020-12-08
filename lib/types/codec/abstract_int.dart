@@ -70,7 +70,8 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
     this._isSigned = isSigned;
     assert(isSigned || this._value >= (BigInt.zero),
         "${this.toRawType()}: Negative number passed to unsigned type");
-    // assert(super.bitLength() <= bitLength, "${this.toRawType()}: Input too large. Found input with ${super.bitLength()} bits, expected ${bitLength}");
+    assert(this._value.bitLength <= bitLength,
+        "${this.toRawType()}: Input too large. Found input with ${this._value.bitLength} bits, expected $bitLength");
   }
 
   /// @description The length of the value when encoded as a Uint8Array
@@ -143,17 +144,20 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
   dynamic toHuman([bool isExpanded]) {
     final rawType = this.toRawType();
 
-    // if(rawType == 'Balance') {
-    //   return this.isMax()
-    //     ? 'everything'
-    //     : formatBalance(this, { decimals: this.registry.chainDecimals, withSi: true, withUnit: this.registry.chainToken });
-    // }
+    if (rawType == 'Balance') {
+      return this.isMax()
+          ? 'everything'
+          : BalanceFormatter.instance.formatBalance(this, {
+              "decimals": this.registry.chainDecimals,
+              "withSi": true,
+              "withUnit": this.registry.chainToken
+            });
+    }
 
     final formats = (FORMATTERS.where((value) => (value[0] as String) == rawType) ?? []).toList();
-
-    return formats[1] != null
+    return formats.length > 1 && formats[1] != null
         ? toPercentage(this._value, formats[1] as BigInt)
-        : formatNumber(this);
+        : formatNumber(this._value);
   }
 
   /// @description Converts the Object to JSON, typically used for RPC transfers

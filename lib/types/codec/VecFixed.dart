@@ -7,9 +7,9 @@ import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-VecFixed<T> Function(Registry, dynamic) vecFixedWith<T extends BaseCodec>(
+VecFixed<T> Function(Registry, [dynamic]) vecFixedWith<T extends BaseCodec>(
     dynamic type, int length) {
-  return (Registry registry, dynamic value) => VecFixed<T>(registry, type, length, value);
+  return (Registry registry, [dynamic value]) => VecFixed<T>(registry, type, length, value);
 }
 
 class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
@@ -19,7 +19,7 @@ class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
       : super(
             registry,
             VecFixed.decodeVecFixed(
-                registry, typeToConstructor<T>(registry, type), length, value)) {
+                registry, typeToConstructor<T>(registry, type), length, value ?? [])) {
     final clazz = typeToConstructor<T>(registry, type);
     this._type = clazz;
   }

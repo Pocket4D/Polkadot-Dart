@@ -6,14 +6,14 @@ import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 Uint8List decodeU8aFixed(dynamic value, int bitLength) {
-  if (value is List || isString(value)) {
+  if ((!(value is Uint8List) && value is List) || isString(value)) {
     return decodeU8aFixed(u8aToU8a(value), bitLength);
   }
 
   // ensure that we have an actual u8a with the full length as specified by
   // the bitLength input (padded with zeros as required)
   final byteLength = (bitLength / 8).ceil();
-  final sub = value.subarray(0, byteLength);
+  final sub = value.sublist(0, byteLength > value.length ? value.length : byteLength);
 
   if (sub.length == byteLength) {
     return sub;
@@ -23,17 +23,17 @@ Uint8List decodeU8aFixed(dynamic value, int bitLength) {
   return u8a;
 }
 
-U8aFixed Function(Registry, Uint8List) u8aFixedWith(int bitLength, String typeName) {
-  return (Registry registry, Uint8List value) => U8aFixed(registry, value, bitLength, typeName);
+U8aFixed Function(Registry, [dynamic]) u8aFixedWith(int bitLength, String typeName) {
+  return (Registry registry, [dynamic value]) => U8aFixed(registry, value, bitLength, typeName);
 }
 
 class U8aFixed extends Raw {
   String typeName;
-  U8aFixed(Registry registry, [Uint8List value, int bitLength = 256, String typeName])
-      : super(registry, decodeU8aFixed(value, bitLength)) {
+  U8aFixed(Registry registry, [dynamic value, int bitLength = 256, String typeName])
+      : super(registry, decodeU8aFixed(value ?? Uint8List.fromList([]), bitLength)) {
     this.typeName = typeName;
   }
-  static Constructor<U8aFixed> withParams(int bitLength, String typeName) =>
+  static Constructor<U8aFixed> withParams(int bitLength, [String typeName]) =>
       u8aFixedWith(bitLength, typeName);
 
   static U8aFixed constructor(Registry registry,

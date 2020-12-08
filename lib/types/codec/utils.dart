@@ -73,13 +73,22 @@ bool hasMismatch([dynamic a, dynamic b]) {
 }
 
 bool notEntry(value) {
-  return !(value is List) || value.length != 2;
+  return !(value is List) || (value.length != 2);
 }
 
 bool compareMapArray(Map a, List b) {
   // equal number of entries and each entry in the array should match
-  return (a.length == b.length) &&
-      !b.any((entry) => notEntry(entry) || hasMismatch(a[entry[0]], entry[1]));
+  final c = b.any((entry) {
+    var result = true;
+    if (entry is MapEntry) {
+      result = hasMismatch(a[entry.key], entry.value);
+    } else if (entry is List && entry.length == 2) {
+      result = hasMismatch(a[entry[0]], entry[1]);
+    }
+    return result;
+  });
+
+  return (a.length == b.length) && !c;
 }
 
 // NOTE These are used internally and when comparing objects, expects that
@@ -87,9 +96,10 @@ bool compareMapArray(Map a, List b) {
 bool compareMap(Map a, [dynamic b]) {
   if (b is List) {
     return compareMapArray(a, b);
-  } else if (b is Map) {
+  } else if (a is Map<dynamic, BaseCodec> && b is Map<dynamic, dynamic>) {
+    return compareMapArray(a, b.entries.toList());
+  } else if (b is Map<String, dynamic>) {
     return compareMap2(a, b);
-    // return compareMapArray(a, b.entries.toList());
   }
   return false;
 }

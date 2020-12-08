@@ -12,6 +12,11 @@ import 'Raw.dart' as rawTest;
 import 'Set.dart' as setTest;
 import 'Struct.dart' as structTest;
 import 'Tuple.dart' as tupleTest;
+import 'U8aFixed.dart' as u8aFiexedTest;
+import 'Uint.dart' as uintTest;
+import 'Vec.dart' as vecTest;
+import 'VecFixed.dart' as vecFixedTest;
+import 'utils.dart' as utilsTest;
 
 void main() {
   option.main();
@@ -28,4 +33,9 @@ void main() {
   setTest.main();
   structTest.main();
   tupleTest.main();
+  u8aFiexedTest.main();
+  uintTest.main();
+  vecTest.main();
+  vecFixedTest.main();
+  utilsTest.main();
 }

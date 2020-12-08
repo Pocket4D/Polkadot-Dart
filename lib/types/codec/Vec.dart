@@ -30,9 +30,9 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   /// @internal */
   static List<T> decodeVec<T extends BaseCodec>(
       Registry registry, Constructor<T> type, dynamic value) {
-    if (value is List<T>) {
+    if (value is List && !isU8a(value)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return (value).map((entry) {
+      return (value).map<T>((entry) {
         final index = value.indexOf(entry);
         try {
           return entry is Constructor<T> ? entry : type(registry, entry);
@@ -42,7 +42,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
       }).toList();
     }
 
-    final u8a = u8aToU8a(value);
+    final u8a = u8aToU8a(List<int>.from(value));
 
     final compact = compactFromU8a(u8a);
 
