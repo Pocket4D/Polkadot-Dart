@@ -1,63 +1,49 @@
-// class Result<O extends Codec, E extends Codec> extends Enum {
-//   constructor (registry: Registry, Ok: Constructor<O> | keyof InterfaceTypes, Error: Constructor<E> | keyof InterfaceTypes, value?: unknown) {
-//     // NOTE This is order-dependent, Ok (with index 0) needs to be first
-//     // eslint-disable-next-line sort-keys
-//     super(registry, { Ok, Error }, value);
-//   }
+import 'package:polkadot_dart/types/codec/Enum.dart';
+import 'package:polkadot_dart/types/types/codec.dart';
+import 'package:polkadot_dart/types/types/registry.dart';
 
-//   public static with<O extends Codec, E extends Codec> (Types: { Ok: Constructor<O> | keyof InterfaceTypes; Error: Constructor<E> | keyof InterfaceTypes }): Constructor<Result<O, E>> {
-//     return class extends Result<O, E> {
-//       constructor (registry: Registry, value?: unknown) {
-//         super(registry, Types.Ok, Types.Error, value);
-//       }
-//     };
-//   }
+class Result<O extends BaseCodec, E extends BaseCodec> extends Enum {
+  Result(Registry registry, dynamic ok, dynamic error, [dynamic value])
+      : super(registry, {"Ok": ok, "Error": error}, value);
 
-//   /**
-//    * @description Returns the wrapper Error value (if isError)
-//    */
-//   public get asError (): E {
-//     assert(this.isError, 'Cannot extract Error value from Ok result, check isError first');
+  static withParams(Map<String, dynamic> types) {
+    return (Registry registry, [dynamic value]) {
+      return Result(registry, types["Ok"], types["Error"], value);
+    };
+  }
 
-//     return this.value as E;
-//   }
+  /// @description Returns the wrapper Error value (if isError)
+  E get asError {
+    assert(this.isError, 'Cannot extract Error value from Ok result, check isError first');
 
-//   /**
-//    * @description Returns the wrapper Ok value (if isOk)
-//    */
-//   public get asOk (): O {
-//     assert(this.isOk, 'Cannot extract Ok value from Error result, check isOk first');
+    return this.value as E;
+  }
 
-//     return this.value as O;
-//   }
+  /// @description Returns the wrapper Ok value (if isOk)
+  O get asOk {
+    assert(this.isOk, 'Cannot extract Ok value from Error result, check isOk first');
+    return this.value as O;
+  }
 
-//   /**
-//    * @description Checks if the Result has no value
-//    */
-//   public get isEmpty (): boolean {
-//     return this.isOk && this.value.isEmpty;
-//   }
+  /// @description Checks if the Result has no value
+  bool get isEmpty {
+    return this.isOk && this.value.isEmpty;
+  }
 
-//   /**
-//    * @description Checks if the Result wraps an Error value
-//    */
-//   public get isError (): boolean {
-//     return !this.isOk;
-//   }
+  /// @description Checks if the Result wraps an Error value
+  bool get isError {
+    return !this.isOk;
+  }
 
-//   /**
-//    * @description Checks if the Result wraps an Ok value
-//    */
-//   public get isOk (): boolean {
-//     return this.index === 0;
-//   }
+  /// @description Checks if the Result wraps an Ok value
+  bool get isOk {
+    return this.index == 0;
+  }
 
-//   /**
-//    * @description Returns the base runtime type name for this instance
-//    */
-//   public toRawType (): string {
-//     const Types = this._toRawStruct() as { Ok: unknown; Error: unknown };
+  /// @description Returns the base runtime type name for this instance
+  String toRawType() {
+    final types = this.toRawStruct();
 
-//     return `Result<${Types.Ok as string},${Types.Error as string}>`;
-//   }
-// }
+    return "Result<${types['Ok']},${types['Error']}>";
+  }
+}

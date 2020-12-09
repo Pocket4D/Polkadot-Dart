@@ -35,14 +35,25 @@ Constructor<T> ClassOf<T extends BaseCodec>(Registry registry, String type) {
 }
 
 List<TypeDef> getSubDefArray(TypeDef value) {
-  assert(value.sub && (value.sub is List), "Expected subtype as TypeDef[] in ${jsonEncode(value)}");
-
-  return value.sub;
+  assert(value.sub != null && (value.sub is List),
+      "Expected subtype as TypeDef[] in ${jsonEncode(value)}");
+  var sub = value.sub;
+  List<TypeDef> result;
+  if (sub is List) {
+    result = List<TypeDef>.from(sub.map((element) {
+      if (element is TypeDef) {
+        return element;
+      }
+      return TypeDef.fromMap(element);
+    }));
+  }
+  return result;
 }
 
 TypeDef getSubDef(TypeDef value) {
-  assert(value.sub && !(value.sub is List), "Expected subtype as TypeDef in ${jsonEncode(value)}");
-  return value.sub;
+  assert(value.sub != null && !(value.sub is List),
+      "Expected subtype as TypeDef in ${jsonEncode(value)}");
+  return value.sub as TypeDef;
 }
 
 String getSubType(TypeDef value) {
@@ -60,7 +71,7 @@ Map<String, String> getTypeClassMap(TypeDef value) {
 
 // create an array of type string constructors from the input
 List<String> getTypeClassArray(TypeDef value) {
-  return getSubDefArray(value).map((def) => def.type);
+  return getSubDefArray(value).map((def) => def.type).toList();
 }
 
 Constructor createInt(TypeDef def, dynamic clazz) {
@@ -127,12 +138,12 @@ final Map<TypeDefInfo, Constructor Function(Registry registry, TypeDef value)> i
 
   TypeDefInfo.Plain: (Registry registry, TypeDef value) => registry.getOrUnknown(value.type),
 
-  // TypeDefInfo.Result: (Registry registry, TypeDef value)  {
-  //   const [Ok, Error] = getTypeClassArray(value);
+  TypeDefInfo.Result: (Registry registry, TypeDef value) {
+    final classArray = getTypeClassArray(value);
 
-  //   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  //   return Result.withParams({ Error, Ok });
-  // },
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return Result.withParams({"Error": classArray[1], "Ok": classArray[0]});
+  },
 
   TypeDefInfo.Set: (Registry registry, TypeDef value) {
     Map<String, int> result = {};

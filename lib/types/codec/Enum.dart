@@ -39,7 +39,9 @@ EnumDef extractDef(Registry registry, dynamic _def) {
     });
 
     final def = mapToTypeMap(registry, Map<String, dynamic>.from(newDef));
-    final isBasic = !(def).values.any((type) => !(type is CodecNull));
+    final isBasic = !(def).values.any((type) {
+      return !(type(registry).toRawType() == "Null");
+    });
 
     return EnumDef(def: def, isBasic: isBasic);
   } else {
@@ -254,6 +256,10 @@ class Enum extends BaseCodec {
   /// @description Returns a raw struct representation of the enum types
   dynamic _toRawStruct() {
     return this._isBasic ? this.defKeys : Struct.typesToMap(this.registry, this.def);
+  }
+
+  dynamic toRawStruct() {
+    return this._toRawStruct();
   }
 
   /// @description Returns the base runtime type name for this instance

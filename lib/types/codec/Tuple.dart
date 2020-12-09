@@ -45,8 +45,8 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
   return result;
 }
 
-Tuple Function(Registry, dynamic) tupleWith(dynamic types) {
-  return (Registry registry, dynamic value) => Tuple(registry, types, value);
+Tuple Function(Registry, [dynamic]) tupleWith(dynamic types) {
+  return (Registry registry, [dynamic value]) => Tuple(registry, types, value);
 }
 
 class Tuple extends AbstractArray<BaseCodec> {

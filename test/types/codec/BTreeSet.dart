@@ -79,13 +79,14 @@ void btreeSetTest() {
       expect(BTreeSet(registry, CodecText.constructor, setVal).eq(setVal), true);
     });
 
-    // test('decodes within more complicated types', () {
-    //   final s = Struct(registry, {"placeholder": u32.constructor, "value": 'BTreeMap<Text, U32>'});
-    //   print(s);
+    test('decodes within more complicated types', () {
+      final s = Struct(registry,
+          {"placeholder": u32.constructor, "value": BTreeSet.withParams(u32.constructor)});
+      print(s);
 
-    //   s.put('value', BTreeSet(registry, u32.constructor, mockU32Set));
-    //   expect(s.toString(), '{"placeholder":0,"value":{"bazzing":69}}');
-    // });
+      s.put('value', BTreeSet(registry, u32.constructor, mockU32Set));
+      expect(s.toString(), '{"placeholder":0,"value":[2,24,30,80]}');
+    });
 
     test('throws when it cannot decode', () {
       expect(() => (BTreeSet.withParams(u32.constructor))(registry, 'ABC'),
@@ -96,13 +97,14 @@ void btreeSetTest() {
       expect((BTreeSet.withParams(u32.constructor))(registry, mockU32Set).encodedLength, 17);
     });
 
-    // // test('generates sane toRawTypes', () {
-    // //   var rt = BTreeSet.withParams(u32.constructor)(registry).toRawType();
-    // //   print(rt);
-    // //   // expect( (BTreeMap.withParams(Text, U32))(registry).toRawType()).toBe('BTreeMap<Text,u32>');
-    // //   // expect( (BTreeMap.withParams(Text, Text))(registry).toRawType()).toBe('BTreeMap<Text,Text>');
-    // //   // expect( (BTreeMap.withParams(Text, Struct.withParams({ a: U32, b: Text })))(registry).toRawType())
-    // //   //   .toBe('BTreeMap<Text,{"a":"u32","b":"Text"}>');
-    // // });
+    test('generates sane toRawTypes', () {
+      expect((BTreeSet.withParams(u32.constructor))(registry).toRawType(), 'BTreeSet<u32>');
+      expect((BTreeSet.withParams(CodecText.constructor))(registry).toRawType(), 'BTreeSet<Text>');
+      expect(
+          (BTreeSet.withParams(
+                  Struct.withParams({"a": u32.constructor, "b": CodecText.constructor})))(registry)
+              .toRawType(),
+          'BTreeSet<{"a":"u32","b":"Text"}>');
+    });
   });
 }

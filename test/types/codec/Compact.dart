@@ -12,27 +12,27 @@ void compactTest() {
   final registry = TypeRegistry();
 
   group('constructor', () {
-    // test('has support for BigInt', () {
-    //   expect(Compact(registry, 'u128', BigInt.parse('123456789000123456789')).toHuman(),
-    //       '123,456,789,000,123,456,789');
-    // });
+    test('has support for BigInt', () {
+      expect(Compact(registry, 'u128', BigInt.parse('123456789000123456789')).toHuman(),
+          '123,456,789,000,123,456,789');
+    });
 
-    // test('has the correct bitLength for constructor values (BlockNumber)', () {
-    //   expect(
-    //       (Compact.withParams(registry.createClass('BlockNumber')))(registry, 0xfffffff9)
-    //           .bitLength(),
-    //       32);
-    // });
+    test('has the correct bitLength for constructor values (BlockNumber)', () {
+      expect(
+          (Compact.withParams(registry.createClass('BlockNumber')))(registry, 0xfffffff9).bitLength,
+          32);
+    });
 
-    // test('has the correct encodedLength for constructor values (string BlockNumber)', () {
-    //   expect((Compact.withParams('BlockNumber'))(registry, 0xfffffff9).encodedLength, 5);
-    // });
+    test('has the correct encodedLength for constructor values (string BlockNumber)', () {
+      expect((Compact.withParams('BlockNumber'))(registry, 0xfffffff9).encodedLength, 5);
+    });
 
-    // test('has the correct encodedLength for constructor values (class BlockNumber)', () {
-    //   expect(
-    //      (Compact.withParams(registry.createClass('BlockNumber')))(registry, 0xfffffff9).encodedLength
-    //   ,5);
-    // });
+    test('has the correct encodedLength for constructor values (class BlockNumber)', () {
+      expect(
+          (Compact.withParams(registry.createClass('BlockNumber')))(registry, 0xfffffff9)
+              .encodedLength,
+          5);
+    });
 
     test('has the correct encodedLength for constructor values (u32)', () {
       expect((Compact.withParams(u32.constructor))(registry, 0xffff9).encodedLength, 4);
@@ -72,18 +72,18 @@ void compactTest() {
       expect((Compact.withParams(u32.constructor))(registry, 12345).unwrap() is u32, true);
     });
 
-    // test('has a valid toBn interface', () {
-    //   expect(
-    //       (Compact.withParams('u128'))(registry, '12345678987654321').toBn() ==
-    //           (BigInt.parse('12345678987654321')),
-    //       true);
-    // });
+    test('has a valid toBn interface', () {
+      expect(
+          (Compact.withParams('u128'))(registry, '12345678987654321').toBn() ==
+              (BigInt.parse('12345678987654321')),
+          true);
+    });
 
-    // test('has a valid toBigInt interface', () {
-    //   expect(
-    //       (Compact.withParams('u128'))(registry, BigInt.parse('12345678987654321')).toBigInt() ==
-    //           BigInt.parse('12345678987654321'),
-    //       true);
-    // });
+    test('has a valid toBigInt interface', () {
+      expect(
+          (Compact.withParams('u128'))(registry, BigInt.parse('12345678987654321')).toBigInt() ==
+              BigInt.parse('12345678987654321'),
+          true);
+    });
   });
 }

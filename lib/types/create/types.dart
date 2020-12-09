@@ -57,6 +57,12 @@ class TypeDef {
       type: map["type"]);
 
   Map<String, dynamic> toMap() {
+    var subMap;
+    if (this.sub is TypeDef) {
+      subMap = this.sub.toMap();
+    } else if (this.sub is List<TypeDef>) {
+      subMap = this.sub.map((e) => e.toMap()).toList();
+    }
     // TODO: implement toString
     return {
       "alias": this.alias,
@@ -65,7 +71,7 @@ class TypeDef {
       'displayName': this.displayName,
       "length": this.length,
       "namespace": this.namespace,
-      "sub": this.sub,
+      "sub": subMap,
       "type": this.type
     };
   }

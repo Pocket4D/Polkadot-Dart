@@ -5,6 +5,7 @@ import 'package:polkadot_dart/types/codec/codec.dart';
 import 'package:polkadot_dart/types/create/createClass.dart' as classCreator;
 import 'package:polkadot_dart/types/create/createTypes.dart' as typesCreator;
 import 'package:polkadot_dart/types/create/types.dart';
+import 'package:polkadot_dart/types/interfaces/definitions.dart';
 
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
@@ -14,16 +15,21 @@ import 'package:polkadot_dart/utils/is.dart';
 
 class TypeRegistry implements Registry {
   Map<String, dynamic> _knownDefaults;
+  Map<String, dynamic> _knownDefinitions;
   Map<String, String> _definitions;
   Map<String, bool> _unknownTypes;
   RegisteredTypes _registeredTypes;
   Map<String, Constructor> _classes;
+  Map<String, Constructor> get cls => _classes;
+  Map<String, String> get defs => _definitions;
   TypeRegistry() {
     this._knownDefaults = {
       'Json': Json.constructor,
       // metadata,
       ...baseTypes
     };
+    this._knownDefinitions = Map<String, dynamic>.from(definitions);
+
     init();
   }
 
@@ -45,8 +51,14 @@ class TypeRegistry implements Registry {
   }
 
   @override
-  T createType<T extends BaseCodec>(String type, [params]) {
-    return typesCreator.createType(this, type, params);
+  T createType<T extends BaseCodec>(String type, [dynamic params]) {
+    List<dynamic> typeParams;
+    if (params != null) {
+      typeParams = List.from(params is List ? params : [params]);
+    } else {
+      typeParams = null;
+    }
+    return typesCreator.createType(this, type, typeParams);
   }
 
   @override
@@ -57,8 +69,8 @@ class TypeRegistry implements Registry {
 
   @override
   String getClassName(clazz) {
-    // TODO: implement getClassName
-    throw UnimplementedError();
+    final entry = [...this._classes.entries].where((entry) => entry.value == clazz).toList();
+    return entry == null || entry.isEmpty ? null : entry[0].key;
   }
 
   @override
@@ -75,7 +87,7 @@ class TypeRegistry implements Registry {
         baseType = classCreator.ClassOf(this, definition);
       } else if (withUnknown != null && withUnknown) {
         // l.warn(`Unable to resolve type ${name}, it will fail on construction`);
-        this._unknownTypes.putIfAbsent(name, () => true);
+        this._unknownTypes[name] = true;
         baseType = DoNotConstruct.withParams(name);
       }
 
@@ -84,7 +96,7 @@ class TypeRegistry implements Registry {
         // Balance, with this, new Balance() instanceof u128 is true, but Balance !== u128
         // Additionally, we now pass through the registry, which is a link to ourselves
 
-        this._classes.putIfAbsent(name, () => baseType);
+        this._classes[name] = baseType;
         returnType = baseType;
       }
     }
@@ -153,8 +165,10 @@ class TypeRegistry implements Registry {
 
     // this._knownTypes = {};
 
-    this.register(this._definitions);
     this.register(this._knownDefaults);
+    this._knownDefinitions.values.forEach((defs) {
+      this.register(Map<String, dynamic>.from(defs["types"]));
+    });
     return this;
   }
 
@@ -165,11 +179,10 @@ class TypeRegistry implements Registry {
   @override
   void register(arg1, [arg2]) {
     if (isFunction(arg1)) {
-      this._classes.putIfAbsent(arg1.name, () => arg1);
+      this._classes[arg1.name] = arg1;
     } else if (isString(arg1)) {
       assert(isFunction(arg2), "Expected class definition passed to '$arg1' registration");
-
-      this._classes.putIfAbsent(arg1, () => arg2);
+      this._classes[arg1.name] = arg2;
     } else {
       this._registerObject(arg1);
     }
@@ -179,7 +192,7 @@ class TypeRegistry implements Registry {
     obj.entries.forEach((entry) {
       if (isFunction(entry.value)) {
         // This _looks_ a bit funny, in js `typeof Clazz === 'function', not in dart
-        this._classes.putIfAbsent(entry.key, () => entry.value);
+        this._classes[entry.key] = entry.value;
       } else {
         final def = isString(entry.value) ? entry.value : jsonEncode(entry.value);
 
@@ -188,7 +201,7 @@ class TypeRegistry implements Registry {
           this._classes.remove(entry.key);
         }
 
-        this._definitions.putIfAbsent(entry.key, () => def);
+        this._definitions[entry.key] = def;
       }
     });
   }

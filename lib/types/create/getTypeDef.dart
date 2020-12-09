@@ -16,48 +16,59 @@ class TypeDefOptions {
 
 const MAX_NESTED = 64;
 
+// decode an enum of either of the following forms
+//  { _enum: ['A', 'B', 'C'] }
+//  { _enum: { A: AccountId, B: Balance, C: u32 } }
+TypeDef _decodeEnum(TypeDef value, dynamic details, int count) {
+  value.info = TypeDefInfo.Enum;
+  // not as pretty, but remain compatible with oo7 for both struct and Array types
+  value.sub = details is List
+      ? details.map((name) => ({"info": TypeDefInfo.Plain, "name": name, "type": 'Null'})).toList()
+      : ((Map<String, String>.from(details)).entries).map((entry) =>
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+          getTypeDef(entry.value ?? 'Null', TypeDefOptions(name: entry.key), count)).toList();
+
+  return value;
+}
+
 /// decode a set of the form
 ///   { _set: { A: 0b0001, B: 0b0010, C: 0b0100 } }
-// TypeDef _decodeSet(TypeDef value, Map<String,num>details) {
-//   value.info = TypeDefInfo.Set;
-//   // TODO details have to be Codec
-//   value.length = details._bitLength;
-//   value.sub = Object
-//     .entries(details)
-//     .filter(([name]): boolean => !name.startsWith('_'))
-//     .map(([name, index]): TypeDef =>({
-//       index,
-//       info: TypeDefInfo.Plain,
-//       name,
-//       type: name
-//     }));
+TypeDef _decodeSet(TypeDef value, Map<String, dynamic> details) {
+  value.info = TypeDefInfo.Set;
+  value.length = details.length;
+  value.sub = details.entries
+      .where((entry) => !entry.key.startsWith('_'))
+      .map((entry) =>
+          ({"index": entry.value, "info": TypeDefInfo.Plain, "name": entry.key, "type": entry.key}))
+      .toList();
 
-//   return value;
-// }
+  return value;
+}
 
 /// decode a struct, set or enum
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
-//  TypeDef _decodeStruct(TypeDef value , String type, String _, int count) {
-//   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-//   final parsed = Map<String,dynamic>.from(jsonDecode(type));
-//   final keys = parsed.keys.toList();
+TypeDef _decodeStruct(TypeDef value, String type, String _, int count) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 
-//   if(keys.length == 1 && keys[0] == '_enum') {
-//     return _decodeEnum(value, parsed[keys[0]], count);
-//   } else if(keys.length == 1 && keys[0] == '_set') {
-//     return _decodeSet(value, parsed[keys[0]]);
-//   }
+  final parsed = Map<String, dynamic>.from(jsonDecode(type));
+  final keys = parsed.keys.toList();
 
-//   value.alias = parsed._alias
-//     ? new Map(Object.entries(parsed._alias))
-//     : undefined;
-//   value.sub = keys.filter((name) => !['_alias'].includes(name)).map((name): TypeDef =>
-//     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-//     getTypeDef(parsed[name], { name }, count)
-//   );
+  if (keys.length == 1 && keys[0] == '_enum') {
+    return _decodeEnum(value, parsed[keys[0]], count);
+  } else if (keys.length == 1 && keys[0] == '_set') {
+    return _decodeSet(value, parsed[keys[0]]);
+  }
 
-//   return value;
-// }
+  value.alias = parsed["_alias"] != null && parsed["_alias"] is Map
+      ? new Map.fromEntries((parsed["_alias"] as Map).entries)
+      : null;
+
+  value.sub = keys.where((name) => !['_alias'].contains(name)).map((name) =>
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      getTypeDef(parsed[name], TypeDefOptions(name: name), count)).toList();
+
+  return value;
+}
 
 /// decode a fixed vector, e.g. [u8;32]
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,7 +76,7 @@ TypeDef _decodeFixedVec(TypeDef value, String type, String _, [int count = 0]) {
   final subType = type.substring(1, type.length - 1).split(';');
   var vecType = subType[0];
   var strLength = subType[1];
-  var displayName = subType[2];
+  var displayName = subType.length > 2 ? subType[2] : null;
   final length = int.parse(strLength.trim(), radix: 10);
 
   // as a first round, only u8 via u8aFixed, we can add more support
@@ -98,7 +109,7 @@ TypeDef _decodeTuple(TypeDef value, String _, String subType, [int count = 0]) {
 TypeDef _decodeAnyInt(TypeDef value, String type, String _, [String clazz, int count = 0]) {
   final subType = type.substring(clazz.length + 1, type.length - 1).split(',');
   var strLength = subType[0];
-  var displayName = subType[1];
+  var displayName = subType.length > 1 ? subType[1] : null;
 
   final length = int.parse(strLength.trim(), radix: 10);
 
@@ -108,7 +119,6 @@ TypeDef _decodeAnyInt(TypeDef value, String type, String _, [String clazz, int c
 
   value.displayName = displayName;
   value.length = length;
-
   return value;
 }
 
@@ -136,7 +146,7 @@ bool hasWrapper(String type, List wrapper) {
 
 final nestedExtraction = [
   ['[', ']', TypeDefInfo.VecFixed, _decodeFixedVec],
-  // ['{', '}', TypeDefInfo.Struct, _decodeStruct],
+  ['{', '}', TypeDefInfo.Struct, _decodeStruct],
   ['(', ')', TypeDefInfo.Tuple, _decodeTuple],
   // the inner for these are the same as tuple, multiple values
   ['BTreeMap<', '>', TypeDefInfo.BTreeMap, _decodeTuple],
@@ -190,5 +200,6 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
     typedefValue.info = wrapped[2] as TypeDefInfo;
     typedefValue.sub = getTypeDef(extractSubType(type, wrapped), TypeDefOptions(), count);
   }
+
   return typedefValue;
 }

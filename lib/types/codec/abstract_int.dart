@@ -173,9 +173,6 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
     // NOTE In the case of balances, which have a special meaning on the UI
     // and can be interpreted differently, return a specific value for it so
     // underlying it always matches(no matter which length it actually is)
-    // return this instanceof this.registry.createClass('Balance')
-    //   ? 'Balance'
-    //   : `${this.isUnsigned ? 'u' : 'i'}${this.bitLength()}`;
     return "${this.isUnsigned ? 'u' : 'i'}${this.bitLength}";
   }
 

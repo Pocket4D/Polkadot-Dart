@@ -31,13 +31,14 @@ void btreeMapTest() {
           true);
     });
 
-    // test('decodes within more complicated types', () {
-    //   final s = Struct(registry, {"placeholder": u32.constructor, "value": 'BTreeMap<Text, U32>'});
-    //   print(s);
+    test('decodes within more complicated types', () {
+      final s = Struct(registry, {"placeholder": u32.constructor, "value": 'u32'});
 
-    //   // s.set('value', new (BTreeMap.with(Text, U32))(registry, mockU32TextMap));
-    //   // expect(s.toString()).toBe('{"placeholder":0,"value":{"bazzing":69}}');
-    // });
+      s.put('value',
+          (BTreeMap.withParams(CodecText.constructor, u32.constructor))(registry, mockU32TextMap));
+
+      expect(s.toString(), '{"placeholder":0,"value":{"bazzing":69}}');
+    });
 
     test('throws when it cannot decode', () {
       expect(() => (BTreeMap.withParams(CodecText.constructor, u32.constructor))(registry, 'ABC'),
@@ -53,11 +54,17 @@ void btreeMapTest() {
 
     test('generates sane toRawTypes', () {
       // var rt = BTreeMap.withParams(CodecText.constructor, u32.constructor)(registry).toRawType();
-      // print(rt);
-      // expect( (BTreeMap.withParams(Text, U32))(registry).toRawType()).toBe('BTreeMap<Text,u32>');
-      // expect( (BTreeMap.withParams(Text, Text))(registry).toRawType()).toBe('BTreeMap<Text,Text>');
-      // expect( (BTreeMap.withParams(Text, Struct.withParams({ a: U32, b: Text })))(registry).toRawType())
-      //   .toBe('BTreeMap<Text,{"a":"u32","b":"Text"}>');
+
+      expect((BTreeMap.withParams(CodecText.constructor, u32.constructor))(registry).toRawType(),
+          'BTreeMap<Text,u32>');
+      expect(
+          (BTreeMap.withParams(CodecText.constructor, CodecText.constructor))(registry).toRawType(),
+          'BTreeMap<Text,Text>');
+      expect(
+          (BTreeMap.withParams(CodecText.constructor,
+                  Struct.withParams({'a': u32.constructor, 'b': CodecText.constructor})))(registry)
+              .toRawType(),
+          'BTreeMap<Text,{"a":"u32","b":"Text"}>');
     });
   });
 }

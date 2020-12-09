@@ -20,6 +20,7 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
     final index = keys.indexOf(key);
 
     final jsonKey = (jsonMap[key] != null && value[key] == null) ? jsonMap[key] : key;
+
     try {
       if ((value is List)) {
         // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
@@ -55,7 +56,6 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
           assign = jsonObj[jsonKey];
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
         (raw)[key] = assign.runtimeType == types[key](registry, assign)
             ? assign
             : types[key](registry, assign);
@@ -120,11 +120,13 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<dynamic, String> _jsonMap;
   Map<String, Constructor<BaseCodec>> _types;
   // List<String> _keys;
-  Struct(Registry registry, S types, [dynamic value, Map<dynamic, String> jsonMap]) {
+  Struct(Registry registry, S types, [dynamic value = const {}, Map<dynamic, String> jsonMap]) {
     if (jsonMap == null) {
       jsonMap = Map<dynamic, String>();
     }
+
     final decoded = decodeStruct(registry, mapToTypeMap(registry, types), value, jsonMap);
+
     _value = Map<dynamic, BaseCodec>.fromEntries(decoded.entries);
     this.registry = registry;
     this._jsonMap = jsonMap ?? Map<dynamic, String>();
@@ -220,9 +222,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     return [...this._value.keys].fold({}, (json, key) {
       final jsonKey = this._jsonMap[key] ?? key;
       final value = this._value[key];
-
       json[jsonKey] = value?.toJSON();
-
       return json;
     });
   }
@@ -253,6 +253,6 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   }
 
   void put(dynamic key, BaseCodec value) {
-    this._value.putIfAbsent(key, () => value);
+    this._value[key] = value;
   }
 }

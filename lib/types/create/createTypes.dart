@@ -80,10 +80,13 @@ T initType<T extends BaseCodec>(Registry registry, dynamic type,
 T createTypeUnsafe<T extends BaseCodec>(Registry registry, String type,
     [List<dynamic> params, bool isPedantic]) {
   // try {
+
   if (params == null) {
     params = [];
   }
+
   final clazz = createClass<T>(registry, type);
+
   // Circle back to isPedantic when it handles all cases 100% - as of now,
   // it provides false warning which is more hinderance than help
   return initType(registry, clazz, params); // , isPedantic);

@@ -2,8 +2,8 @@ import 'package:polkadot_dart/types/codec/abstract_int.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-UInt Function(Registry, [dynamic, int]) uintWith(int bitLength, [String typeName]) {
-  return (Registry registry, [dynamic value, int bitLength = DEFAULT_UINT_BITS]) {
+UInt Function(Registry, [dynamic]) uintWith(int bitLength, [String typeName]) {
+  return (Registry registry, [dynamic value]) {
     var result = UInt(registry, value, bitLength);
     result.setRawType(typeName);
     return result;
