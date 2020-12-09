@@ -46,13 +46,12 @@ void btreeSetTest() {
   });
 
   group('static with', () {
-    print("⚠️ ：TODO");
-    // test('allows default toRawType', () {
-    //   expect((CodecInt.withParams(64))(registry).toRawType(), 'i64');
-    // });
+    test('allows default toRawType', () {
+      expect((CodecInt.withParams(64))(registry).toRawType(), 'i64');
+    });
 
-    //   test('allows toRawType override', () {
-    //     expect((CodecInt.withParams(64, 'SomethingElse'))(registry).toRawType(), 'SomethingElse');
-    //   });
+    test('allows toRawType override', () {
+      expect((CodecInt.withParams(64, 'SomethingElse'))(registry).toRawType(), 'SomethingElse');
+    });
   });
 }

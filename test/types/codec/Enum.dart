@@ -56,17 +56,17 @@ void enumTest() {
           '4660'); // 0x1234 in decimal
     });
 
-    // test('decodes from hex (string types)', () {
-    //   expect(
-    //       Enum(
-    //               registry,
-    //               // eslint-disable-next-line sort-keys
-    //               {"foo": 'Text', "bar": 'u32'},
-    //               '0x0134120000')
-    //           .value
-    //           .toString(),
-    //       '4660'); // 0x1234 in decimal
-    // });
+    test('decodes from hex (string types)', () {
+      expect(
+          Enum(
+                  registry,
+                  // eslint-disable-next-line sort-keys
+                  {"foo": 'Text', "bar": 'u32'},
+                  '0x0134120000')
+              .value
+              .toString(),
+          '4660'); // 0x1234 in decimal
+    });
 
     test('decodes from a JSON input (mixed case)', () {
       expect(
@@ -277,30 +277,32 @@ void enumTest() {
           }));
     });
 
-    // test('has a sane output for typed enums', () {
-    //   expect(
-    //       // eslint-disable-next-line sort-keys
-    //       new Enum(registry, {"foo": CodecText.constructor, "bar": u32.constructor}).toRawType()
-    //       // eslint-disable-next-line sort-keys
-    //       ,
-    //       jsonEncode({
-    //         "_enum": {"foo": 'Text', "bar": 'u32'}
-    //       }));
-    // });
+    test('has a sane output for typed enums', () {
+      expect(
+          // eslint-disable-next-line sort-keys
+          new Enum(registry, {"foo": CodecText.constructor, "bar": u32.constructor}).toRawType()
+          // eslint-disable-next-line sort-keys
+          ,
+          jsonEncode({
+            "_enum": {"foo": 'Text', "bar": 'u32'}
+          }));
+    });
 
-    // test('re-creates via rawType (c-like)', () {
-    //   final type = new Enum(registry, ['foo', 'bar']).toRawType() as 'Raw';
+    test('re-creates via rawType (c-like)', () {
+      final type = new Enum(registry, ['foo', 'bar']).toRawType();
 
-    //   expect(registry.createType(type, 1).toString(),'bar');
-    // });
+      expect(registry.createType(type, 1).toString(), 'bar');
+    });
 
-    // test('re-creates via rawType (types)', () {
-    //   final type = new Enum(registry, { A: Text, B: U32, C: U32 }).toRawType() as 'Raw';
-    //   final value = registry.createType(type, { B: 123 }) as unknown as { isB: true, asB: U32 };
+    test('re-creates via rawType (types)', () {
+      final type = new Enum(
+              registry, {"A": CodecText.constructor, "B": u32.constructor, "C": u32.constructor})
+          .toRawType();
+      final value = registry.createType<Enum>(type, {"B": 123});
 
-    //   expect(value.isB,true);
-    //   expect(value.asB.toNumber(),123);
-    // });
+      expect((value).isKey("B"), true);
+      expect((value).askey("B").value, BigInt.from(123));
+    });
   });
 
   group('toHex', () {
@@ -312,28 +314,33 @@ void enumTest() {
       expect(test.encodedLength, 1 + 4);
     });
 
-    // test('encodes a single entry correctly', () {
-    //   final Test = enumWith({"A": 'u32'});
-    //   final test = Test(registry, 0x44332211, 0);
+    test('encodes a single entry correctly', () {
+      final Test = enumWith({"A": 'u32'});
+      final test = Test(registry, 0x44332211, 0);
+
+      expect(
+          test.toHex(),
+          '0x' +
+              '00' + // index
+              '11223344' // u32 LE encoded
+          );
+    });
+
+    // test('encodes a single entry correctly (with embedded encoding)', () {
+    //   final Test = enumWith({A: 'Address'});
+    //   final test = Test(
+    //       registry,
+    //       registry.createType(
+    //           'AccountId', '0x0001020304050607080910111213141516171819202122232425262728293031'),
+    //       0);
 
     //   expect(
     //       test.toHex(),
     //       '0x' +
     //           '00' + // index
-    //           '11223344' // u32 LE encoded
+    //           'ff' + // Address indicating an embedded AccountId
+    //           '0001020304050607080910111213141516171819202122232425262728293031' // AccountId
     //       );
-    // });
-
-    // test('encodes a single entry correctly (with embedded encoding)', () {
-    //   final Test = enumWith({ A: 'Address' });
-    //   final test = Test(registry, registry.createType('AccountId', '0x0001020304050607080910111213141516171819202122232425262728293031'), 0);
-
-    //   expect(test.toHex(),
-    //     '0x' +
-    //     '00' + // index
-    //     'ff' + // Address indicating an embedded AccountId
-    //     '0001020304050607080910111213141516171819202122232425262728293031' // AccountId
-    //   );
     // });
   });
 }

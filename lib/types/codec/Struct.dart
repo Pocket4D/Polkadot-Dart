@@ -247,8 +247,8 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
       ...entries
           // eslint-disable-next-line @typescript-eslint/unbound-method
           .takeWhile((entry) => isFunction(entry.value?.toU8a))
-          .map((entry) => entry.value
-              .toU8a(((isBare is bool && !isBare) || isBare == null) ? isBare : isBare[entry.key]))
+          .map((entry) =>
+              entry.value.toU8a(((isBare is bool) || isBare == null) ? isBare : isBare[entry.key]))
     ]);
   }
 

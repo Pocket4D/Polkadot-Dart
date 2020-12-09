@@ -73,18 +73,18 @@ void structTest() {
         (new Struct(registry, {"foo": CodecText.constructor}, {"foo": foo})).getCodec('foo'), foo);
   });
 
-  // test('decodes a more complicated type', () {
-  //   final s = new Struct(registry, {
-  //     "foo": Vec.withParams(Struct.withParams({"bar": CodecText.constructor}))
-  //   }, {
-  //     "foo": [
-  //       {"bar": 1},
-  //       {"bar": 2}
-  //     ]
-  //   });
+  test('decodes a more complicated type', () {
+    final s = new Struct(registry, {
+      "foo": Vec.withParams(Struct.withParams({"bar": CodecText.constructor}))
+    }, {
+      "foo": [
+        {"bar": 1},
+        {"bar": 2}
+      ]
+    });
 
-  //   expect(s.toString(), '{"foo":[{"bar":"1"},{"bar":"2"}]}');
-  // });
+    expect(s.toString(), '{"foo":[{"bar":"1"},{"bar":"2"}]}');
+  });
 
   test('decodes from a Map input', () {
     final input = new Struct(
@@ -123,21 +123,20 @@ void structTest() {
         '{"txt":"foo","u32":1193046}');
   });
 
-  // test('provides a clean toString() (string types)', () {
-  //   expect(
-  //       Struct.withParams({"txt": 'Text', "num": 'u32', "cls": u32.constructor})(
-  //           registry, {"txt": 'foo', num: 0x123456, "cls": 123}).toString(),
-  //       '{"txt":"foo","num":1193046,"cls":123}');
-  // });
+  test('provides a clean toString() (string types)', () {
+    expect(
+        Struct.withParams({"txt": 'Text', "num": 'u32', "cls": u32.constructor})(
+            registry, {"txt": 'foo', "num": 0x123456, "cls": 123}).toString(),
+        '{"txt":"foo","num":1193046,"cls":123}');
+  });
 
   test('exposes the properties on the object', () {
     final struct = (Struct.withParams({"txt": CodecText.constructor, "u32": u32.constructor})(
         registry, {"txt": 'foo', "u32": 0x123456}));
-    // print(struct.getKey("txt"));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-    // expect((struct).txt.toString(),'foo');
+    expect((struct).getCodec("txt").toString(), 'foo');
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-    // expect((struct).u32.toNumber(),0x123456);
+    expect((struct).getCodec("u32").value, BigInt.from(0x123456));
   });
 
   test('correctly encodes length', () {
@@ -178,14 +177,13 @@ void structTest() {
     });
   });
 
-  // test('allows toString with large numbers', () {
-  //   // replicate https://github.com/polkadot-js/api/issues/640
-  //   expect(
-  //     new Struct(registry, {
-  //       "blockNumber": registry.createClass('Option<BlockNumber>')
-  //     }, { "blockNumber": '0x0000000010abcdef' }).toString()
-  //   ,'{"blockNumber":279694831}');
-  // });
+  test('allows toString with large numbers', () {
+    // replicate https://github.com/polkadot-js/api/issues/640
+    expect(
+        new Struct(registry, {"blockNumber": registry.createClass('Option<BlockNumber>')},
+            {"blockNumber": '0x0000000010abcdef'}).toString(),
+        '{"blockNumber":279694831}');
+  });
 
   // test('generates sane toRawType', () {
   //   expect(
@@ -223,23 +221,23 @@ void structTest() {
   //   }));
   // });
 
-  // group('toU8a', () {
-  //   const def = {"foo": 'Bytes', "method": 'Bytes', "bar": 'Option<u32>', "baz": 'bool'};
-  //   const val = {"foo": '0x4269', "method": '0x99', "bar": 1, "baz": true};
+  group('toU8a', () {
+    const def = {"foo": 'Bytes', "method": 'Bytes', "bar": 'Option<u32>', "baz": 'bool'};
+    const val = {"foo": '0x4269', "method": '0x99', "bar": 1, "baz": true};
 
-  //   test('generates toU8a with undefined', () {
-  //     expect(new Struct(registry, def, val).toU8a(),
-  //         new Uint8List.fromList([2 << 2, 0x42, 0x69, 1 << 2, 0x99, 1, 1, 0, 0, 0, 1]));
-  //   });
+    test('generates toU8a with undefined', () {
+      expect(new Struct(registry, def, val).toU8a(),
+          new Uint8List.fromList([2 << 2, 0x42, 0x69, 1 << 2, 0x99, 1, 1, 0, 0, 0, 1]));
+    });
 
-  //   test('generates toU8a with true', () {
-  //     expect(new Struct(registry, def, val).toU8a(true),
-  //         new Uint8List.fromList([0x42, 0x69, 0x99, 1, 0, 0, 0, 1]));
-  //   });
+    test('generates toU8a with true', () {
+      expect(new Struct(registry, def, val).toU8a(true),
+          new Uint8List.fromList([0x42, 0x69, 0x99, 1, 0, 0, 0, 1]));
+    });
 
-  //   test('generates toU8a with { method: true }', () {
-  //     expect(new Struct(registry, def, val).toU8a({"method": true}),
-  //         new Uint8List.fromList([2 << 2, 0x42, 0x69, 0x99, 1, 1, 0, 0, 0, 1]));
-  //   });
-  // });
+    test('generates toU8a with { method: true }', () {
+      expect(new Struct(registry, def, val).toU8a({"method": true}),
+          new Uint8List.fromList([2 << 2, 0x42, 0x69, 0x99, 1, 1, 0, 0, 0, 1]));
+    });
+  });
 }

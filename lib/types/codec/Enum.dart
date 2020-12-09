@@ -39,8 +39,9 @@ EnumDef extractDef(Registry registry, dynamic _def) {
     });
 
     final def = mapToTypeMap(registry, Map<String, dynamic>.from(newDef));
+
     final isBasic = !(def).values.any((type) {
-      return !(type(registry).toRawType() == "Null");
+      return !(type.runtimeType.toString().contains("CodecNull"));
     });
 
     return EnumDef(def: def, isBasic: isBasic);
@@ -115,15 +116,15 @@ DecodedEnum decodeEnum(Registry registry, Map<String, Constructor> def,
   return decodeFromValue(registry, def, value);
 }
 
-Enum Function(Registry, [dynamic, int]) enumWith(dynamic types) {
+Enum<T> Function(Registry, [dynamic, int]) enumWith<T extends BaseCodec>(dynamic types) {
   return (Registry registry, [dynamic value, int index]) {
-    var result = Enum(registry, types, value, index);
+    var result = Enum<T>(registry, types, value, index);
     result.genKeys();
     return result;
   };
 }
 
-class Enum extends BaseCodec {
+class Enum<T extends BaseCodec> extends BaseCodec {
   Registry registry;
 
   Map<String, Constructor> def;
@@ -134,7 +135,7 @@ class Enum extends BaseCodec {
 
   bool _isBasic;
 
-  BaseCodec _raw;
+  T _raw;
 
   List<String> iskeys = [];
   List<String> askeys = [];
@@ -154,7 +155,13 @@ class Enum extends BaseCodec {
   static Enum constructor(Registry registry, [dynamic def, dynamic value, int index]) =>
       Enum(registry, def, value, index);
 
-  static Constructor<Enum> withParams(dynamic types) => enumWith(types);
+  static Constructor<Enum<T>> withParams<T extends BaseCodec>(dynamic types) {
+    return (Registry registry, [dynamic value, int index]) {
+      var result = Enum<T>(registry, types, value, index);
+      result.genKeys();
+      return result;
+    };
+  }
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
@@ -286,7 +293,7 @@ class Enum extends BaseCodec {
     return found != null && found == "is$name";
   }
 
-  BaseCodec askey(String typeName) {
+  T askey(String typeName) {
     assert(isKey(typeName), "Cannot convert '${this.type}' via as$typeName");
     return this.value;
   }
