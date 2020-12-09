@@ -61,7 +61,7 @@ const MAX_NESTED = 64;
 
 /// decode a fixed vector, e.g. [u8;32]
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
-TypeDef _decodeFixedVec(TypeDef value, String type, String _, int count) {
+TypeDef _decodeFixedVec(TypeDef value, String type, String _, [int count = 0]) {
   final subType = type.substring(1, type.length - 1).split(';');
   var vecType = subType[0];
   var strLength = subType[1];
@@ -80,7 +80,7 @@ TypeDef _decodeFixedVec(TypeDef value, String type, String _, int count) {
 }
 
 // decode a tuple
-TypeDef _decodeTuple(TypeDef value, String _, String subType, int count) {
+TypeDef _decodeTuple(TypeDef value, String _, String subType, [int count = 0]) {
   value.sub = subType.length == 0
       ? []
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -95,7 +95,7 @@ TypeDef _decodeTuple(TypeDef value, String _, String subType, int count) {
 /// decode a Int/UInt<bitLength[, name]>
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
 // clazz= 'Int' | 'UInt'
-TypeDef _decodeAnyInt(TypeDef value, String type, String _, [String clazz]) {
+TypeDef _decodeAnyInt(TypeDef value, String type, String _, [String clazz, int count = 0]) {
   final subType = type.substring(clazz.length + 1, type.length - 1).split(',');
   var strLength = subType[0];
   var displayName = subType[1];
@@ -112,15 +112,15 @@ TypeDef _decodeAnyInt(TypeDef value, String type, String _, [String clazz]) {
   return value;
 }
 
-TypeDef _decodeInt(TypeDef value, String type, String subType) {
+TypeDef _decodeInt(TypeDef value, String type, String subType, [int count = 0]) {
   return _decodeAnyInt(value, type, subType, 'Int');
 }
 
-TypeDef _decodeUInt(TypeDef value, String type, String subType) {
+TypeDef _decodeUInt(TypeDef value, String type, String subType, [int count = 0]) {
   return _decodeAnyInt(value, type, subType, 'UInt');
 }
 
-TypeDef _decodeDoNotConstruct(TypeDef value, String type, String _) {
+TypeDef _decodeDoNotConstruct(TypeDef value, String type, String _, [int count = 0]) {
   const NAME_LENGTH = 'DoNotConstruct'.length;
 
   value.displayName = type.substring(NAME_LENGTH + 1, type.length - 1);
@@ -160,7 +160,7 @@ String extractSubType(String type, List wrapper) {
 }
 
 /// eslint-disable-next-line @typescript-eslint/ban-types
-TypeDef getTypeDef(String _type, [TypeDefOptions options, count = 0]) {
+TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
   // create the type via Type, allowing types to be sanitized
   if (options == null) {
     options = TypeDefOptions();
@@ -181,7 +181,6 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, count = 0]) {
 
   if (nested.isNotEmpty) {
     typedefValue.info = nested[2] as TypeDefInfo;
-
     return (nested[3] as Function)(typedefValue, type, extractSubType(type, nested), count);
   }
 

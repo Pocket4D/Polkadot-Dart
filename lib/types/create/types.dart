@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:polkadot_dart/types/primitives/primitives.dart';
+import 'package:polkadot_dart/types/types.dart';
+
 enum TypeDefInfo {
   BTreeMap,
   BTreeSet,
@@ -148,3 +151,42 @@ List<String> typeSplit(String type) {
 
   return result;
 }
+
+Map<String, Constructor> baseTypes = {
+  'BitVec': BitVec.constructor,
+  'bool': CodecBool.constructor,
+  'Bool': CodecBool.constructor,
+  'Bytes': Bytes.constructor,
+  'Data': Bytes.constructor,
+  'DoNotConstruct': DoNotConstruct.constructor,
+  'i8': i8.constructor,
+  'I8': i8.constructor,
+  'i16': i16.constructor,
+  'I16': i16.constructor,
+  'i32': i32.constructor,
+  'I32': i32.constructor,
+  'i64': i64.constructor,
+  'I64': i64.constructor,
+  'i128': i128.constructor,
+  'I128': i128.constructor,
+  'i256': i256.constructor,
+  'I256': i256.constructor,
+  'Null': CodecNull.constructor,
+  'StorageKey': StorageKey.constructor,
+  'Text': CodecText.constructor,
+  'Type': CodecType.constructor,
+  'u8': u8.constructor,
+  'U8': u8.constructor,
+  'u16': u16.constructor,
+  'U16': u16.constructor,
+  'u32': u32.constructor,
+  'U32': u32.constructor,
+  'u64': u64.constructor,
+  'U64': u64.constructor,
+  'u128': u128.constructor,
+  'U128': u128.constructor,
+  'u256': u256.constructor,
+  'U256': u256.constructor,
+  'usize': usize.constructor,
+  'USize': usize.constructor,
+};

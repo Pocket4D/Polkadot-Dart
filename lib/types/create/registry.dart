@@ -2,51 +2,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/codec.dart';
-import 'package:polkadot_dart/types/create/createClass.dart';
+import 'package:polkadot_dart/types/create/createClass.dart' as classCreator;
+import 'package:polkadot_dart/types/create/createTypes.dart' as typesCreator;
+import 'package:polkadot_dart/types/create/types.dart';
+
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/is.dart';
-
-Map<String, Constructor> baseTypes = {
-  'BitVec': BitVec.constructor,
-  'bool': CodecBool.constructor,
-  'Bool': CodecBool.constructor,
-  'Bytes': Bytes.constructor,
-  'Data': Bytes.constructor,
-  'DoNotConstruct': DoNotConstruct.constructor,
-  'i8': i8.constructor,
-  'I8': i8.constructor,
-  'i16': i16.constructor,
-  'I16': i16.constructor,
-  'i32': i32.constructor,
-  'I32': i32.constructor,
-  'i64': i64.constructor,
-  'I64': i64.constructor,
-  'i128': i128.constructor,
-  'I128': i128.constructor,
-  'i256': i256.constructor,
-  'I256': i256.constructor,
-  'Null': CodecNull.constructor,
-  'StorageKey': StorageKey.constructor,
-  'Text': CodecText.constructor,
-  'Type': CodecType.constructor,
-  'u8': u8.constructor,
-  'U8': u8.constructor,
-  'u16': u16.constructor,
-  'U16': u16.constructor,
-  'u32': u32.constructor,
-  'U32': u32.constructor,
-  'u64': u64.constructor,
-  'U64': u64.constructor,
-  'u128': u128.constructor,
-  'U128': u128.constructor,
-  'u256': u256.constructor,
-  'U256': u256.constructor,
-  'usize': usize.constructor,
-  'USize': usize.constructor,
-};
 
 class TypeRegistry implements Registry {
   Map<String, dynamic> _knownDefaults;
@@ -77,14 +41,12 @@ class TypeRegistry implements Registry {
 
   @override
   Constructor<T> createClass<T extends BaseCodec>(String type) {
-    // TODO: implement createClass
-    throw UnimplementedError();
+    return classCreator.createClass(this, type);
   }
 
   @override
   T createType<T extends BaseCodec>(String type, [params]) {
-    // TODO: implement createType
-    throw UnimplementedError();
+    return typesCreator.createType(this, type, params);
   }
 
   @override
@@ -110,7 +72,7 @@ class TypeRegistry implements Registry {
 
       // we have a definition, so create the class now (lazily)
       if (definition != null) {
-        baseType = ClassOf(this, definition);
+        baseType = classCreator.ClassOf(this, definition);
       } else if (withUnknown != null && withUnknown) {
         // l.warn(`Unable to resolve type ${name}, it will fail on construction`);
         this._unknownTypes.putIfAbsent(name, () => true);
@@ -188,7 +150,10 @@ class TypeRegistry implements Registry {
     this._classes = Map<String, Constructor>();
     this._definitions = new Map<String, String>();
     this._unknownTypes = new Map<String, bool>();
+
     // this._knownTypes = {};
+
+    this.register(this._definitions);
     this.register(this._knownDefaults);
     return this;
   }

@@ -23,7 +23,10 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 Constructor<T> createClass<T extends BaseCodec>(Registry registry, String type) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  return getTypeClass<T>(registry, getTypeDef(type));
+  final typeDefResult = getTypeDef(type);
+  final result = getTypeClass<T>(registry, typeDefResult);
+
+  return result;
 }
 
 // ignore: non_constant_identifier_names
