@@ -163,9 +163,18 @@ The `polkadot_dart_test.dart` is the entry of all unit tests, simply run:
 `flutter test test/polkadot_dart_test.dart` 
 
 ### Generate coverage
-```bash
-$ ./scripts/runTest.sh
-```
+1. if on MacOS, install `lcov` first:
+   ```bash
+   brew install lcov
+   ```
+2. if on Linux:
+   ```bash
+   sudo apt install lcov
+   ```
+3. then run:
+   ```bash
+   ./scripts/runTest.sh
+   ```
 
 ### Integration tests
 TODO
