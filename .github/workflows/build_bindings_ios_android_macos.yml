@@ -3,12 +3,12 @@ name: Rust Bindings
 on:
   push:
     branches:
-      - build_linux
+      - rust_bindings
 
 jobs:
   ci:
     name: Compile, Build and Release
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Cache LLVM and Clang
         id: cache-llvm
@@ -35,6 +35,9 @@ jobs:
           override: true
           components: rustfmt
 
+      - name: Install WASM Target
+        run: rustup target add wasm32-unknown-unknown
+
       - name: Cache Cargo
         uses: actions/cache@v2
         with:
@@ -42,7 +45,27 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
+            target/aarch64-linux-android
+            target/armv7-linux-androideabi
+            target/x86_64-linux-android
+            target/i686-linux-android
+            target/aarch64-apple-ios
+            target/x86_64-apple-ios
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Cargo Tools (cbindgen)
+        uses: actions-rs/cargo@v1
+        continue-on-error: true
+        with:
+          command: install
+          args: --force cbindgen
+
+      - name: Install Cargo Tools (lipo)
+        uses: actions-rs/cargo@v1
+        continue-on-error: true
+        with:
+          command: install
+          args: cargo-lipo
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
@@ -60,6 +83,33 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
+      - name: Cache NDK
+        id: cache-ndk
+        uses: actions/cache@v2
+        with:
+          path: /Users/runner/android/ndk-bundle
+          key: ${{ runner.os }}-cached-ndk
+
+      - name: Install Android NDK
+        if: steps.cache-ndk.outputs.cache-hit != 'true'
+        run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager ndk-bundle
+
+      - name: Set Android NDK Env
+        uses: allenevans/set-env@v2.0.0
+        with:
+          ANDROID_NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
+          NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
+
+      - name: Setup Android NDK list
+        run: |
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/aarch64-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/arm-linux-androideabi/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/i686-linux-android/bin:$PATH" >> $GITHUB_PATH
+          echo "$NDK_HOME/toolchains/llvm/prebuild/darwin-x86_64/x86_64-linux-android/bin:$PATH" >> $GITHUB_PATH
+
+      - name: Install Android Targets
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
       - name: Execute cargo test
         run: |
           cd rust
@@ -67,8 +117,9 @@ jobs:
 
       - name: Execute build scripts
         run: |
-          bash ./scripts/clean.sh
-          bash ./scripts/build_linux.sh
+          ./scripts/clean.sh
+          ./scripts/init.sh
+          ./scripts/build.sh
 
       - name: Run binding/crypto tests
         run: flutter test test/crypto/crypto.dart

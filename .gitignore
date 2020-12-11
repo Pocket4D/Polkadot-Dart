@@ -7,7 +7,4 @@ coverage/
 
 build/
 
-# temporarily remove ios build
-ios/*.a
-
 _*.dart

@@ -14,11 +14,12 @@ This library contains a set of crypto libraries and implementations of utils.
       3. [Milestone 3: Awaits](#milestone-3-awaits)
    3. [Manually Build](#manually-build)
       1. [Enviorment Settings](#enviorment-settings)
-      2. [LLVM and clang](#llvm-and-clang)
-      3. [Flutter and Dart](#flutter-and-dart)
-      4. [NDK and Android SDK](#ndk-and-android-sdk)
-      5. [Everything you need for rust](#everything-you-need-for-rust)
-      6. [Build rust lib to `.so` and `.a` manually](#build-rust-lib-to-so-and-a-manually)
+      2. [Read before build](#read-before-build)
+      3. [LLVM and clang](#llvm-and-clang)
+      4. [Flutter and Dart](#flutter-and-dart)
+      5. [NDK and Android SDK](#ndk-and-android-sdk)
+      6. [Everything you need for rust](#everything-you-need-for-rust)
+      7. [Build rust lib to `.so` and `.a` manually](#build-rust-lib-to-so-and-a-manually)
    4. [Testing Guide](#testing-guide)
       1. [Run a single unit test](#run-a-single-unit-test)
       2. [Run all tests](#run-all-tests)
@@ -75,6 +76,13 @@ This library contains a set of crypto libraries and implementations of utils.
 There are a few settings that needed before manually build, here is the guide.
 We will try to make a `.make` file afterwards to simply the process.
 
+### Read before build
+1. There are dynamic libs to be build during the process.
+   
+2. This repository use CI to generate dynamic libs, tests are ensured passed, better not build them yourself.
+
+
+
 ### LLVM and clang
 
 With Macos (because we need to build iOS)
@@ -117,7 +125,7 @@ brew upgrade && brew install llvm
 
    * Install Android and iOS targets:
    ```bash
-   rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android aarch64-apple-ios x86_64-apple-ios x86_64-unknown-linux-gnu
+   rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android aarch64-apple-ios x86_64-apple-ios
    ```
 
 ### Build rust lib to `.so` and `.a` manually  
