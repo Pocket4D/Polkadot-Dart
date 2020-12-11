@@ -9,5 +9,5 @@ if [ "$SYSTEM" = "Darwin" ]
     echo "Opened coverage/index-sort-l.html"
     open coverage/index-sort-l.html
 else
-    echo "Use browser to open coverage/index-sort-l.html"
+    python3 -m webbrowser "coverage/index-sort-l.html"
 fi
