@@ -78,7 +78,6 @@ jobs:
       - name: Execute build scripts
         run: |
           ./scripts/clean.sh
-          ./scripts/init.sh
           ./scripts/build_linux.sh
 
       - name: Run binding/crypto tests
