@@ -64,50 +64,50 @@ String bytesToHex(List<int> bytes, {bool include0x = false}) {
 // BigInt bytesToInt(List<int> bytes) => p_utils.decodeBigInt(bytes);
 BigInt bytesToInt(List<int> bytes) => decodeBigInt(bytes, endian: Endian.big);
 
-/// Converts the given number, either a [int] or a [BigInt] to a list of
-/// bytes representing the same value.
-List<int> numberToBytes(dynamic number) {
-  if (number is BigInt) return encodeBigInt(number, endian: Endian.big);
+// /// Converts the given number, either a [int] or a [BigInt] to a list of
+// /// bytes representing the same value.
+// List<int> numberToBytes(dynamic number) {
+//   if (number is BigInt) return encodeBigInt(number, endian: Endian.big);
 
-  var hexString = numberToHex(number, pad: true);
-  return hex.decode(hexString);
-}
-
-/// wrapper to u8a
-Uint8List numberToU8a(dynamic number) {
-  final listInt = numberToBytes(number);
-  return Uint8List.fromList(listInt);
-}
-
-// List<int> intToBytes(BigInt number) => p_utils.encodeBigInt(number);
-/// big int to bytes
-List<int> bnToBytes(BigInt number, {int length}) {
-  Uint8List bigIntList = encodeBigInt(number);
-  if (length != null && length > bigIntList.length) {
-    var newList = new Int8List(length);
-    newList.setRange(length - bigIntList.length, length, bigIntList);
-    return newList;
-  } else if (length == null) {
-    return bigIntList;
-  } else {
-    throw 'length is to short, should be >= ${bigIntList.length}';
-  }
-}
-
-///Takes the hexadecimal input and creates a BigInt.
-// BigInt hexToBN(String hex) {
-//   return BigInt.parse(strip0xHex(hex), radix: 16);
+//   var hexString = numberToHex(number, pad: true);
+//   return hex.decode(hexString);
 // }
 
-List<String> numberToHexArray(int number, int size) {
-  String hexVal = number.toRadixString(16);
-  List<String> hexRep = List.filled(hexVal.length, '0');
-  List<String> hex = List.filled(size, '0');
-  for (int i = 0; i < hexVal.length; i++) {
-    hexRep[i] = hexVal.substring(i, i + 1);
-  }
-  hex.setRange(size - hexVal.length, size, hexRep);
-  return hex;
-}
+// /// wrapper to u8a
+// Uint8List numberToU8a(dynamic number) {
+//   final listInt = numberToBytes(number);
+//   return Uint8List.fromList(listInt);
+// }
+
+// // List<int> intToBytes(BigInt number) => p_utils.encodeBigInt(number);
+// /// big int to bytes
+// List<int> bnToBytes(BigInt number, {int length}) {
+//   Uint8List bigIntList = encodeBigInt(number);
+//   if (length != null && length > bigIntList.length) {
+//     var newList = new Int8List(length);
+//     newList.setRange(length - bigIntList.length, length, bigIntList);
+//     return newList;
+//   } else if (length == null) {
+//     return bigIntList;
+//   } else {
+//     throw 'length is to short, should be >= ${bigIntList.length}';
+//   }
+// }
+
+// ///Takes the hexadecimal input and creates a BigInt.
+// // BigInt hexToBN(String hex) {
+// //   return BigInt.parse(strip0xHex(hex), radix: 16);
+// // }
+
+// List<String> numberToHexArray(int number, int size) {
+//   String hexVal = number.toRadixString(16);
+//   List<String> hexRep = List.filled(hexVal.length, '0');
+//   List<String> hex = List.filled(size, '0');
+//   for (int i = 0; i < hexVal.length; i++) {
+//     hexRep[i] = hexVal.substring(i, i + 1);
+//   }
+//   hex.setRange(size - hexVal.length, size, hexRep);
+//   return hex;
+// }
 
 num log2(num x) => math.log(x) / math.log(2);

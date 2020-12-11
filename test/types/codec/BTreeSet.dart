@@ -82,7 +82,6 @@ void btreeSetTest() {
     test('decodes within more complicated types', () {
       final s = Struct(registry,
           {"placeholder": u32.constructor, "value": BTreeSet.withParams(u32.constructor)});
-      print(s);
 
       s.put('value', BTreeSet(registry, u32.constructor, mockU32Set));
       expect(s.toString(), '{"placeholder":0,"value":[2,24,30,80]}');

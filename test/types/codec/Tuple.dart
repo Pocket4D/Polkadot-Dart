@@ -31,13 +31,13 @@ void tupleTest() {
       expect((new Tuple(registry, [CodecText.constructor], [foo])).value[0], foo);
     });
 
-    // test('decodes properly from complex types', () {
-    //   const INPUT = '0xcc0200000000';
-    //   const test = registry.createType('(u32, [u32; 0], u16)' as 'u32', INPUT);
+    test('decodes properly from complex types', () {
+      const INPUT = '0xcc0200000000';
+      final test = registry.createType('(u32, [u32; 0], u16)', INPUT);
 
-    //   expect(test.encodedLength).toEqual(4 + 0 + 2);
-    //   expect(test.toHex()).toEqual(INPUT);
-    // });
+      expect(test.encodedLength, 4 + 0 + 2);
+      expect(test.toHex(), INPUT);
+    });
   });
   group('encoding', () {
     testEncode(String to, dynamic expected) {
@@ -66,10 +66,10 @@ void tupleTest() {
     testEncode('toU8a', Uint8List.fromList([28, 98, 97, 122, 122, 105, 110, 103, 69, 0, 0, 0]));
     testEncode('toString', '["bazzing",69]');
   });
-  // test('creates from string types', () {
-  //   expect(new Tuple(registry, ['Text', 'u32', u32.constructor], ['foo', 69, 42]).toString(),
-  //       '["foo",69,42]');
-  // });
+  test('creates from string types', () {
+    expect(new Tuple(registry, ['Text', 'u32', u32.constructor], ['foo', 69, 42]).toString(),
+        '["foo",69,42]');
+  });
   // test('creates properly via actual hex string', () {
   //   const metadata = new Metadata(registry, rpcMetadata);
 

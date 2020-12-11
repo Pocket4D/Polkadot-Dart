@@ -77,6 +77,7 @@ TypeDef _decodeFixedVec(TypeDef value, String type, String _, [int count = 0]) {
   var vecType = subType[0];
   var strLength = subType[1];
   var displayName = subType.length > 2 ? subType[2] : null;
+
   final length = int.parse(strLength.trim(), radix: 10);
 
   // as a first round, only u8 via u8aFixed, we can add more support
@@ -182,7 +183,6 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
     "name": options.name,
     "type": type
   });
-
   assert(++count != MAX_NESTED, 'getTypeDef: Maximum nested limit reached');
 
   final nested = nestedExtraction.singleWhere((val) {

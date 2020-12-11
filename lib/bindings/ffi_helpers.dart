@@ -10,7 +10,7 @@ final dylib = Platform.isAndroid
         : Platform.isMacOS
             ? DynamicLibrary.open("macos/libpolkadot_dart.dylib")
             : Platform.isLinux
-                ? DynamicLibrary.open("linux/libpolkadot_dart.dylib")
+                ? DynamicLibrary.open("linux/libpolkadot_dart.so")
                 : Platform.isWindows
                     ? DynamicLibrary.open("windows/libpolkadot_dart.dll")
                     : DynamicLibrary.open("rust/target/debug/libpolkadot_dart.dylib");

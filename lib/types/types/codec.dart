@@ -22,7 +22,7 @@ abstract class BaseCodec {
   Registry registry;
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]);
+  bool eq(dynamic other);
 
   /// @description Returns a hex string representation of the value. isLe returns a LE(number-only) representation
   String toHex([bool isLe]);

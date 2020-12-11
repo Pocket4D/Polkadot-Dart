@@ -107,11 +107,13 @@ void uintTest() {
       expect((UInt.withParams(64, 'SomethingElse'))(registry).toRawType(), 'SomethingElse');
     });
 
-    // test('has proper toHuman() for PerMill/PerBill/Percent/Balance', () {
-    //   expect(registry.createType('Perbill', 12340000).toHuman(), '1.23%');
-    //   expect(registry.createType('Percent', 12).toHuman(), '12.00%');
-    //   expect(registry.createType('Permill', 16900).toHuman(), '1.69%');
-    //   expect(registry.createType('Balance', '123456789012345').toHuman(), '123.4567 Unit');
-    // });
+    test('has proper toHuman() for PerMill/PerBill/Percent/Balance', () {
+      BalanceFormatter.instance
+          .setDefaults(Defaults(decimals: 0, unit: SI[SI_MID]["text"] as String));
+      expect(registry.createType('Perbill', 12340000).toHuman(), '1.23%');
+      expect(registry.createType('Percent', 12).toHuman(), '12.00%');
+      expect(registry.createType('Permill', 16900).toHuman(), '1.69%');
+      expect(registry.createType('Balance', '123456789012345').toHuman(), '123.4567 Unit');
+    });
   });
 }

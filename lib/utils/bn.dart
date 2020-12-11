@@ -4,19 +4,42 @@ import 'package:polkadot_dart/polkadot_dart.dart';
 import 'package:polkadot_dart/utils/number.dart';
 
 BigInt bnToBn(dynamic value) {
-  if (value == null) {
-    return BigInt.zero;
+  try {
+    if (value == null) {
+      return BigInt.zero;
+    }
+    BigInt result;
+    if (value is BigInt) {
+      return value;
+    } else if (value is int) {
+      return BigInt.from(value);
+    } else if (isHex(value)) {
+      return hexToBn(value.toString());
+    } else if (value is Map<String, dynamic>) {
+      return compactToBn(value);
+    } else if (value is String && !isHex(value)) {
+      result = BigInt.tryParse(value, radix: 10);
+    }
+    if (result != null) {
+      return result;
+    }
+    throw "failed converting:'$value' to BigInt";
+  } catch (e) {
+    throw "$e";
+  }
+}
+
+BigInt compactToBn(Map<String, dynamic> value) {
+  var toBnTrue = value.containsKey("toBn") && isFunction(value['toBn']);
+  var toBigIntTrue = value.containsKey("toBigInt") && isFunction(value['toBigInt']);
+  if (toBnTrue && !toBigIntTrue) {
+    return (value["toBn"] as Function).call();
+  }
+  if (!toBnTrue && toBigIntTrue) {
+    return (value["toBigInt"] as Function).call();
   }
 
-  if (value is BigInt) {
-    return value;
-  } else if (value is num) {
-    return BigInt.from(value);
-  } else if (value is String) {
-    return BigInt.parse(value, radix: 16);
-  }
-
-  throw Exception(" bnToBn " + value);
+  throw "toBn or toBigInt function not found";
 }
 
 BigInt bitnot(BigInt bn, {int bitLength}) {

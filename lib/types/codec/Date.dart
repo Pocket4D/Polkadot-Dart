@@ -49,7 +49,7 @@ class CodecDate extends BaseCodec implements CompactEncodable {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     return CodecDate.decodeDate(other).millisecondsSinceEpoch == this._value.millisecondsSinceEpoch;
   }
 

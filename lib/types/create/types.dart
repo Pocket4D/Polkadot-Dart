@@ -45,16 +45,34 @@ class TypeDef {
       this.namespace,
       this.sub,
       this.type});
-  factory TypeDef.fromMap(Map<String, dynamic> map) => TypeDef(
-      alias: map["alias"],
-      info: map["info"],
-      index: map["index"],
-      displayName: map["displayName"],
-      length: map["length"],
-      name: map["name"],
-      namespace: map["namespace"],
-      sub: map["sub"],
-      type: map["type"]);
+  factory TypeDef.fromMap(Map<String, dynamic> map) {
+    var sub;
+    var mapSub = map["sub"];
+    if (mapSub is Map<String, dynamic>) {
+      sub = TypeDef.fromMap(map["sub"]);
+    } else if (mapSub is List) {
+      sub = mapSub.map((e) {
+        if (e is Map<String, dynamic>) {
+          return TypeDef.fromMap(e);
+        } else if (e is TypeDef) {
+          return e;
+        }
+      }).toList();
+    } else if (mapSub is TypeDef) {
+      sub = mapSub;
+    }
+
+    return TypeDef(
+        alias: map["alias"],
+        info: map["info"],
+        index: map["index"],
+        displayName: map["displayName"],
+        length: map["length"],
+        name: map["name"],
+        namespace: map["namespace"],
+        sub: sub,
+        type: map["type"]);
+  }
 
   Map<String, dynamic> toMap() {
     var subMap;
@@ -62,18 +80,21 @@ class TypeDef {
       subMap = this.sub.toMap();
     } else if (this.sub is List<TypeDef>) {
       subMap = this.sub.map((e) => e.toMap()).toList();
+    } else {
+      subMap = this.sub;
     }
     // TODO: implement toString
-    return {
+    return removeNull({
       "alias": this.alias,
       "info": this.info,
       "index": this.index,
+      "name": this.name,
       'displayName': this.displayName,
       "length": this.length,
       "namespace": this.namespace,
       "sub": subMap,
       "type": this.type
-    };
+    });
   }
 
   removeNull(Map<String, dynamic> map) {

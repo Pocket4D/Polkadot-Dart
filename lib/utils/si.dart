@@ -1,6 +1,6 @@
 const SI_MID = 8;
 // ignore: non_constant_identifier_names
-final SI = [
+const SI = [
   {"power": -24, "text": 'yocto', "value": 'y'},
   {"power": -21, "text": 'zepto', "value": 'z'},
   {"power": -18, "text": 'atto', "value": 'a'},

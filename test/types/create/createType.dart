@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polkadot_dart/types/codec/Int.dart';
+import 'package:polkadot_dart/types/codec/Set.dart';
+import 'package:polkadot_dart/types/codec/Uint.dart';
+import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart';
-import 'package:polkadot_dart/types/types.dart';
-import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/types/create/registry.dart';
 
 import '../../testUtils/throws.dart';
 

@@ -11,6 +11,7 @@ import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
 import 'package:polkadot_dart/types/types/registry.dart';
+import 'package:polkadot_dart/utils/format.dart';
 import 'package:polkadot_dart/utils/is.dart';
 
 class TypeRegistry implements Registry {
@@ -35,7 +36,12 @@ class TypeRegistry implements Registry {
 
   @override
   // TODO: implement chainDecimals
-  int get chainDecimals => throw UnimplementedError();
+  int get chainDecimals {
+    // return this.#chainProperties?.tokenDecimals.isSome
+    //   ? this.#chainProperties.tokenDecimals.unwrap().toNumber()
+    //   : 12;
+    return 12;
+  }
 
   @override
   // TODO: implement chainSS58
@@ -43,7 +49,12 @@ class TypeRegistry implements Registry {
 
   @override
   // TODO: implement chainToken
-  String get chainToken => throw UnimplementedError();
+  String get chainToken {
+    // return this.#chainProperties?.tokenSymbol.isSome
+    //   ? this.#chainProperties.tokenSymbol.unwrap().toString()
+    //   : formatBalance.getDefaults().unit;
+    return BalanceFormatter.instance.getDefaults().unit;
+  }
 
   @override
   Constructor<T> createClass<T extends BaseCodec>(String type) {
@@ -169,6 +180,8 @@ class TypeRegistry implements Registry {
     this._knownDefinitions.values.forEach((defs) {
       this.register(Map<String, dynamic>.from(defs["types"]));
     });
+    // load balanceFormatter
+    BalanceFormatter();
     return this;
   }
 

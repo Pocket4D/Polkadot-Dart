@@ -117,7 +117,7 @@ brew upgrade && brew install llvm
 
    * Install Android and iOS targets:
    ```bash
-   rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android aarch64-apple-ios x86_64-apple-ios
+   rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android aarch64-apple-ios x86_64-apple-ios x86_64-unknown-linux-gnu
    ```
 
 ### Build rust lib to `.so` and `.a` manually  
@@ -128,8 +128,8 @@ brew upgrade && brew install llvm
 2. You can locate files in the android and ios folder.
    * Android: `android/src/main/jniLibs/`
    * iOS:  `ios`
-   * MacOS: `macos` (**Caution: for testing dart vm only**)
-   * Linux: `linux` (**Caution: for testing dart vm only**)
+   * MacOS: `macos` (**Caution: Build it on macos only**)
+   * Linux: `linux` (**Caution: Build it on linux only**)
    * Windows: `windows` (unavailable for now)
 
 ---

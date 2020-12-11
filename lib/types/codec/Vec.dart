@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:polkadot_dart/types/codec/abstract_array.dart';
 import 'package:polkadot_dart/types/codec/utils.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
@@ -42,7 +44,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
       }).toList();
     }
 
-    final u8a = u8aToU8a(List<int>.from(value));
+    final u8a = u8aToU8a(value is Uint8List ? List<int>.from(value) : value);
 
     final compact = compactFromU8a(u8a);
 

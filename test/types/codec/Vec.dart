@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polkadot_dart/types/create/createTypes.dart';
 import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
@@ -82,13 +83,13 @@ void vecTest() {
     // //   expect((first[1] as AccountId).toString(),'5GoKvZWG5ZPYL1WUovuHW3zJBWBP5eT8CbqjdRY4Q6iMaQua');
     // // });
 
-    // // test('decodes a complex type via construction', () {
-    // //   final INPUT = '0x08cc0200000000ce0200000001';
-    // //   final test = createTypeUnsafe(registry, 'Vec<(u32, [u32; 0], u16)>' as any, [INPUT]);
+    test('decodes a complex type via construction', () {
+      final INPUT = '0x08cc0200000000ce0200000001';
+      final test = createTypeUnsafe(registry, 'Vec<(u32, [u32; 0], u16)>', [INPUT]);
 
-    // //   expect((test as Vec<any>).length,2);
-    // //   expect(test.toHex(),INPUT);
-    // // });
+      expect((test as Vec).length, 2);
+      expect(test.toHex(), INPUT);
+    });
 
     group('vector-like functions', () {
       test('allows retrieval of a specific item', () {

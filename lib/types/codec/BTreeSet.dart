@@ -118,7 +118,7 @@ class BTreeSet<V extends BaseCodec> extends BaseCodec {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     return compareSet(this._value, other);
   }
 

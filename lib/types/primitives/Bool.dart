@@ -9,8 +9,12 @@ bool _decodeBool(dynamic value) {
     return value;
   } else if (isU8a(value)) {
     return value[0] == 1;
+  } else if (value is CodecBool) {
+    return value.value;
+  } else if (value is num) {
+    return value.toInt() == 1;
   }
-  return !!value;
+  return false;
 }
 
 class CodecBool extends BaseCodec {
@@ -38,22 +42,22 @@ class CodecBool extends BaseCodec {
 
   /// @description Checks if the value is an empty value(true when it wraps false/default)
   bool get isEmpty {
-    return this._value == null;
+    return this.isFalse || this._value == null;
   }
 
   /// @description Checks if the value is an empty value(always false)
   bool get isFalse {
-    return this._value;
+    return this._value == false;
   }
 
   /// @description Checks if the value is an empty value(always false)
   bool get isTrue {
-    return this._value;
+    return this._value == true;
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
-    return this._value == other;
+  bool eq(dynamic other) {
+    return other is CodecBool ? this._value == other.value : this._value == other;
   }
 
   /// @description Returns a hex string representation of the value

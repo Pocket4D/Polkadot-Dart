@@ -1,5 +1,6 @@
 import 'bn.dart';
 import 'compact.dart';
+import 'extension.dart';
 import 'format.dart';
 import 'hex.dart';
 import 'is.dart';
@@ -11,7 +12,7 @@ void main() {
   //---- utils
   bnTest();
   compactTest();
-  // extensionTest();
+  extensionTest();
   formatTest();
   hexTest();
   isTest();

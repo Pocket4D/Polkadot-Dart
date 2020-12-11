@@ -219,7 +219,7 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     // cater for the case where we only pass the enum index
     if (isNumber(other)) {
       return this.toNumber() == other;

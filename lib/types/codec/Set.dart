@@ -138,7 +138,7 @@ class CodecSet extends BaseCodec {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     if ((other is List)) {
       // we don't actually care about the order, sort the values
       var sorted = this.strings;

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/utils/format.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 void main() {
   formatTest();
@@ -78,10 +79,12 @@ void formatTest() {
           '12,345.6789 Unit'); // 12,345.6789 Unit
       expect(BalanceFormatter.instance.formatBalance(testVal, option8, 15),
           '123.4567 µ🔥'); // 123.4567 µ🔥
+
       BalanceFormatter.instance.setDefaults(Defaults(decimals: 0, unit: 'TEST'));
       expect(BalanceFormatter.instance.getOptions()[0]["text"],
           "TEST"); // [{power: 0, text: TEST, value: -},...]
-      // print("\n");
+      BalanceFormatter.instance
+          .setDefaults(Defaults(decimals: 0, unit: SI[SI_MID]["text"] as String));
     } catch (e) {
       throw "format Error: $e";
     }

@@ -77,7 +77,7 @@ class CodecText extends BaseCodec {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     var compare = other;
     if (other is CodecText) {
       compare = other.value;

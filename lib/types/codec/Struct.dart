@@ -188,7 +188,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     return compareMap(this.toJSON(), other is Struct ? other.toJSON() : other);
   }
 

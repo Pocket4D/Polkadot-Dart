@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
+import 'package:polkadot_dart/utils/is.dart';
 
 class CodecNull extends BaseCodec {
   Registry registry;
@@ -30,7 +31,8 @@ class CodecNull extends BaseCodec {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  @override
+  bool eq(dynamic other) {
     return other is CodecNull || (other == null);
   }
 

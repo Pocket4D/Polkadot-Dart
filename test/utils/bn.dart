@@ -47,6 +47,10 @@ void bnTest() {
         u8aEq(bnToU8a(BigInt.from(-1234), bitLength: 32, isNegative: true),
             Uint8List.fromList([46, 251, 255, 255])),
         true); // [46, 251, 255, 255] -- different from [46,251,255,255]
+    expect(
+        u8aEq(bnToU8a(BigInt.from(1234), bitLength: 32, isNegative: true),
+            Uint8List.fromList([46, 251, 255, 255])),
+        true);
     // print("\n");
   });
 
@@ -61,5 +65,45 @@ void bnTest() {
 
   test('bnSqrt', () {
     expect(bnSqrt(BigInt.from(16)), BigInt.from(4)); // 4
+  });
+  group('bnToBn', () {
+    test('converts null values to 0x00', () {
+      expect(bnToBn(null).toInt(), 0);
+    });
+
+    test('converts BN values to BN', () {
+      expect(bnToBn(BigInt.from(128)).toInt(), 128);
+    });
+
+    test('converts BigInt values to BN', () {
+      expect(bnToBn(BigInt.from(128821)).toInt(), 128821);
+    });
+
+    test('converts number values to BN', () {
+      expect(bnToBn(128).toInt(), 128);
+    });
+
+    test('converts string to BN', () {
+      expect(bnToBn('123').toInt(), 123);
+    });
+
+    test('converts hex to BN', () {
+      expect(bnToBn('0x0123').toInt(), 0x123);
+    });
+
+    test('converts Compact to BN', () {
+      expect(bnToBn({"something": 'test', "toBn": () => BigInt.from(1234)}).toInt(), 1234);
+    });
+    test('constants', () {
+      expect(bnZero.toInt(), 0);
+      expect(bnOne.toInt(), 1);
+      expect(bnTen.toInt(), 10);
+      expect(bnHundred.toInt(), 100);
+      expect(bnThrousand.toInt(), 1000);
+    });
+    test('throws error', () {
+      expect(() => bnToBn("throws this"),
+          throwsA(contains("failed converting:'throws this' to BigInt")));
+    });
   });
 }

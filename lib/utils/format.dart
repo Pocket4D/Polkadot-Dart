@@ -91,7 +91,7 @@ class BalanceFormatter implements Formatter {
   dynamic defaultUnit;
   List<Map<String, Object>> si;
   static BalanceFormatter _instance;
-  static get instance => _instance;
+  static BalanceFormatter get instance => _instance;
   factory BalanceFormatter({Defaults defaults}) =>
       _getInstance(defaults: defaults ?? Defaults(decimals: 0, unit: SI[SI_MID]["text"] as String));
   static _getInstance({Defaults defaults}) {
@@ -177,7 +177,14 @@ class BalanceFormatter implements Formatter {
   }
 
   Defaults getDefaults() {
-    return Defaults(decimals: defaultDecimals, unit: defaultUnit, si: SI);
+    var newList = List<Map<String, Object>>(SI.length);
+    for (var i = 0; i < SI.length; i += 1) {
+      newList[i] = Map<String, Object>();
+      SI[i].forEach((key, value) {
+        newList[i].addEntries([MapEntry(key, value)]);
+      });
+    }
+    return Defaults(decimals: defaultDecimals, unit: defaultUnit, si: newList);
   }
 
   List<Map<String, Object>> getOptions([int decimals]) {
@@ -188,9 +195,16 @@ class BalanceFormatter implements Formatter {
   }
 
   void setDefaults(Defaults defaults) {
+    var newList = List<Map<String, Object>>(SI.length);
+    for (var i = 0; i < SI.length; i += 1) {
+      newList[i] = Map<String, Object>();
+      SI[i].forEach((key, value) {
+        newList[i].addEntries([MapEntry(key, value)]);
+      });
+    }
     defaultDecimals = defaults.decimals ?? defaultDecimals;
     defaultUnit = defaults.unit ?? defaultUnit;
-    si = defaults.si ?? SI;
+    si = defaults.si ?? newList;
     si[SI_MID]["text"] = defaultUnit;
   }
 }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source ./scripts/variables.sh
 
@@ -12,7 +12,11 @@ for i in "${IOS_ARCHS[@]}";
   do rustup target add "$i";
 done
 
-cargo install cargo-lipo && cargo install cbindgen --force
+# for i in "${LINUX_ARCHS[@]}";
+#   do rustup target add "$i";
+# done
+
+# cargo install cargo-lipo && cargo install cbindgen --force
 
 
 

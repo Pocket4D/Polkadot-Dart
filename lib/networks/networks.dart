@@ -304,6 +304,15 @@ final all = [
     "website": 'https://nodle.io/'
   },
   {
+    "prefix": 38,
+    "network": "kilt",
+    "displayName": "KILT Chain",
+    "symbols": ["KILT"],
+    "decimals": [18],
+    "standardAccount": "*25519",
+    "website": "https://kilt.io/"
+  },
+  {
     "decimals": [18],
     "displayName": 'MathChain mainnet',
     "network": 'mathchain',
@@ -320,6 +329,15 @@ final all = [
     "standardAccount": '*25519',
     "symbols": ['MATH'],
     "website": 'https://mathwallet.org'
+  },
+  {
+    "prefix": 41,
+    "network": "poli",
+    "displayName": "Polimec Chain",
+    "symbols": null,
+    "decimals": null,
+    "standardAccount": "*25519",
+    "website": "https://polimec.io/"
   },
   {
     "decimals": null,

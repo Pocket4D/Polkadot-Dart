@@ -28,21 +28,24 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
       ? _types.toList()
       : (_types as Map<String, Constructor>).values.toList();
 
-  final List<BaseCodec> result = types.map<BaseCodec>((type) {
-    var index = types.indexOf(type);
-    try {
-      var entry = value != null ? value[index] : null;
+  List<BaseCodec> resultList = List<BaseCodec>(types.length);
+  if (types.length >= 1) {
+    for (var i = 0; i < types.length; i += 1) {
+      var type = types[i];
+      try {
+        var entry = value != null ? value[i] : null;
 
-      if (entry is BaseCodec) {
-        return entry;
+        if (entry is BaseCodec) {
+          resultList[i] = entry;
+        }
+
+        resultList[i] = type(registry, entry);
+      } catch (error) {
+        throw "Tuple: failed on $i:: $error";
       }
-
-      return type(registry, entry);
-    } catch (error) {
-      throw "Tuple: failed on $index:: $error";
     }
-  }).toList();
-  return result;
+  }
+  return resultList;
 }
 
 Tuple Function(Registry, [dynamic]) tupleWith(dynamic types) {

@@ -27,7 +27,7 @@ Uint8List _decodeBytesU8a(Uint8List value) {
 
 // /** @internal */
 dynamic _decodeBytes([dynamic value]) {
-  if ((value is List) || isString(value)) {
+  if ((value is List && !isU8a(value)) || isString(value)) {
     return u8aToU8a(value);
   } else if (!(value is Raw) && isU8a(value)) {
     // We are ensuring we are not a Raw instance. In the case of a Raw we already have gotten

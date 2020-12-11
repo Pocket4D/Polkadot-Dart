@@ -39,7 +39,7 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     return compareArray(this._values, other);
   }
 

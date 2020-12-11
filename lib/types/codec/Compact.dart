@@ -68,7 +68,7 @@ class Compact<T extends CompactEncodable> extends BaseCodec implements ICompact<
   }
 
   /// @description Compares the value of the input to see if there is a match
-  bool eq([dynamic other]) {
+  bool eq(dynamic other) {
     return this._raw.eq(other is Compact ? other._raw : other);
   }
 

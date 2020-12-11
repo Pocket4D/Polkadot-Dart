@@ -29,7 +29,7 @@ List<dynamic> _decodeDataU8a(Registry registry, Uint8List value) {
 
 /// @internal */
 List<dynamic> _decodeData(Registry registry, [dynamic value]) {
-  if (!value) {
+  if (value == null) {
     return [null, null];
   } else if (isU8a(value) || isString(value)) {
     return _decodeDataU8a(registry, u8aToU8a(value));

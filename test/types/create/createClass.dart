@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
+import 'package:polkadot_dart/types/create/registry.dart';
 import 'package:polkadot_dart/types/create/types.dart';
-import 'package:polkadot_dart/types/types.dart';
+
 // import 'package:polkadot_dart/utils/utils.dart'; // use extendsion methods for fast data format converting
 
 void main() {
@@ -22,17 +23,15 @@ void createClassTest() {
       final a = createClass(registry, 'Vec<u8>');
       final b = createClass(registry, 'Bytes');
       expect(a.runtimeType, b.runtimeType);
-      // expect(A(registry).runtimeType == B(registry).runtimeType, true);
     });
-  });
+    group('getTypeClass', () {
+      final registry = new TypeRegistry();
 
-  group('getTypeClass', () {
-    final registry = new TypeRegistry();
-
-    test('warns on invalid types', () {
-      final typeDef = TypeDef.fromMap({"info": TypeDefInfo.Plain, "type": 'ABC'});
-      var result = getTypeClass(registry, typeDef);
-      print(result);
+      test('warns on invalid types', () {
+        final typeDef = TypeDef.fromMap({"info": TypeDefInfo.Plain, "type": 'ABC'});
+        var result = getTypeClass(registry, typeDef);
+        print("⚠️: TODO: $result");
+      });
     });
   });
 }
