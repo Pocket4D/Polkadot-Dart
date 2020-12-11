@@ -1,4 +1,4 @@
-name: Rust Bindings
+name: Rust Bindings for ios android and mac
 
 on:
   push:
