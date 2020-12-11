@@ -85,7 +85,7 @@ jobs:
         id: cache-ndk
         uses: actions/cache@v2
         with:
-          path: /Users/runner/android/ndk-bundle
+          path: ${ANDROID_SDK_ROOT}/ndk-bundle
           key: ${{ runner.os }}-cached-ndk
 
       - name: Install Android NDK
@@ -95,8 +95,8 @@ jobs:
       - name: Set Android NDK Env
         uses: allenevans/set-env@v2.0.0
         with:
-          ANDROID_NDK_HOME: '/Users/runner/android/ndk-bundle'
-          NDK_HOME: '/Users/runner/android/ndk-bundle'
+          ANDROID_NDK_HOME: '/usr/local/lib/android/sdk/ndk-bundle'
+          NDK_HOME: '/usr/local/lib/android/sdk/ndk-bundle'
 
       - name: Setup Android NDK list
         run: |
