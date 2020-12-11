@@ -23,10 +23,9 @@ This library contains a set of crypto libraries and implementations of utils.
    4. [Testing Guide](#testing-guide)
       1. [Run a single unit test](#run-a-single-unit-test)
       2. [Run all tests](#run-all-tests)
-      3. [Coverage and null-safe tests](#coverage-and-null-safe-tests)
+      3. [Generate coverage](#generate-coverage)
       4. [Integration tests](#integration-tests)
       5. [Mobile phone tests example](#mobile-phone-tests-example)
-      6. [Generate coverage](#generate-coverage)
 
 ---
 ## Status
@@ -163,8 +162,10 @@ The `polkadot_dart_test.dart` is the entry of all unit tests, simply run:
 
 `flutter test test/polkadot_dart_test.dart` 
 
-### Coverage and null-safe tests
-TODO
+### Generate coverage
+```bash
+$ ./scripts/runTest.sh
+```
 
 ### Integration tests
 TODO
@@ -173,10 +174,7 @@ TODO
 Later
 
 
-### Generate coverage
-```bash
-$ ./scripts/runTest.sh
-```
+
 
 
 
