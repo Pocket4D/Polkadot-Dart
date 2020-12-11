@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # source ./scripts/variables.sh
 
@@ -71,8 +71,8 @@ if [ "$SYSTEM" = "Darwin" ]
     sh ./scripts/build_macos.sh 
 elif [ "$SYSTEM" = "Linux" ]
   then
-    sh ./scripts/build_android.sh
-    sh ./scripts/build_linux.sh
+    bash ./scripts/build_android.sh
+    bash ./scripts/build_linux.sh
 fi
 
 
