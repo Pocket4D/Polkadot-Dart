@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Change this name to the rust library name
 LIB_NAME=polkadot_dart
