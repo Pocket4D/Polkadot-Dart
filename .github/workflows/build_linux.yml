@@ -95,8 +95,8 @@ jobs:
       - name: Set Android NDK Env
         uses: allenevans/set-env@v2.0.0
         with:
-          ANDROID_NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
-          NDK_HOME: '/Users/runner/Library/Android/sdk/ndk-bundle'
+          ANDROID_NDK_HOME: '/Users/runner/android/ndk-bundle'
+          NDK_HOME: '/Users/runner/android/ndk-bundle'
 
       - name: Setup Android NDK list
         run: |
