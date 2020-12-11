@@ -35,9 +35,6 @@ jobs:
           override: true
           components: rustfmt
 
-      - name: Install WASM Target
-        run: rustup target add wasm32-unknown-unknown
-
       - name: Cache Cargo
         uses: actions/cache@v2
         with:
@@ -46,13 +43,6 @@ jobs:
             ~/.cargo/git
             ~/.cargo/bin
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Install Cargo Tools (cbindgen)
-        uses: actions-rs/cargo@v1
-        continue-on-error: true
-        with:
-          command: install
-          args: --force cbindgen
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
@@ -82,3 +72,17 @@ jobs:
 
       - name: Run binding/crypto tests
         run: flutter test test/crypto/crypto.dart
+
+      - name: Commit files
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          remote_repo="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git remote add origin "${remote_repo}"
+          git commit -m "build bindings for linux" -a
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
