@@ -17,6 +17,7 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
     // The key in the JSON can be snake_case (or other cases), but in our
     // Types, result or any other maps, it's camelCase
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     final index = keys.indexOf(key);
 
     final jsonKey = (jsonMap[key] != null && value[key] == null) ? jsonMap[key] : key;
@@ -120,11 +121,14 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<dynamic, String> _jsonMap;
   Map<String, Constructor<BaseCodec>> _types;
   // List<String> _keys;
-  Struct(Registry registry, S types, [dynamic value = const {}, Map<dynamic, String> jsonMap]) {
+  Struct(Registry registry, S types,
+      [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap]) {
     if (jsonMap == null) {
       jsonMap = Map<dynamic, String>();
     }
-
+    if (value == "___defaultEmpty") {
+      value = {};
+    }
     final decoded = decodeStruct(registry, mapToTypeMap(registry, types), value, jsonMap);
 
     _value = Map<dynamic, BaseCodec>.fromEntries(decoded.entries);
@@ -141,22 +145,29 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
 
   static Constructor<Struct> withParams<S extends Map<String, dynamic>>(S types,
       [Map<dynamic, String> jsonMap]) {
-    return (Registry registry, [dynamic value]) {
+    return (Registry registry, [dynamic value = "___defaultEmpty"]) {
+      if (value == "___defaultEmpty") {
+        value = {};
+      }
       return Struct(registry, types, value, jsonMap);
     };
   }
 
   static Struct
       constructor<S extends Map<String, dynamic>, V extends Map, E extends Map<dynamic, String>>(
-              Registry registry,
-              [dynamic types,
-              dynamic value,
-              Map<dynamic, String> jsonMap]) =>
-          Struct(registry, types as S, value, jsonMap);
+          Registry registry,
+          [dynamic types,
+          dynamic value = "___defaultEmpty",
+          Map<dynamic, String> jsonMap]) {
+    if (value == "___defaultEmpty") {
+      value = {};
+    }
+    return Struct(registry, types as S, value, jsonMap);
+  }
 
   /// @description The available keys for this enum
   List<String> get defKeys {
-    return this._types.keys;
+    return this._types.keys.toList();
   }
 
   /// @description Checks if the value is an empty value

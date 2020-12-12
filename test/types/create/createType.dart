@@ -19,15 +19,17 @@ void createTypeTest() {
     final registry = new TypeRegistry();
 
     test('allows creation of a H256 (with proper toRawType)', () {
-      expect(registry.createType('H256').toRawType(), 'H256');
+      final h256 = registry.createType('H256');
+      expect(h256.runtimeType.toString(), "U8aFixed");
+      expect(h256.toRawType(), 'H256');
       expect(registry.createType('Hash').toRawType(), 'H256');
     });
 
     test('allows creation of a Fixed64 (with proper toRawType & instance)', () {
-      final f64 = registry.createType('Fixed64');
+      final f64 = registry.createType<CodecInt>('Fixed64');
       expect(f64.toRawType(), 'Fixed64');
-      expect((f64 as CodecInt).bitLength, 64);
-      expect((f64 as CodecInt).isUnsigned, false);
+      expect(f64.bitLength, 64);
+      expect(f64.isUnsigned, false);
       expect(f64 is CodecInt, true);
     });
 
@@ -101,6 +103,7 @@ void createTypeTest() {
     });
 
     test('fails on creation of DoNotConstruct', () {
+      // ignore: non_constant_identifier_names
       final Clazz = createClass(registry, 'DoNotConstruct<UnknownSomething>');
       expect(() => Clazz(registry), throwsA(contains('Cannot construct unknown type')));
     });
@@ -131,6 +134,7 @@ void createTypeTest() {
 
       test('instanceof should work (srml type)', () {
         final value = registry.createType('Gas', 1234);
+        // ignore: non_constant_identifier_names
         final Gas = registry.createClass('Gas')(registry);
 
         expect(value.toRawType() == Gas.toRawType(), true);
@@ -173,33 +177,33 @@ void createTypeTest() {
         expect((balu32 as UInt).bitLength, 32);
       });
 
-      test('allows for re-registration of a type (affecting derives)', () {
-        registry.register({
-          "Balance": 'u128',
-          "TestComplex": {
-            "balance": 'Balance',
-            // eslint-disable-next-line sort-keys
-            "accountId": 'AccountId',
-            "log": '(u64, u32)',
-            // eslint-disable-next-line sort-keys
-            "fromSrml": 'Gas'
-          }
-        });
+      // test('allows for re-registration of a type (affecting derives)', () {
+      //   registry.register({
+      //     "Balance": 'u128',
+      //     "TestComplex": {
+      //       "balance": 'Balance',
+      //       // eslint-disable-next-line sort-keys
+      //       "accountId": 'AccountId',
+      //       "log": '(u64, u32)',
+      //       // eslint-disable-next-line sort-keys
+      //       "fromSrml": 'Gas'
+      //     }
+      //   });
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        final cmpDef = createTypeUnsafe(registry, 'TestComplex');
+      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      //   final cmpDef = createTypeUnsafe(registry, 'TestComplex');
+      //   // print(cmpDef.value);
+      //   // // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+      //   // //  expect(cmpDef.balance.bitLength(),128);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-        //  expect(cmpDef.balance.bitLength(),128);
+      //   registry.register({"Balance": 'u32'});
 
-        registry.register({"Balance": 'u32'});
+      //   // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      //   final cmpu32 = createTypeUnsafe(registry, 'TestComplex');
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        final cmpu32 = createTypeUnsafe(registry, 'TestComplex');
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-        // expect(cmpu32.balance.bitLength(),32);
-      });
+      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+      //   // expect(cmpu32.balance.bitLength(),32);
+      // });
     });
   });
 }
