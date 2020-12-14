@@ -7,6 +7,8 @@ import 'package:polkadot_dart/types/codec/Uint.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart';
 import 'package:polkadot_dart/types/create/registry.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/types.dart';
 
 import '../../testUtils/throws.dart';
 
@@ -76,10 +78,10 @@ void createTypeTest() {
 
     test('allows creation of a Set', () {
       expect(
-          createTypeUnsafe<CodecSet>(
+          createTypeUnsafe(
               registry,
               '{"_set": { "A": 1, "B": 2, "C": 4, "D": 8, "E": 16, "G": 32, "H": 64, "I": 128 } }',
-              [1 + 4 + 16 + 64]).strings,
+              [1 + 4 + 16 + 64]).cast<CodecSet>().strings,
           ['A', 'C', 'E', 'H']);
     });
 
@@ -140,70 +142,73 @@ void createTypeTest() {
         expect(value.toRawType() == Gas.toRawType(), true);
       });
 
-      // test('instanceof should work (complex type)', () {
-      //   registry.register({
-      //     "TestComplex": {
-      //       "balance": 'Balance',
-      //       // eslint-disable-next-line sort-keys
-      //       "accountId": 'AccountId',
-      //       "log": '(u64, u32)',
-      //       // eslint-disable-next-line sort-keys
-      //       "fromSrml": 'Gas'
-      //     }
-      //   });
+      test('instanceof should work (complex type)', () {
+        registry.register({
+          "TestComplex": {
+            "balance": 'Balance',
+            // eslint-disable-next-line sort-keys
+            "accountId": 'AccountId',
+            "log": '(u64, u32)',
+            // eslint-disable-next-line sort-keys
+            "fromSrml": 'Gas'
+          }
+        });
 
-      //   final value = createTypeUnsafe(registry, 'TestComplex', [
-      //     {
-      //       "accountId": '0x1234567812345678123456781234567812345678123456781234567812345678',
-      //       "balance": 123,
-      //       "fromSrml": 0,
-      //       "log": [456, 789]
-      //     }
-      //   ]);
+        final value = createTypeUnsafe(registry, 'TestComplex', [
+          {
+            "accountId": '0x1234567812345678123456781234567812345678123456781234567812345678',
+            "balance": 123,
+            "fromSrml": 0,
+            "log": [456, 789]
+          }
+        ]);
 
-      //   // expect(
-      //   //     value.toRawType() == createClass(registry, 'TestComplex')(registry).toRawType(), true);
-      // });
+        expect(
+            value.toRawType() == createClass(registry, 'TestComplex')(registry).toRawType(), true);
+      });
 
       test('allows for re-registration of a type', () {
+        final cc = registry.createType('Balance');
+        print(cc.runtimeType);
+
         final balDef = registry.createType('Balance');
-        expect(balDef.toRawType() == 'Balance', true);
-        expect((balDef as UInt).bitLength, 128);
+        final bb = Balance.from(balDef);
+        expect(bb.toRawType(), 'Balance');
+        expect(bb.bitLength, 128);
 
         registry.register({"Balance": 'u32'});
 
         final balu32 = registry.createType('Balance');
-        expect(balu32.toRawType(), "u32");
-        expect((balu32 as UInt).bitLength, 32);
+        final bb32 = Balance.from(balu32);
+        expect(bb32.toRawType(), "u32");
+        expect(bb32.bitLength, 32);
       });
 
-      // test('allows for re-registration of a type (affecting derives)', () {
-      //   registry.register({
-      //     "Balance": 'u128',
-      //     "TestComplex": {
-      //       "balance": 'Balance',
-      //       // eslint-disable-next-line sort-keys
-      //       "accountId": 'AccountId',
-      //       "log": '(u64, u32)',
-      //       // eslint-disable-next-line sort-keys
-      //       "fromSrml": 'Gas'
-      //     }
-      //   });
+      test('allows for re-registration of a type (affecting derives)', () {
+        registry.register({
+          "Balance": 'u128',
+          "TestComplex": {
+            "balance": 'Balance',
+            // eslint-disable-next-line sort-keys
+            "accountId": 'AccountId',
+            "log": '(u64, u32)',
+            // eslint-disable-next-line sort-keys
+            "fromSrml": 'Gas'
+          }
+        });
 
-      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      //   final cmpDef = createTypeUnsafe(registry, 'TestComplex');
-      //   // print(cmpDef.value);
-      //   // // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-      //   // //  expect(cmpDef.balance.bitLength(),128);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        final cmpDef = createTypeUnsafe(registry, 'TestComplex').cast<Struct>();
+        expect(cmpDef.getCodec("balance").cast<u128>().bitLength, 128);
 
-      //   registry.register({"Balance": 'u32'});
+        registry.register({"Balance": 'u32'});
 
-      //   // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      //   final cmpu32 = createTypeUnsafe(registry, 'TestComplex');
+        // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        final cmpu32 = createTypeUnsafe(registry, 'TestComplex').cast<Struct>();
 
-      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-      //   // expect(cmpu32.balance.bitLength(),32);
-      // });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+        expect(cmpu32.getCodec("balance").cast<u32>().bitLength, 32);
+      });
     });
   });
 }

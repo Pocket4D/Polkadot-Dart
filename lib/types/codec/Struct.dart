@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -120,15 +121,23 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<dynamic, BaseCodec> get value => _value;
   Map<dynamic, String> _jsonMap;
   Map<String, Constructor<BaseCodec>> _types;
+  S originTypes;
+  dynamic originValue;
+  Map<dynamic, String> originJsonMap;
   // List<String> _keys;
   Struct(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap]) {
+    originTypes = types;
+    originValue = value;
+    originJsonMap = jsonMap;
+
     if (jsonMap == null) {
       jsonMap = Map<dynamic, String>();
     }
     if (value == "___defaultEmpty") {
       value = {};
     }
+
     final decoded = decodeStruct(registry, mapToTypeMap(registry, types), value, jsonMap);
 
     _value = Map<dynamic, BaseCodec>.fromEntries(decoded.entries);

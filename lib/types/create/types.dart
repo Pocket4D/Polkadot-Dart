@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:polkadot_dart/types/generic/AccountId.dart';
+import 'package:polkadot_dart/types/generic/AccountIndex.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types.dart';
 
@@ -184,7 +186,7 @@ Map<String, Constructor> baseTypes = {
   'bool': CodecBool.constructor,
   'Bool': CodecBool.constructor,
   'Bytes': Bytes.constructor,
-  'Data': Bytes.constructor,
+  'Data': Data.constructor,
   'DoNotConstruct': DoNotConstruct.constructor,
   'i8': i8.constructor,
   'I8': i8.constructor,
@@ -216,4 +218,7 @@ Map<String, Constructor> baseTypes = {
   'U256': u256.constructor,
   'usize': usize.constructor,
   'USize': usize.constructor,
+  'Raw': Raw.constructor,
+  'GenericAccountId': GenericAccountId.constructor,
+  'GenericAccountIndex': GenericAccountIndex.constructor
 };

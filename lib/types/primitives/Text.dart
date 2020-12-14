@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Raw.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';

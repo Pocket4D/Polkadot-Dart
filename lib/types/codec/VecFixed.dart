@@ -67,4 +67,10 @@ class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
   String toRawType() {
     return "[${this.type};${this.length}]";
   }
+
+  @override
+  F cast<F extends BaseCodec>() {
+    // TODO: implement cast
+    return this as F;
+  }
 }

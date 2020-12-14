@@ -224,7 +224,7 @@ class StorageKey extends Bytes {
   }
 
   /// @description Returns the Human representation for this type
-  dynamic toHuman([bool isExtended]) {
+  String toHuman([bool isExtended]) {
     return this._args.length != 0 ? this._args.map((arg) => arg.toHuman()) : super.toHuman();
   }
 

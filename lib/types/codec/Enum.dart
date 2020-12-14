@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Struct.dart';
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/primitives/Null.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -140,7 +141,13 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   List<String> iskeys = [];
   List<String> askeys = [];
 
+  dynamic originDef;
+  dynamic originValue;
+  dynamic originIndex;
   Enum(Registry registry, dynamic def, [dynamic value, int index]) {
+    originDef = def;
+    originValue = value;
+    originIndex = index;
     final defInfo = extractDef(registry, def);
     final decoded = decodeEnum(registry, defInfo.def, value, index);
     final defList = defInfo.def.keys.toList();

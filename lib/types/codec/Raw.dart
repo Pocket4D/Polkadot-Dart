@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/interfaces.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -44,7 +45,9 @@ class Raw extends BaseCodec implements IU8a {
 
   /// @description Returns true if the type wraps an empty/default all-0 value
   get isEmpty {
-    return this._value.length == 0 || this._value.isEmpty;
+    return this._value.length == 0 ||
+        this._value.isEmpty ||
+        this._value.every((element) => element == 0);
   }
 
   /// @description Returns true if the wrapped value contains only utf8 characters
@@ -93,7 +96,7 @@ class Raw extends BaseCodec implements IU8a {
   }
 
   /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
-  toHuman([bool isExtended]) {
+  String toHuman([bool isExtended]) {
     return this.isAscii ? this.toUtf8() : this.toJSON();
   }
 

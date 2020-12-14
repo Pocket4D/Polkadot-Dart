@@ -35,7 +35,7 @@ TypeDef _decodeEnum(TypeDef value, dynamic details, int count) {
 ///   { _set: { A: 0b0001, B: 0b0010, C: 0b0100 } }
 TypeDef _decodeSet(TypeDef value, Map<String, dynamic> details) {
   value.info = TypeDefInfo.Set;
-  value.length = details.length;
+  value.length = details["_bitLength"];
   value.sub = details.entries
       .where((entry) => !entry.key.startsWith('_'))
       .map((entry) =>
@@ -49,7 +49,6 @@ TypeDef _decodeSet(TypeDef value, Map<String, dynamic> details) {
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
 TypeDef _decodeStruct(TypeDef value, String type, String _, int count) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-
   final parsed = Map<String, dynamic>.from(jsonDecode(type));
   final keys = parsed.keys.toList();
 
@@ -177,6 +176,7 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
     options = TypeDefOptions();
   }
   var type = sanitize(_type);
+
   final typedefValue = TypeDef.fromMap({
     "displayName": options.displayName,
     "info": TypeDefInfo.Plain,
@@ -200,6 +200,5 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
     typedefValue.info = wrapped[2] as TypeDefInfo;
     typedefValue.sub = getTypeDef(extractSubType(type, wrapped), TypeDefOptions(), count);
   }
-
   return typedefValue;
 }

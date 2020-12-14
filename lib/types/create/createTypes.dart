@@ -40,7 +40,6 @@ T initType<T extends BaseCodec>(Registry registry, dynamic type,
   if (params == null) {
     params = [];
   }
-
   T created;
   switch (params.length) {
     case 0:
@@ -96,5 +95,5 @@ T createTypeUnsafe<T extends BaseCodec>(Registry registry, String type,
 }
 
 T createType<T extends BaseCodec>(Registry registry, String type, List<dynamic> params) {
-  return createTypeUnsafe(registry, type, params);
+  return createTypeUnsafe(registry, type, params).cast<T>();
 }

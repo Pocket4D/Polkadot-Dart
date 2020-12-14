@@ -114,4 +114,10 @@ class Tuple extends AbstractArray<BaseCodec> {
   Uint8List toU8a([dynamic isBare]) {
     return u8aConcat([...this.value.map((entry) => entry.toU8a(isBare))]);
   }
+
+  @override
+  F cast<F extends BaseCodec>() {
+    // TODO: implement cast
+    return this as F;
+  }
 }

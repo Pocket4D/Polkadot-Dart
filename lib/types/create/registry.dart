@@ -6,6 +6,7 @@ import 'package:polkadot_dart/types/create/createClass.dart' as classCreator;
 import 'package:polkadot_dart/types/create/createTypes.dart' as typesCreator;
 import 'package:polkadot_dart/types/create/types.dart';
 import 'package:polkadot_dart/types/interfaces/definitions.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
@@ -45,7 +46,12 @@ class TypeRegistry implements Registry {
 
   @override
   // TODO: implement chainSS58
-  int get chainSS58 => throw UnimplementedError();
+  int get chainSS58 {
+    // return this.#chainProperties?.ss58Format.isSome
+    //   ? this.#chainProperties.ss58Format.unwrap().toNumber()
+    //   : undefined;
+    return null;
+  }
 
   @override
   // TODO: implement chainToken
@@ -63,13 +69,15 @@ class TypeRegistry implements Registry {
 
   @override
   T createType<T extends BaseCodec>(String type, [dynamic params]) {
-    List<dynamic> typeParams;
-    if (params != null) {
-      typeParams = List.from(params is List ? params : [params]);
-    } else {
-      typeParams = null;
-    }
-    return typesCreator.createType(this, type, typeParams);
+    // List<dynamic> typeParams;
+    // if (params != null) {
+    //   typeParams = List.from(params is List && !(params is Uint8List) ? params : [params]);
+    // } else {
+    //   typeParams = null;
+    // }
+    // print(typeParams);
+
+    return typesCreator.createType(this, type, [params]);
   }
 
   @override
@@ -85,14 +93,12 @@ class TypeRegistry implements Registry {
   }
 
   @override
-  getConstructor<T extends BaseCodec>(String name, [bool withUnknown]) {
+  Constructor<T> getConstructor<T extends BaseCodec>(String name, [bool withUnknown]) {
     var returnType = this._classes[name];
-
     // we have not already created the type, attempt it
     if (returnType == null) {
       final definition = this._definitions[name];
       Constructor<BaseCodec> baseType;
-
       // we have a definition, so create the class now (lazily)
       if (definition != null) {
         baseType = classCreator.ClassOf(this, definition);

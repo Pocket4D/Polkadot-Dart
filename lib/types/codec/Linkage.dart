@@ -69,4 +69,10 @@ class LinkageResult extends Tuple {
             registry,
             {'Keys': Vec.withParams(typeKeys[0]), 'Values': Vec.withParams(typeValues[0])},
             [typeKeys[1], typeValues[1]]);
+
+  @override
+  F cast<F extends BaseCodec>() {
+    // TODO: implement cast
+    return this as F;
+  }
 }

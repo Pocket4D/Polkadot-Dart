@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+
 import 'registry.dart';
 
-class H256 {}
-
 abstract class BaseCodec {
-  static BaseCodec constructor;
-
   dynamic get value;
 
   /// @description The length of the value when encoded as a Uint8Array
@@ -50,6 +48,10 @@ abstract class BaseCodec {
   @override
   // TODO: implement hashCode
   int get hashCode => super.hashCode;
+
+  T cast<T extends BaseCodec>() {
+    return this as T;
+  }
 }
 
 // abstract class Constructor<T extends BaseCodec> {

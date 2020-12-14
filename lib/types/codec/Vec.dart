@@ -81,4 +81,10 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   String toRawType() {
     return "Vec<${this.registry.getClassName(this._type) ?? this._type(this.registry).toRawType()}>";
   }
+
+  @override
+  F cast<F extends BaseCodec>() {
+    // TODO: implement cast
+    return this as F;
+  }
 }

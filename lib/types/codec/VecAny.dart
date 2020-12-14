@@ -13,4 +13,10 @@ class VecAny<T extends BaseCodec> extends AbstractArray<T> {
     // FIXME This is basically an any type, cannot instantiate via createType
     return 'Vec<Codec>';
   }
+
+  @override
+  F cast<F extends BaseCodec>() {
+    // TODO: implement cast
+    return this as F;
+  }
 }
