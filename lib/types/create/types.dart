@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:polkadot_dart/types/generic/AccountId.dart';
 import 'package:polkadot_dart/types/generic/AccountIndex.dart';
+import 'package:polkadot_dart/types/generic/ConsensusEngineId.dart';
+import 'package:polkadot_dart/types/generic/Event.dart';
+import 'package:polkadot_dart/types/generic/LookupSource.dart';
+import 'package:polkadot_dart/types/generic/MultiAddress.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types.dart';
 
@@ -220,5 +224,9 @@ Map<String, Constructor> baseTypes = {
   'USize': usize.constructor,
   'Raw': Raw.constructor,
   'GenericAccountId': GenericAccountId.constructor,
-  'GenericAccountIndex': GenericAccountIndex.constructor
+  'GenericAccountIndex': GenericAccountIndex.constructor,
+  'GenericEventData': GenericEventData.constructor,
+  'GenericEvent': GenericEvent.constructor,
+  'GenericLookupSource': GenericLookupSource.constructor,
+  'GenericMultiAddress': GenericMultiAddress.constructor
 };

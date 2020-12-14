@@ -37,9 +37,6 @@ class GenericAccountIndex extends u32 {
   GenericAccountIndex(Registry registry, [dynamic value])
       : super(registry, decodeAccountIndex(value ?? BigInt.from(0)));
 
-  // constructor(registry: Registry, value: AnyNumber = new BN(0)) {
-  //   super(registry, decodeAccountIndex(value));
-  // }
   factory GenericAccountIndex.from(u32 origin) {
     return GenericAccountIndex(origin.registry, origin.value);
   }

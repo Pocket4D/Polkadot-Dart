@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/keyring/types.dart';
+import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
 abstract class ICompact<T> extends BaseCodec {
@@ -17,15 +19,15 @@ abstract class IKeyringPair {
   Uint8List sign(Uint8List data, [SignOptions options]);
 }
 
-// abstract class IMethod extends BaseCodec {
-//   List<BaseCodec> args;
-//   Map<String, Constructor> argsDef;
-//   Uint8List callIndex;
-//   Uint8List data;
-//   Hash hash;
-//   bool hasOrigin;
-//   dynamic meta; // FunctionMetadataLatest;
-// }
+abstract class IMethod extends BaseCodec {
+  List<BaseCodec> get args;
+  Map<String, Constructor> get argsDef;
+  Uint8List get callIndex;
+  Uint8List get data;
+  H256 get hash;
+  bool get hasOrigin;
+  FunctionMetadataLatest get meta; // ;
+}
 
 abstract class IRuntimeVersion {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,3 +47,6 @@ abstract class IU8a extends BaseCodec {
   dynamic toHuman([bool isExtended]);
   dynamic toJSON();
 }
+
+// export type ITuple<Sub extends Codec[]> = Sub & Codec
+abstract class ITuple<T extends List<BaseCodec>> extends BaseCodec {}

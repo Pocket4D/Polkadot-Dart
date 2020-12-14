@@ -9,11 +9,86 @@ import 'package:polkadot_dart/types/interfaces/definitions.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 
 import 'package:polkadot_dart/types/primitives/primitives.dart';
+import 'package:polkadot_dart/types/types/calls.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/format.dart';
 import 'package:polkadot_dart/utils/is.dart';
+import 'package:polkadot_dart/utils/u8a.dart';
+
+// // create error mapping from metadata
+// function decorateErrors (_: Registry, metadata: RegistryMetadata, metadataErrors: Record<string, RegistryError>): void {
+//   const modules = metadata.asLatest.modules;
+//   const isIndexed = modules.some(({ index }) => !index.eqn(255));
+
+//   // decorate the errors
+//   modules.forEach((section, _sectionIndex): void => {
+//     const sectionIndex = isIndexed
+//       ? section.index.toNumber()
+//       : _sectionIndex;
+//     const sectionName = stringCamelCase(section.name);
+
+//     section.errors.forEach(({ documentation, name }, index): void => {
+//       const eventIndex = new Uint8Array([sectionIndex, index]);
+
+//       metadataErrors[u8aToHex(eventIndex)] = {
+//         documentation: documentation.map((d): string => d.toString()),
+//         index,
+//         name: name.toString(),
+//         section: sectionName
+//       };
+//     });
+//   });
+// }
+
+// // create event classes from metadata
+// function decorateEvents (registry: Registry, metadata: RegistryMetadata, metadataEvents: Record<string, Constructor<GenericEventData>>): void {
+//   const modules = metadata.asLatest.modules;
+//   const isIndexed = modules.some(({ index }) => !index.eqn(255));
+
+//   // decorate the events
+//   modules
+//     .filter(({ events }): boolean => events.isSome)
+//     .forEach((section, _sectionIndex): void => {
+//       const sectionIndex = isIndexed
+//         ? section.index.toNumber()
+//         : _sectionIndex;
+//       const sectionName = stringCamelCase(section.name);
+
+//       section.events.unwrap().forEach((meta, methodIndex): void => {
+//         const methodName = meta.name.toString();
+//         const eventIndex = new Uint8Array([sectionIndex, methodIndex]);
+//         // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+//         const typeDef = meta.args.map((arg) => getTypeDef(arg));
+//         let Types: Constructor<Codec>[] = [];
+
+//         try {
+//           Types = typeDef.map((typeDef): Constructor<Codec> => getTypeClass(registry, typeDef));
+//         } catch (error) {
+//           l.error(error);
+//         }
+
+//         metadataEvents[u8aToHex(eventIndex)] = class extends GenericEventData {
+//           constructor (registry: Registry, value: Uint8Array) {
+//             super(registry, value, Types, typeDef, meta, sectionName, methodName);
+//           }
+//         };
+//       });
+//     });
+// }
+
+// // create extrinsic mapping from metadata
+// function decorateExtrinsics (registry: Registry, metadata: RegistryMetadata, metadataCalls: Record<string, CallFunction>): void {
+//   const extrinsics = extrinsicsFromMeta(registry, metadata);
+
+//   // decorate the extrinsics
+//   Object.values(extrinsics).forEach((methods): void =>
+//     Object.values(methods).forEach((method): void => {
+//       metadataCalls[u8aToHex(method.callIndex)] = method;
+//     })
+//   );
+// }
 
 class TypeRegistry implements Registry {
   Map<String, dynamic> _knownDefaults;
@@ -69,15 +144,7 @@ class TypeRegistry implements Registry {
 
   @override
   T createType<T extends BaseCodec>(String type, [dynamic params]) {
-    // List<dynamic> typeParams;
-    // if (params != null) {
-    //   typeParams = List.from(params is List && !(params is Uint8List) ? params : [params]);
-    // } else {
-    //   typeParams = null;
-    // }
-    // print(typeParams);
-
-    return typesCreator.createType(this, type, [params]);
+    return typesCreator.createType(this, type, params != null ? [params] : null);
   }
 
   @override
@@ -249,4 +316,13 @@ class TypeRegistry implements Registry {
   @override
   // TODO: implement signedExtensions
   List<String> get signedExtensions => throw UnimplementedError();
+
+  @override
+  CallFunction findMetaCall(Uint8List callIndex) {
+    final hexIndex = u8aToHex(callIndex);
+    // final call = this._metadataCalls[hexIndex];
+    // assert(call != null,
+    //     "findMetaCall: Unable to find Call with index $hexIndex/[${callIndex.toString()}]");
+    return null;
+  }
 }

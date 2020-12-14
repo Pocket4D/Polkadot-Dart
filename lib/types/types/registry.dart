@@ -135,7 +135,7 @@ abstract class Registry {
   RegisteredTypes get knownTypes;
   List<String> get signedExtensions;
 
-  // findMetaCall(callIndex: Uint8Array): CallFunction;
+  CallFunction findMetaCall(Uint8List callIndex);
   // findMetaError(errorIndex: Uint8Array | { error: BN, index: BN }): RegistryError;
 
   // due to same circular imports where types don't really want to import from EventData,

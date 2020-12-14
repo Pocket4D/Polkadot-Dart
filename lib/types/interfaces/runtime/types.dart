@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:polkadot_dart/types/codec/codec.dart';
+import 'package:polkadot_dart/types/generic/Call.dart';
+import 'package:polkadot_dart/types/generic/LookupSource.dart';
 import 'package:polkadot_dart/types/generic/generic.dart';
+import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:tuple/tuple.dart';
@@ -62,7 +67,10 @@ class BlockNumber extends u32 {
 }
 
 // /** @name Call */
-// class Call extends GenericCall {}
+class Call extends GenericCall {
+  Call(Registry registry, [dynamic value, FunctionMetadataLatest meta])
+      : super(registry, value, meta);
+}
 
 class CallHash extends Hash {
   CallHash(Registry registry, [dynamic value, int bitLength = 256, String typeName])
@@ -253,8 +261,13 @@ class Index extends u32 {
   }
 }
 
-// /** @name IndicesLookupSource */
-// class IndicesLookupSource extends GenericLookupSource {}
+/** @name IndicesLookupSource */
+class IndicesLookupSource extends GenericLookupSource {
+  IndicesLookupSource(Registry registry, [dynamic value])
+      : super(registry, value ?? Uint8List.fromList([]));
+  factory IndicesLookupSource.from(GenericLookupSource origin) =>
+      IndicesLookupSource(origin.registry, origin.raw);
+}
 
 class Justification extends Bytes {
   Justification(Registry registry, [dynamic value]) : super(registry, value);

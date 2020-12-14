@@ -1,55 +1,64 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Tuple.dart';
+import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
+import 'package:polkadot_dart/types/interfaces/system/types.dart';
+import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
-// class GenericEventData extends Tuple {
-//   // GenericEventData(Registry registry, Uint8List value, dynamic value) : super(registry, types, value);
-//   // readonly #meta: EventMetadataLatest;
+class GenericEventData extends Tuple {
+  EventMetadataLatest _meta;
 
-//   // readonly #method: string;
+  String _method;
 
-//   // readonly #section: string;
+  String _section;
 
-//   // readonly #typeDef: TypeDef[];
+  List<TypeDef> _typeDef;
+  // List<Constructor> _types;
 
-//   // constructor (registry: Registry, value: Uint8Array, Types: Constructor[] = [], typeDef: TypeDef[] = [], meta: RegistryMetadataEvent, section = '<unknown>', method = '<unknown>') {
-//   //   super(registry, Types, value);
+  GenericEventData(Registry registry, Uint8List value,
+      [List<Constructor> types,
+      List<TypeDef> typeDef,
+      RegistryMetadataEvent meta,
+      String section = '<unknown>',
+      String method = '<unknown>'])
+      : super(registry, types ?? [], value) {
+    // this._types = types ?? [];
+    this._meta = meta as EventMetadataLatest;
+    this._method = method;
+    this._section = section;
+    this._typeDef = typeDef ?? [];
+  }
 
-//   //   this.#meta = meta as EventMetadataLatest;
-//   //   this.#method = method;
-//   //   this.#section = section;
-//   //   this.#typeDef = typeDef;
-//   // }
+  static GenericEventData constructor(Registry registry,
+          [dynamic value,
+          List<Constructor> types,
+          List<TypeDef> typeDef,
+          RegistryMetadataEvent meta,
+          String section = '<unknown>',
+          String method = '<unknown>']) =>
+      GenericEventData(registry, value as Uint8List, types, typeDef, meta, section, method);
 
-//   // /**
-//   //  * @description The wrapped [[EventMetadata]]
-//   //  */
-//   // get meta (): EventMetadataLatest {
-//   //   return this.#meta;
-//   // }
+  /// @description The wrapped [[EventMetadata]]
+  EventMetadataLatest get meta {
+    return this._meta;
+  }
 
-//   // /**
-//   //  * @description The method as a string
-//   //  */
-//   // get method (): string {
-//   //   return this.#method;
-//   // }
+  /// @description The method as a string
+  String get method {
+    return this._method;
+  }
 
-//   // /**
-//   //  * @description The section as a string
-//   //  */
-//   // get section (): string {
-//   //   return this.#section;
-//   // }
+  /// @description The section as a string
+  String get section {
+    return this._section;
+  }
 
-//   // /**
-//   //  * @description The [[TypeDef]] for this event
-//   //  */
-//   // get typeDef (): TypeDef[] {
-//   //   return this.#typeDef;
-//   // }
-// }
+  /// @description The [[TypeDef]] for this event
+  List<TypeDef> get typeDef {
+    return this._typeDef;
+  }
+}
 
 /**
  * @name GenericEvent
@@ -57,90 +66,78 @@ import 'package:polkadot_dart/types/types/registry.dart';
  * A representation of a system event. These are generated via the [[Metadata]] interfaces and
  * specific to a specific Substrate runtime
  */
-// class GenericEvent extends Struct {
-//   // Currently we _only_ decode from Uint8Array, since we expect it to
-//   // be used via EventRecord
-//   constructor (registry: Registry, _value?: Uint8Array) {
-//     const { DataType, value } = GenericEvent.decodeEvent(registry, _value);
+class GenericEvent<S extends Map<String, dynamic>> extends Struct {
+  // Currently we _only_ decode from Uint8Array, since we expect it to
+  // be used via EventRecord
 
-//     super(registry, {
-//       index: 'EventId',
-//       // eslint-disable-next-line sort-keys
-//       data: DataType
-//     }, value);
-//   }
+  GenericEvent(Registry registry, [dynamic _value])
+      : super(
+            registry,
+            {
+              "index": EventId,
+              "data": GenericEvent.decodeEvent(registry, (_value as Uint8List))["DataType"]
+            },
+            GenericEvent.decodeEvent(registry, _value as Uint8List)["value"]);
+  factory GenericEvent.from(Struct origin) => GenericEvent(origin.registry, origin.originValue);
 
-//   /** @internal */
-//   static decodeEvent (registry: Registry, value: Uint8Array = new Uint8Array()): { DataType: Constructor<Null> | Constructor<GenericEventData>; value?: { index: Uint8Array; data: Uint8Array } } {
-//     if (!value.length) {
-//       return { DataType: Null };
-//     }
+  static GenericEvent constructor(Registry registry, [dynamic _value]) =>
+      GenericEvent(registry, _value);
 
-//     const index = value.subarray(0, 2);
+  static Map<String, dynamic> decodeEvent(Registry registry, Uint8List value) {
+    if (value == null) {
+      value = Uint8List.fromList([]);
+    }
+    if (value.length == 0) {
+      return {"DataType": CodecNull.constructor};
+    }
 
-//     return {
-//       DataType: registry.findMetaEvent(index),
-//       value: {
-//         data: value.subarray(2),
-//         index
-//       }
-//     };
-//   }
+    final index = value.sublist(0, 2);
 
-//   /**
-//    * @description The wrapped [[EventData]]
-//    */
-//   get data (): GenericEventData {
-//     return this.get('data') as GenericEventData;
-//   }
+    return {
+      "DataType": registry.findMetaEvent(index),
+      "value": {"data": value.sublist(2), "index": index}
+    };
+  }
 
-//   /**
-//    * @description The [[EventId]], identifying the raw event
-//    */
-//   get index (): EventId {
-//     return this.get('index') as EventId;
-//   }
+  /// @description The wrapped [[EventData]]
+  GenericEventData get data {
+    return this.getCodec('data').cast<GenericEventData>();
+  }
 
-//   /**
-//    * @description The [[EventMetadata]] with the documentation
-//    */
-//   get meta (): EventMetadataLatest {
-//     return this.data.meta;
-//   }
+  /// @description The [[EventId]], identifying the raw event
+  EventId get index {
+    return this.getCodec('index').cast<EventId>();
+  }
 
-//   /**
-//    * @description The method string identifying the event
-//    */
-//   get method (): string {
-//     return this.data.method;
-//   }
+  /// @description The [[EventMetadata]] with the documentation
+  EventMetadataLatest get meta {
+    return this.data.meta;
+  }
 
-//   /**
-//    * @description The section string identifying the event
-//    */
-//   get section (): string {
-//     return this.data.section;
-//   }
+  /// @description The method string identifying the event
+  String get method {
+    return this.data.method;
+  }
 
-//   /**
-//    * @description The [[TypeDef]] for the event
-//    */
-//   get typeDef (): TypeDef[] {
-//     return this.data.typeDef;
-//   }
+  /// @description The section string identifying the event
+  String get section {
+    return this.data.section;
+  }
 
-//   /**
-//    * @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
-//    */
-//   toHuman (isExpanded?: boolean): Record<string, AnyJson> {
-//     return {
-//       method: this.method,
-//       section: this.section,
-//       ...(isExpanded
-//         ? { documentation: this.meta.documentation.map((d) => d.toString()) }
-//         : {}
-//       ),
-//       ...super.toHuman(isExpanded)
-//     };
-//   }
-// }
+  /// @description The [[TypeDef]] for the event
+  List<TypeDef> get typeDef {
+    return this.data.typeDef;
+  }
+
+  /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
+  Map<String, dynamic> toHuman([bool isExpanded]) {
+    return {
+      "method": this.method,
+      "section": this.section,
+      ...(isExpanded
+          ? {"documentation": this.meta.documentation.map((d, [i, list]) => d.toString())}
+          : {}),
+      ...super.toHuman(isExpanded)
+    };
+  }
+}
