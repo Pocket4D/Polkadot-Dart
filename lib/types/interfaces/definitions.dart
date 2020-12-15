@@ -53,7 +53,7 @@ final authorship = authorshipDefs.defs;
 final babe = babeDefs.defs;
 final balances = balancesDefs.defs;
 final chain = chainDefs.defs;
-final chilestate = childstateDefs.defs;
+final childstate = childstateDefs.defs;
 final claims = claimsDefs.defs;
 final collective = collectiveDefs.defs;
 final consensus = consensusDefs.defs;
@@ -102,7 +102,7 @@ final definitions = {
   "babe": babe,
   "balances": balances,
   "chain": chain,
-  "chilestate": chilestate,
+  "childstate": childstate,
   "claims": claims,
   "collective": collective,
   "consensus": consensus,

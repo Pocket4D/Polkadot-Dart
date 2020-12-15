@@ -1,0 +1,19 @@
+targets:
+  $default:
+    builders:
+      # Configure the builder `pkg_name|builder_name`
+      # In this case, the member_count builder defined in `../example`
+      #-----------指定 代码构建器的 目标作用域
+      polkadot_dart|build_interfaces:
+        # Only run this builder on the specified input.
+        #---------指定 代码构建器的 目标文件
+        generate_for:
+          #- lib/library_source.dart
+          - lib/types/interfaces/evm/definitions.dart
+      # The end-user of a builder which applies "source_gen|combining_builder"
+      # may configure the builder to ignore specific lints for their project
+      source_gen|combining_builder:
+        options:
+          ignore_for_file:
+            - lint_a
+            - lint_b
