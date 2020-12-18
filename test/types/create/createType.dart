@@ -7,7 +7,8 @@ import 'package:polkadot_dart/types/codec/Uint.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart';
 import 'package:polkadot_dart/types/create/registry.dart';
-import 'package:polkadot_dart/types/interfaces/offchain/definitions.info.dart';
+import 'package:polkadot_dart/types/interfaces/offchain/builder.dart';
+// import 'package:polkadot_dart/types/interfaces/offchain/definitions.info.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 

@@ -3,6 +3,7 @@ import 'dart:math' as Math;
 
 import 'package:polkadot_dart/types/extrinsic/constant.dart';
 import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/types/types/extrinsic.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 class MortalMethod {
@@ -40,6 +41,8 @@ class ImmortalEra extends Raw {
 class MortalEra extends Tuple {
   MortalEra(Registry registry, [dynamic value])
       : super(registry, {"period": u64, "phase": u64}, MortalEra._decodeMortalEra(registry, value));
+
+  static MortalEra constructor(Registry registry, [dynamic value]) => MortalEra(registry, value);
 
   /** @internal */
   static List<u64> _decodeMortalEra(Registry registry, [dynamic value]) {
@@ -174,10 +177,13 @@ class MortalEra extends Tuple {
  * The era for an extrinsic, indicating either a mortal or immortal extrinsic
  */
 // implements IExtrinsicEra
-class GenericExtrinsicEra extends Enum {
+class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
   GenericExtrinsicEra(Registry registry, [dynamic value])
       : super(registry, {ImmortalEra, MortalEra},
             GenericExtrinsicEra._decodeExtrinsicEra(value as String));
+
+  static GenericExtrinsicEra constructor(Registry registry, [dynamic value]) =>
+      GenericExtrinsicEra(registry, value);
 
   // ImmortalEra get asImmortalEra => super.askey("ImmortalEra").cast<ImmortalEra>();
   // MortalEra get asMortalEra => super.askey("MortalEra").cast<MortalEra>();

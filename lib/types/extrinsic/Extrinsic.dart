@@ -149,6 +149,9 @@ class GenericExtrinsic extends ExtrinsicBase {
   GenericExtrinsic(Registry registry, dynamic value, [CreateOptions option])
       : super(registry, GenericExtrinsic._decodeExtrinsic(registry, value, option?.version ?? {}));
 
+  static GenericExtrinsic constructor(Registry registry, [dynamic value, CreateOptions option]) =>
+      GenericExtrinsic(registry, value, option);
+
   // : ExtrinsicVx | ExtrinsicUnknown
   static _newFromValue(Registry registry, dynamic value, int version) {
     if (value is GenericExtrinsic) {

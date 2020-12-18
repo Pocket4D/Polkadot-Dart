@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:polkadot_dart/types/extrinsic/Extrinsic.dart';
+import 'package:polkadot_dart/types/extrinsic/ExtrinsicUnknown.dart';
+import 'package:polkadot_dart/types/extrinsic/index.dart';
 import 'package:polkadot_dart/types/generic/AccountId.dart';
 import 'package:polkadot_dart/types/generic/AccountIndex.dart';
 import 'package:polkadot_dart/types/generic/ConsensusEngineId.dart';
@@ -227,6 +230,16 @@ Map<String, Constructor> baseTypes = {
   'GenericAccountIndex': GenericAccountIndex.constructor,
   'GenericEventData': GenericEventData.constructor,
   'GenericEvent': GenericEvent.constructor,
+  'GenericExtrinsic': GenericExtrinsic.constructor,
+  'GenericMortalEra': MortalEra.constructor,
+  'GenericImmortalEra': ImmortalEra.constructor,
+  'GenericExtrinsicPayload': GenericExtrinsicPayload.constructor,
+  'GenericExtrinsicPayloadUnknown': GenericExtrinsicPayloadUnknown.constructor,
+  'GenericExtrinsicUnknown': GenericExtrinsicUnknown.constructor,
+  'GenericSignerPayload': GenericSignerPayload.constructor,
+  'GenericExtrinsicV4': GenericExtrinsicV4.constructor,
+  'GenericExtrinsicPayloadV4': GenericExtrinsicPayloadV4.constructor,
+  'GenericExtrinsicSignatureV4': GenericExtrinsicSignatureV4.constructor,
   'GenericLookupSource': GenericLookupSource.constructor,
-  'GenericMultiAddress': GenericMultiAddress.constructor
+  'GenericMultiAddress': GenericMultiAddress.constructor,
 };

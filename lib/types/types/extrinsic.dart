@@ -72,7 +72,7 @@ abstract class SignerPayloadJSON {
   /**
    * @description The applicable signed extensions for this runtime
    */
-  String signedExtensions;
+  List<String> signedExtensions;
 
   /**
    * @description The version of the extrinsic we are dealing with
@@ -140,8 +140,8 @@ abstract class Signer {
 }
 
 abstract class IExtrinsicEra extends BaseCodec {
-  BaseCodec asImmortalEra;
-  BaseCodec asMortalEra;
+  BaseCodec get asImmortalEra;
+  BaseCodec get asMortalEra;
 }
 
 abstract class SignatureOptions {
@@ -160,7 +160,7 @@ abstract class ExtrinsicSignatureBase {
   IExtrinsicEra get era;
   ICompact<Index> get nonce;
   dynamic get signature; //: EcdsaSignature | Ed25519Signature | Sr25519Signature;
-  // Address get signer;
+  Address get signer;
   ICompact<Balance> get tip;
 }
 
