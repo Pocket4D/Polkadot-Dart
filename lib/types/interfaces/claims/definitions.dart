@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "EthereumAddress": "H160",

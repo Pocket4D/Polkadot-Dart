@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:polkadot_dart/types/codec/Enum.dart';
 import 'package:polkadot_dart/types/codec/Raw.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+// import 'package:polkadot_dart/types/interfaces/runtime/typesbak.dart';
 import 'package:polkadot_dart/types/primitives/Bytes.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -63,9 +63,9 @@ class Data extends Enum {
     return this.value as Bytes;
   }
 
-  H256 get asSha256 {
-    return this.value as H256;
-  }
+  // H256 get asSha256 {
+  //   return this.value as H256;
+  // }
 
   bool get isRaw {
     return this.index == 1;

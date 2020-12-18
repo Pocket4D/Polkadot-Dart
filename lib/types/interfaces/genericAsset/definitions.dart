@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "AssetOptions": {"initalIssuance": "Compact<Balance>", "permissions": "PermissionLatest"},

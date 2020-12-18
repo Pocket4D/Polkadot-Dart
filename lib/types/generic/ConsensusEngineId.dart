@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/interfaces/aura/types.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+// import 'package:polkadot_dart/types/interfaces/builders.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -52,12 +53,12 @@ class GenericConsensusEngineId extends u32 {
   }
 
   AccountId _getAuraAuthor(Bytes bytes, List<AccountId> sessionValidators) {
-    return sessionValidators[
-        RawAuraPreDigest.from(this.registry.createType('RawAuraPreDigest', bytes.toU8a(true)))
-            .slotNumber
-            .value
-            .modInverse(BigInt.from(sessionValidators.length))
-            .toInt()];
+    return sessionValidators[(this.registry.createType('RawAuraPreDigest', bytes.toU8a(true)))
+        .cast<RawAuraPreDigest>()
+        .slotNumber
+        .value
+        .modInverse(BigInt.from(sessionValidators.length))
+        .toInt()];
   }
 
   AccountId _getBabeAuthor(Bytes bytes, List<AccountId> sessionValidators) {
@@ -67,7 +68,7 @@ class GenericConsensusEngineId extends u32 {
   }
 
   AccountId _getPowAuthor(Bytes bytes) {
-    return AccountId.from(this.registry.createType('AccountId', bytes));
+    return (this.registry.createType('AccountId', bytes)).cast<AccountId>();
   }
 
   // /**

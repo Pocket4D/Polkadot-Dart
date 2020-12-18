@@ -5,6 +5,7 @@ import 'package:polkadot_dart/types/generic/Call.dart';
 import 'package:polkadot_dart/types/generic/LookupSource.dart';
 import 'package:polkadot_dart/types/generic/generic.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
+import 'package:polkadot_dart/types/interfaces/system/types.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:tuple/tuple.dart';
@@ -31,7 +32,10 @@ class AccountIndex extends GenericAccountIndex {
 }
 
 // /** @name Address */
-// class Address extends LookupSource {}
+class Address extends LookupSource {
+  Address(Registry registry, [dynamic value]) : super(registry, value ?? Uint8List.fromList([]));
+  factory Address.from(LookupSource origin) => Address(origin.registry, origin.raw);
+}
 
 class AssetId extends u32 {
   AssetId(Registry registry, [dynamic value = 0]) : super(registry, value ?? 0);
@@ -70,6 +74,9 @@ class BlockNumber extends u32 {
 class Call extends GenericCall {
   Call(Registry registry, [dynamic value, FunctionMetadataLatest meta])
       : super(registry, value, meta);
+  factory Call.from(GenericCall origin) {
+    return Call(origin.registry, origin.value, origin.meta);
+  }
 }
 
 class CallHash extends Hash {
@@ -206,7 +213,7 @@ class FixedU64 extends UInt {
 }
 
 class H160 extends U8aFixed {
-  H160(Registry registry, [dynamic value, int bitLength = 256, String typeName])
+  H160(Registry registry, [dynamic value, int bitLength = 160, String typeName = "H160"])
       : super(registry, value, bitLength ?? 256, typeName);
   factory H160.from(U8aFixed origin) {
     return H160(origin.registry, origin.value, origin.bitLength, origin.typeName);
@@ -214,7 +221,7 @@ class H160 extends U8aFixed {
 }
 
 class H256 extends U8aFixed {
-  H256(Registry registry, [dynamic value, int bitLength = 256, String typeName])
+  H256(Registry registry, [dynamic value, int bitLength = 256, String typeName = "H256"])
       : super(registry, value, bitLength ?? 256, typeName);
   factory H256.from(U8aFixed origin) {
     return H256(origin.registry, origin.value, origin.bitLength, origin.typeName);
@@ -222,7 +229,7 @@ class H256 extends U8aFixed {
 }
 
 class H512 extends U8aFixed {
-  H512(Registry registry, [dynamic value, int bitLength = 256, String typeName])
+  H512(Registry registry, [dynamic value, int bitLength = 512, String typeName = "H512"])
       : super(registry, value, bitLength ?? 256, typeName);
   factory H512.from(U8aFixed origin) {
     return H512(origin.registry, origin.value, origin.bitLength, origin.typeName);
@@ -230,7 +237,7 @@ class H512 extends U8aFixed {
 }
 
 class Hash extends H256 {
-  Hash(Registry registry, [dynamic value, int bitLength = 256, String typeName])
+  Hash(Registry registry, [dynamic value, int bitLength = 256, String typeName = "Hash"])
       : super(registry, value, bitLength ?? 256, typeName);
   factory Hash.from(H256 origin) {
     return Hash(origin.registry, origin.value, origin.bitLength, origin.typeName);
@@ -292,7 +299,12 @@ class LockIdentifier extends U8aFixed {
   }
 }
 
-// class  LookupSource extends IndicesLookupSource {}
+class LookupSource extends IndicesLookupSource {
+  LookupSource(Registry registry, [dynamic value])
+      : super(registry, value ?? Uint8List.fromList([]));
+  factory LookupSource.from(IndicesLookupSource origin) =>
+      LookupSource(origin.registry, origin.raw);
+}
 
 class LookupTarget extends AccountId {
   LookupTarget(Registry registry, [dynamic value]) : super(registry, value);
@@ -329,12 +341,21 @@ class Origin extends DoNotConstruct {
 }
 
 // /** @name OriginCaller */
-// class OriginCaller extends Enum {
-//   bool get isSystem;
-//   SystemOrigin get asSystem;
-// }
+class OriginCaller extends Enum {
+  bool get isSystem => super.isKey("System");
+  SystemOrigin get asSystem => super.askey("System").cast<SystemOrigin>();
+  OriginCaller(Registry registry, dynamic def, [dynamic value, int index])
+      : super(registry, def, value, index);
+  factory OriginCaller.from(Enum origin) =>
+      OriginCaller(origin.registry, origin.def, origin.originValue, origin.originIndex);
+}
 
-// class  PalletsOrigin extends OriginCaller {}
+class PalletsOrigin extends OriginCaller {
+  PalletsOrigin(Registry registry, dynamic def, [dynamic value, int index])
+      : super(registry, def, value, index);
+  factory PalletsOrigin.from(OriginCaller origin) =>
+      PalletsOrigin(origin.registry, origin.def, origin.originValue, origin.originIndex);
+}
 
 class PalletVersion<S extends Map<String, dynamic>> extends Struct {
   u16 get major => super.getCodec("major").cast<u16>();

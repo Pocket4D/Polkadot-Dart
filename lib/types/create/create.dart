@@ -3,3 +3,4 @@ export 'types.dart';
 export 'createClass.dart';
 export 'getTypeDef.dart';
 export 'sanitize.dart';
+export 'encodeTypes.dart';

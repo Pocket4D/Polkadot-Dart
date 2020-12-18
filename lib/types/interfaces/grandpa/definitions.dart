@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "proveFinality": {
       "description": "Prove finality for the range (begin; end] hash.",

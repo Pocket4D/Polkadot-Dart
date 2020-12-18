@@ -38,7 +38,10 @@ dynamic _decodeBytes([dynamic value]) {
 }
 
 class Bytes extends Raw {
-  Bytes(Registry registry, [dynamic value]) : super(registry, _decodeBytes(value));
+  dynamic originValue;
+  Bytes(Registry registry, [dynamic value]) : super(registry, _decodeBytes(value)) {
+    originValue = value;
+  }
 
   static Bytes constructor(Registry registry, [dynamic value]) => Bytes(registry, value);
 

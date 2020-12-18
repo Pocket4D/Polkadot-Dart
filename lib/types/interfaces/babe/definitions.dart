@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "epochAuthorship": {
       "description":

@@ -136,8 +136,14 @@ class StorageKey extends Bytes {
 
   String _section;
 
+  dynamic originValue;
+
+  StorageKeyExtra originOverride;
+
   StorageKey(Registry registry, [dynamic value, StorageKeyExtra override])
       : super(registry, decodeStorageKey(value).key) {
+    originValue = value;
+    originOverride = override;
     if (override == null) {
       override = StorageKeyExtra();
     }

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -86,8 +86,14 @@ class CodecSet extends BaseCodec {
   Set<String> get value => _value;
   List<String> iskeys = [];
   List<String> askeys = [];
+  Map<String, dynamic> originSetValues;
+  dynamic originValue;
+  int originBitLength;
 
   CodecSet(Registry registry, Map<String, dynamic> setValues, [dynamic value, int bitLength = 8]) {
+    originSetValues = setValues;
+    originValue = value;
+    originBitLength = bitLength;
     this._value = (decodeSet(setValues, value, bitLength)).toSet();
     this.registry = registry;
     this._allowed = setValues;

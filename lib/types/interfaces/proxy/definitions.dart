@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "ProxyDefinition": {"delegate": "AccountId", "proxyType": "ProxyType", "delay": "BlockNumber"},

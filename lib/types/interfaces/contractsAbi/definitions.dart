@@ -1,4 +1,4 @@
-final layout = {
+const layout = {
   "ContractCryptoHasher": {
     "_enum": ["Blake2x256", "Sha2x256", "Keccak256"]
   },
@@ -38,7 +38,7 @@ final layout = {
   }
 };
 
-final spec = {
+const spec = {
   "ContractConstructorSpec": {
     "name": "Text",
     "selector": "ContractSelector",
@@ -73,7 +73,7 @@ final spec = {
   "ContractTypeSpec": {"type": "SiLookupTypeId", "displayName": "ContractDisplayName"}
 };
 
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     ...layout,

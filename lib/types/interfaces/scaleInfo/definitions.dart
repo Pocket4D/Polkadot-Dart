@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "SiField": {"name": "Option<Text>", "type": "SiLookupTypeId"},

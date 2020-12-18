@@ -4,3 +4,4 @@ export 'codec/codec.dart';
 export 'primitives/primitives.dart';
 export 'types/types.dart';
 export 'create/create.dart';
+export 'generic/generic.dart';

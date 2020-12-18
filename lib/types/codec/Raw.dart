@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/interfaces.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -20,8 +20,10 @@ class Raw extends BaseCodec implements IU8a {
   Registry registry;
   Uint8List _value;
   Uint8List get value => _value;
+  dynamic originValue;
 
   Raw(Registry registry, [dynamic value]) {
+    originValue = value;
     _value = _decodeU8a(value);
     this.registry = registry;
   }

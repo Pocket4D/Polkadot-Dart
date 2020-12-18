@@ -29,12 +29,12 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
       : (_types as Map<String, Constructor>).values.toList();
 
   List<BaseCodec> resultList = List<BaseCodec>(types.length);
+
   if (types.length >= 1) {
     for (var i = 0; i < types.length; i += 1) {
       var type = types[i];
       try {
-        var entry = value != null ? value[i] : null;
-
+        var entry = (value == null || (value is List && value.isEmpty)) ? null : value[i];
         if (entry is BaseCodec) {
           resultList[i] = entry;
         }

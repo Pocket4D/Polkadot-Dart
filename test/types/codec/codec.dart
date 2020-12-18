@@ -17,6 +17,7 @@ import 'Uint.dart' as uintTest;
 import 'Vec.dart' as vecTest;
 import 'VecFixed.dart' as vecFixedTest;
 import 'utils.dart' as utilsTest;
+import 'Result.dart' as resultTest;
 
 void main() {
   option.main();
@@ -30,6 +31,7 @@ void main() {
   linkageTest.main();
   mapTest.main();
   rawTest.main();
+  resultTest.main();
   setTest.main();
   structTest.main();
   tupleTest.main();

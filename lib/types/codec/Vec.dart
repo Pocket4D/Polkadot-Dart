@@ -15,10 +15,14 @@ Vec<T> Function(Registry, [dynamic]) vecWith<T extends BaseCodec>(dynamic type) 
 
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
+  dynamic originType;
+  dynamic originValue;
 
   Vec(Registry registry, dynamic type, [dynamic value])
       : super(
             registry, Vec.decodeVec(registry, typeToConstructor<T>(registry, type), value ?? [])) {
+    originType = type;
+    originValue = value;
     if (value == null) {
       value = [];
     }

@@ -25,7 +25,7 @@ const keyTypes = {
       '(AccountId, AccountId, AccountId, AccountId, AccountId, AccountId, AccountId, AccountId, AccountId, AccountId)'
 };
 
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     ...keyTypes,

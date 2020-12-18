@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "genSyncSpec": {
       "endpoint": "sync_state_genSyncSpec",

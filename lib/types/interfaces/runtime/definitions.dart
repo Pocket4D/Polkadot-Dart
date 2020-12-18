@@ -14,7 +14,7 @@ const numberTypes = {
   "Perquintill": 'UInt<64, Perquintill>'
 };
 
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     ...numberTypes,

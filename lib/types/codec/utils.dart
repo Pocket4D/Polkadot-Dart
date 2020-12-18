@@ -7,18 +7,17 @@ import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 bool hasEq(dynamic o) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-
   return o is BaseCodec ? isFunction((o as dynamic).eq) : false;
 }
 
 Constructor<T> typeToConstructor<T extends BaseCodec>(Registry registry, dynamic type) {
-  return (isString(type) ? registry.createClass(type) : type) as Constructor<T>;
+  return isString(type) ? registry.createClass(type) : type as Constructor<T>;
 }
 
 Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> input) {
   return input.entries.fold({}, (Map<String, Constructor> output, MapEntry entry) {
-    output[entry.key] = typeToConstructor(registry, entry.value);
+    output[entry.key] =
+        typeToConstructor(registry, entry.value is Function ? entry.value : entry.value.toString());
     return output;
   });
 }

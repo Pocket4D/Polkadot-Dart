@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Struct.dart';
 import 'package:polkadot_dart/types/codec/utils.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/primitives/Null.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -68,6 +68,7 @@ DecodedEnum decodeFromJSON(Registry registry, Map<String, Constructor> def, Stri
   // JSON comes in the form of { "<type (lowercased)>": "<value for type>" }, here we
   // additionally force to lower to ensure forward compat
   final keys = (def.keys.toList()).map((k) => k.toLowerCase());
+
   final keyLower = key.toLowerCase();
   final index = keys.toList().indexOf(keyLower);
 
@@ -157,6 +158,7 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     this._indexes = defList.map((def) => defList.indexOf(def)).toList();
     this._index = this._indexes.indexOf(decoded.index) ?? 0;
     this._raw = decoded.value;
+    this.genKeys();
   }
 
   static Enum constructor(Registry registry, [dynamic def, dynamic value, int index]) =>
@@ -296,7 +298,7 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   }
 
   bool isKey(String name) {
-    var found = iskeys.singleWhere((element) => element == "is${this.type}");
+    var found = iskeys.singleWhere((element) => element == "is${this.type}", orElse: () => null);
     return found != null && found == "is$name";
   }
 

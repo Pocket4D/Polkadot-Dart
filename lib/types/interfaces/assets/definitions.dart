@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "AssetBalance": {"balance": 'TAssetBalance', "isFrozen": 'bool', "isZombie": 'bool'},

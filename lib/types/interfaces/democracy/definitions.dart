@@ -16,7 +16,7 @@ const AllConvictions = [
   'Locked6x'
 ];
 
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "AccountVote": {

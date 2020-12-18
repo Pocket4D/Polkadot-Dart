@@ -23,6 +23,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  source_gen: ^0.9.10+1
+  build_runner: ^1.10.9
+  type_gen:
+    path: './type_gen'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/keyring/types.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+// import 'package:polkadot_dart/types/interfaces/runtime/typesbak.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
 abstract class ICompact<T> extends BaseCodec {
@@ -24,7 +24,7 @@ abstract class IMethod extends BaseCodec {
   Map<String, Constructor> get argsDef;
   Uint8List get callIndex;
   Uint8List get data;
-  H256 get hash;
+  // H256 get hash;
   bool get hasOrigin;
   FunctionMetadataLatest get meta; // ;
 }

@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "DeferredOffenceOf": "(Vec<OffenceDetails>, Vec<Perbill>, SessionIndex)",

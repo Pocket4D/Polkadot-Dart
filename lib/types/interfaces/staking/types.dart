@@ -1,4 +1,4 @@
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 
 // /** @name ActiveEraInfo */

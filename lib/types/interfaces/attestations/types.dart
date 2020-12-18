@@ -1,6 +1,5 @@
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
-import 'package:polkadot_dart/types/interfaces/session/types.dart';
-import 'package:polkadot_dart/types/types.dart';
+// import 'package:polkadot_dart/types/interfaces/types.dart';
+// import 'package:polkadot_dart/types/types.dart';
 
 // /** @name BlockAttestations */
 // class BlockAttestations<S extends Map<String, dynamic>> extends Struct {

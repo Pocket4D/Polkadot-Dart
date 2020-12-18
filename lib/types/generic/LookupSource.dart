@@ -23,9 +23,10 @@ dynamic _decodeString(Registry registry, String value) {
 dynamic _decodeU8a(Registry registry, Uint8List value) {
   // This allows us to instantiate an address with a raw publicKey. Do this first before
   // we checking the first byte, otherwise we may split an already-existent valid address
+
   if (value.length == 32) {
     return registry.createType('AccountId', value).cast<GenericAccountId>();
-  } else if (value[0] == 0xff) {
+  } else if (value.length > 0 && value[0] == 0xff) {
     return registry.createType('AccountId', value.sublist(1)).cast<GenericAccountId>();
   }
 
@@ -48,7 +49,7 @@ dynamic _decodeU8a(Registry registry, Uint8List value) {
 class GenericLookupSource extends Base {
   GenericLookupSource(Registry registry, [dynamic value])
       : super(registry,
-            GenericLookupSource._decodeAddress(registry, value ?? Uint8List.fromList([])));
+            GenericLookupSource._decodeAddress(registry, value ?? Uint8List.fromList([0])));
 
   static GenericLookupSource constructor(Registry registry, [dynamic value]) =>
       GenericLookupSource(registry, value);

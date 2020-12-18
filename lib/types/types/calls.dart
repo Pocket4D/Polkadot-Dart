@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 
 abstract class CallBase {
   Uint8List callIndex;

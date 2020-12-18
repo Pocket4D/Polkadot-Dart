@@ -12,7 +12,7 @@ const proposeTypes = {
   "RegisteredParachainInfo": {"validators": "Vec<ValidatorId>", "proposer": "AccountId"}
 };
 
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     ...proposeTypes,

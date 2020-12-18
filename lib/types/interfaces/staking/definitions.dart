@@ -2,7 +2,7 @@ const deprecated = {
   "Points": 'u32',
   "EraPoints": {"total": 'Points', "individual": 'Vec<Points>'}
 };
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     ...deprecated,

@@ -59,7 +59,8 @@ TypeDef _decodeStruct(TypeDef value, String type, String _, int count) {
   }
 
   value.alias = parsed["_alias"] != null && parsed["_alias"] is Map
-      ? new Map.fromEntries((parsed["_alias"] as Map).entries)
+      ? new Map.fromEntries(
+          (parsed["_alias"] as Map).entries.map((e) => MapEntry(e.key, e.value.toString())))
       : null;
 
   value.sub = keys.where((name) => !['_alias'].contains(name)).map((name) =>

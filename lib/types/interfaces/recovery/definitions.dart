@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "ActiveRecovery": {"created": "BlockNumber", "deposit": "Balance", "friends": "Vec<AccountId>"},

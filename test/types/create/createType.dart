@@ -7,6 +7,7 @@ import 'package:polkadot_dart/types/codec/Uint.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart';
 import 'package:polkadot_dart/types/create/registry.dart';
+import 'package:polkadot_dart/types/interfaces/offchain/definitions.info.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 
@@ -208,6 +209,28 @@ void createTypeTest() {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
         expect(cmpu32.getCodec("balance").cast<u32>().bitLength, 32);
+
+        var sk = registry.createType("StorageKind");
+        print((sk as Enum).originDef);
+        // print((sk as Enum).type);
+        // print((sk as Enum).iskeys);
+        var sk4 = registry.createClass("StorageKind")(registry, {"Local": "123"});
+
+        print(sk4);
+
+        var sk2 = StorageKind(registry, {"LOCAL": "123"});
+        print(sk2.toJSON());
+        print(sk2.originDef);
+
+        var sk3 = StorageKind.from(sk4);
+        print(sk3.toJSON());
+
+        print(getTypeDef("UInt<128, Balance>").toMap());
+        print(getTypeDef("Balance").toMap());
+        print(getTypeClass(registry, getTypeDef("Balance")));
+        print(getTypeDef("BalanceOf").toMap());
+
+        print(registry.createType("BalanceOf").runtimeType);
       });
     });
   });
