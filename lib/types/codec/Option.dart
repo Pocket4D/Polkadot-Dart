@@ -45,8 +45,13 @@ class Option<T extends BaseCodec> extends BaseCodec {
 
   T _raw;
 
+  dynamic originTypeName;
+  dynamic originValue;
+
   Option(Registry registry, dynamic typeName, [dynamic value]) {
     this.registry = registry;
+    this.originTypeName = typeName;
+    this.originValue = value;
     this._type = typeToConstructor(registry, typeName);
     this._raw = decodeOption(registry, typeName, value) as T;
   }

@@ -9,6 +9,7 @@ import 'package:polkadot_dart/types/generic/ConsensusEngineId.dart';
 import 'package:polkadot_dart/types/generic/Event.dart';
 import 'package:polkadot_dart/types/generic/LookupSource.dart';
 import 'package:polkadot_dart/types/generic/MultiAddress.dart';
+import 'package:polkadot_dart/types/generic/Vote.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types.dart';
 
@@ -228,6 +229,7 @@ Map<String, Constructor> baseTypes = {
   'Raw': Raw.constructor,
   'GenericAccountId': GenericAccountId.constructor,
   'GenericAccountIndex': GenericAccountIndex.constructor,
+  'GenericCall': GenericCall.constructor,
   'GenericEventData': GenericEventData.constructor,
   'GenericEvent': GenericEvent.constructor,
   'GenericExtrinsic': GenericExtrinsic.constructor,
@@ -242,4 +244,5 @@ Map<String, Constructor> baseTypes = {
   'GenericExtrinsicSignatureV4': GenericExtrinsicSignatureV4.constructor,
   'GenericLookupSource': GenericLookupSource.constructor,
   'GenericMultiAddress': GenericMultiAddress.constructor,
+  'GenericVote': GenericVote.constructor
 };

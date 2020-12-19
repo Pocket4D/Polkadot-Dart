@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/keyring/types.dart';
+
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 // import 'package:polkadot_dart/types/interfaces/runtime/typesbak.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
+import 'package:tuple/tuple.dart';
 
 abstract class ICompact<T> extends BaseCodec {
   BigInt toBigInt();
@@ -49,4 +51,7 @@ abstract class IU8a extends BaseCodec {
 }
 
 // export type ITuple<Sub extends Codec[]> = Sub & Codec
-abstract class ITuple<T extends List<BaseCodec>> extends BaseCodec {}
+abstract class ITuple<S extends BaseCodec, E extends BaseCodec> extends Tuple2<S, E>
+    implements BaseCodec {
+  ITuple(S item1, E item2) : super(item1, item2);
+}

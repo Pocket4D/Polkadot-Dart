@@ -25,6 +25,7 @@ Constructor<T> createClass<T extends BaseCodec>(Registry registry, String type) 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
 
   final typeDefResult = getTypeDef(type);
+
   final result = getTypeClass<T>(registry, typeDefResult);
   return result;
 }
@@ -182,6 +183,7 @@ final Map<TypeDefInfo, Constructor Function(Registry registry, TypeDef value)> i
 
 Constructor<T> getTypeClass<T extends BaseCodec>(Registry registry, TypeDef value) {
   final theType = registry.getConstructor(value.type);
+
   if (theType != null) {
     return theType;
   }

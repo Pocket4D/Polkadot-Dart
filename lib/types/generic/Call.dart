@@ -47,13 +47,13 @@ DecodedMethod decodeCallViaObject(Registry registry, DecodedMethod value,
 DecodedMethod decodeCallViaU8a(Registry registry, Uint8List value, [FunctionMetadataLatest _meta]) {
   // We need 2 bytes for the callIndex
   final callIndex = Uint8List(2);
-  callIndex.setAll(0, value.sublist(0, 2));
+  callIndex.setAll(0, value.length < 2 ? value.sublist(0, value.length) : value.sublist(0, 2));
 
   // Find metadata with callIndex
   final meta = _meta ?? registry.findMetaCall(callIndex).meta;
 
   return DecodedMethod(
-      args: value.sublist(2),
+      args: value.length < 2 ? [] : value.sublist(2),
       argsDef: getArgsDef(registry, meta),
       callIndex: callIndex,
       meta: meta);
@@ -116,6 +116,9 @@ class GenericCall extends Struct implements IMethod {
 
     this._meta = decoded.meta;
   }
+
+  static GenericCall constructor(Registry registry, [dynamic value, FunctionMetadataLatest meta]) =>
+      GenericCall(registry, value, meta);
 
   // If the extrinsic function has an argument of type "Origin", we ignore it
   static List<FunctionArgumentMetadataLatest> filterOrigin([FunctionMetadataLatest meta]) {

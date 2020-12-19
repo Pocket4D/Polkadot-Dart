@@ -155,7 +155,15 @@ String getKeyClassGetters(
     case "Struct":
       return getters.entries
           .map((entry) {
-            var toCast = entry.value.toString().replaceAll("Text", "CodecText");
+            var rawString = entry.value.toString();
+
+            // if (getClassByType(registry, rawString).startsWith("ITuple")) {
+            //   rawString = getClassByType(registry, rawString);
+            // }
+            rawString = getClassByType(registry, rawString);
+            var toCast = !rawString.contains("CodecText")
+                ? rawString.replaceAll("Text", "CodecText")
+                : rawString;
             var toCastEnd = toCast;
             switch (toCast) {
               case 'bool':
@@ -174,14 +182,11 @@ String getKeyClassGetters(
                 break;
             }
 
-            var theKey = entry.key == "value" ? "thisValue" : entry.key;
+            var theKey = entry.key;
             // theKey = stringUpperFirst(stringCamelCase(theKey.replaceAll(' ', '_')));
             var theKeyFront = theKey;
 
-            if (theKeyFront == "class") {
-              theKeyFront = "classOf";
-            }
-            theKeyFront = stringCamelCase(theKeyFront.replaceAll(' ', '_'));
+            theKeyFront = stringCamelCase(avoidReservedWords(theKey).replaceAll(' ', '_'));
 
             var rest = toCastEnd == "CodecBool" ? ".value" : "";
 
@@ -194,22 +199,19 @@ String getKeyClassGetters(
     case "Enum":
       return getters.entries
           .map((entry) {
-            var toCast = entry.value.toString().replaceAll("Text", "CodecText");
-
-            // var getterType = "as";
-            // var getterTypeString = "askey";
-            // switch (toCast) {
-            //   case 'Null':
-            //     toCast = "bool";
-            //     getterType = "is";
-            //     getterTypeString = "isKey";
-            //     break;
-            //   default:
-            //     getterType = "as";
-            //     getterTypeString = "askey";
+            var rawString = entry.value.toString();
+            // if (getClassByType(registry, rawString).startsWith("ITuple")) {
+            //   rawString = getClassByType(registry, rawString);
             // }
-            var theKey = entry.key == "value" ? "thisValue" : entry.key;
-            theKey = stringUpperFirst(stringCamelCase(theKey.replaceAll(' ', '_')));
+
+            rawString = getClassByType(registry, rawString);
+            var toCast = !rawString.contains("CodecText")
+                ? rawString.replaceAll("Text", "CodecText")
+                : rawString;
+
+            var theKey = entry.key;
+            theKey =
+                stringUpperFirst(stringCamelCase(avoidReservedWords(theKey).replaceAll(' ', '_')));
             var rest = ".cast<$toCast>()";
 
             if (toCast == "Null") {
@@ -229,7 +231,15 @@ String getKeyClassGetters(
     case "CodecSet":
       return getters.entries
           .map((entry) {
-            var toCast = entry.value.toString().replaceAll("Text", "CodecText");
+            var rawString = entry.value.toString();
+            // if (getClassByType(registry, rawString).startsWith("ITuple")) {
+            //   rawString = getClassByType(registry, rawString);
+            // }
+            rawString = getClassByType(registry, rawString);
+
+            var toCast = !rawString.contains("CodecText")
+                ? rawString.replaceAll("Text", "CodecText")
+                : rawString;
 
             var getterType = "as";
             var getterTypeString = "askey";
@@ -243,8 +253,9 @@ String getKeyClassGetters(
                 getterType = "as";
                 getterTypeString = "askey";
             }
-            var theKey = entry.key == "value" ? "thisValue" : entry.key;
-            var frontKey = stringUpperFirst(stringCamelCase(theKey.replaceAll(' ', '_')));
+            var theKey = entry.key;
+            var frontKey =
+                stringUpperFirst(stringCamelCase(avoidReservedWords(theKey).replaceAll(' ', '_')));
 
             var rest = toCast == "bool" ? "" : ".cast<$toCast>()";
             return '''
@@ -268,27 +279,64 @@ String getClassExtends(Registry registry, String rtType) {
   }
 }
 
+String avoidReservedWords(String word) {
+  bool add = true;
+  switch (word) {
+    case 'bool':
+      break;
+    case 'get':
+      break;
+    case 'value':
+      break;
+    case 'hash':
+      break;
+    case 'return':
+      break;
+    case 'class':
+      break;
+    case 'String':
+      break;
+    case 'int':
+      break;
+    case 'double':
+      break;
+    default:
+      add = false;
+      break;
+  }
+  if (add) {
+    return "this${stringUpperFirst(word)}";
+  }
+  return word;
+}
+
 String getClassByType(Registry registry, String value) {
   var def = getTypeDef(value);
   var defInfo = def.info;
+  print(def.toMap());
 
   switch (defInfo) {
     case TypeDefInfo.BTreeMap:
-      return formatBTreeMap(getClassByType(registry, def.sub[0]["type"]),
-          getClassByType(registry, def.sub[1]["type"]));
+      return formatBTreeMap(
+          getClassByType(
+              registry, def.sub[0] is TypeDef ? def.sub[0].type : TypeDef.fromMap(def.sub[0]).type),
+          getClassByType(registry,
+              def.sub[1] is TypeDef ? def.sub[1].type : TypeDef.fromMap(def.sub[1]).type));
     case TypeDefInfo.BTreeSet:
       return formatBTreeSet(getClassByType(registry, def.sub));
 
     case TypeDefInfo.Compact:
-      return formatCompact(getClassByType(registry, (def.sub as TypeDef).type));
+      return formatCompact(getClassByType(
+          registry, def.sub is TypeDef ? def.sub.type : TypeDef.fromMap(def.sub).type));
 
     case TypeDefInfo.Enum:
       return "Enum";
     case TypeDefInfo.Linkage:
-      final type = (def.sub as TypeDef).type;
+      final type = def.sub is TypeDef ? def.sub.type : TypeDef.fromMap(def.sub).type;
       return formatLinkage(getClassByType(registry, type));
     case TypeDefInfo.Option:
-      return formatOption(getClassByType(registry, (def.sub as TypeDef).type));
+      return formatOption(getClassByType(
+          registry, def.sub is TypeDef ? def.sub.type : TypeDef.fromMap(def.sub).type));
 
     case TypeDefInfo.Plain:
       return def.type;
@@ -297,10 +345,10 @@ String getClassByType(Registry registry, String value) {
       final listSub = (def.sub);
 
       if (listSub is List) {
-        final okDef = listSub[0];
-        final errorDef = listSub[1];
+        final okDef = listSub[0] is TypeDef ? listSub[0] : TypeDef.fromMap(listSub[0]);
+        final errorDef = listSub[1] is TypeDef ? listSub[1] : TypeDef.fromMap(listSub[1]);
         return formatResult(
-            getClassByType(registry, okDef["type"]), getClassByType(registry, errorDef["type"]));
+            getClassByType(registry, okDef.type), getClassByType(registry, errorDef.type));
       }
       break;
 
@@ -312,14 +360,15 @@ String getClassByType(Registry registry, String value) {
 
     case TypeDefInfo.Tuple:
       return formatTuple((def.sub as List).map((sub) {
-        return getClassByType(registry, (sub as TypeDef).type);
+        return getClassByType(registry, (TypeDef.fromMap(sub)).type);
       }).toList());
       break;
     case TypeDefInfo.Vec:
-      return formatVec(getClassByType(registry, (def.sub as TypeDef).type));
+      return formatVec(getClassByType(
+          registry, def.sub is TypeDef ? def.sub.type : TypeDef.fromMap(def.sub).type));
 
     case TypeDefInfo.VecFixed:
-      final type = (def.sub as TypeDef).type;
+      final type = def.sub is TypeDef ? def.sub.type : TypeDef.fromMap(def.sub).type;
 
       if (type == 'u8') {
         return 'U8aFixed';
@@ -329,10 +378,10 @@ String getClassByType(Registry registry, String value) {
     case TypeDefInfo.HashMap:
       final listSub = (def.sub);
       if (listSub is List) {
-        final keyDef = listSub[0];
-        final valDef = listSub[1];
+        final keyDef = listSub[0] is TypeDef ? listSub[0] as TypeDef : TypeDef.fromMap(listSub[0]);
+        final valDef = listSub[1] is TypeDef ? listSub[1] as TypeDef : TypeDef.fromMap(listSub[1]);
         return formatHashMap(
-            getClassByType(registry, keyDef["type"]), getClassByType(registry, valDef["type"]));
+            getClassByType(registry, keyDef.type), getClassByType(registry, valDef.type));
       }
       break;
 

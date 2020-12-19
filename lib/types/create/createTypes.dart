@@ -84,7 +84,6 @@ T createTypeUnsafe<T extends BaseCodec>(Registry registry, String type,
   }
 
   final clazz = createClass<T>(registry, type);
-
   // Circle back to isPedantic when it handles all cases 100% - as of now,
   // it provides false warning which is more hinderance than help
   return initType(registry, clazz, params); // , isPedantic);

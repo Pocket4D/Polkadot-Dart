@@ -162,9 +162,11 @@ class TypeRegistry implements Registry {
   @override
   Constructor<T> getConstructor<T extends BaseCodec>(String name, [bool withUnknown]) {
     var returnType = this._classes[name];
+
     // we have not already created the type, attempt it
     if (returnType == null) {
       final definition = this._definitions[name];
+
       Constructor<BaseCodec> baseType;
       // we have a definition, so create the class now (lazily)
       if (definition != null) {

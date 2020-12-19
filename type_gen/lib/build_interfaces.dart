@@ -43,17 +43,7 @@ List<ClassCreation> _extractTypesDefsList(ConstantReader annotation) {
       final classKey = key.toStringValue();
       print("\n classKey :$classKey");
       var type = registry.createType(classKey);
-      // print("\n type :${type.runtimeType}");
-
-      // var classExtends = getClassExtends(registry,value.type.isDartCoreMap
-      //     ? type.runtimeType.toString()
-      //     : registry
-      //             .createType(value.toStringValue())
-      //             .runtimeType
-      //             .toString()
-      //             .startsWith(value.toStringValue())
-      //         ? value.toStringValue()
-      //         : registry.createType(value.toStringValue()).runtimeType.toString());
+      print("\n type :${type.runtimeType}");
 
       var classExtends;
 

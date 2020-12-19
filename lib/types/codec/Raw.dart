@@ -98,7 +98,7 @@ class Raw extends BaseCodec implements IU8a {
   }
 
   /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
-  String toHuman([bool isExtended]) {
+  dynamic toHuman([bool isExtended]) {
     return this.isAscii ? this.toUtf8() : this.toJSON();
   }
 

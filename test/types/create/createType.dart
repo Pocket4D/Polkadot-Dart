@@ -3,11 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/types/codec/Int.dart';
 import 'package:polkadot_dart/types/codec/Set.dart';
-import 'package:polkadot_dart/types/codec/Uint.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart';
 import 'package:polkadot_dart/types/create/registry.dart';
-import 'package:polkadot_dart/types/interfaces/offchain/builder.dart';
+
 // import 'package:polkadot_dart/types/interfaces/offchain/definitions.info.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart';
@@ -218,20 +217,9 @@ void createTypeTest() {
         var sk4 = registry.createClass("StorageKind")(registry, {"Local": "123"});
 
         print(sk4);
-
-        var sk2 = StorageKind(registry, {"LOCAL": "123"});
-        print(sk2.toJSON());
-        print(sk2.originDef);
-
-        var sk3 = StorageKind.from(sk4);
-        print(sk3.toJSON());
-
-        print(getTypeDef("UInt<128, Balance>").toMap());
-        print(getTypeDef("Balance").toMap());
-        print(getTypeClass(registry, getTypeDef("Balance")));
-        print(getTypeDef("BalanceOf").toMap());
-
-        print(registry.createType("BalanceOf").runtimeType);
+        print(getTypeDef("(Hash, Option<AccountId>)").toMap());
+        print(registry.createType('Call').runtimeType);
+        // print(registry.createType("ExtrinsicOrHash").runtimeType);
       });
     });
   });

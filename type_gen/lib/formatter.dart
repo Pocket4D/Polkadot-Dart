@@ -82,7 +82,7 @@ String formatTuple(List<String> inners) {
   inners.forEach((element) {
     element = fixVal(element);
   });
-  return paramsNotation('ITuple', inners.length > 1 ? "[${inners.join(', ')}]" : null);
+  return paramsNotation('ITuple', inners.length > 1 ? "${inners.join(', ')}" : null);
 }
 
 /**

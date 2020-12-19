@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/codec.dart';
+import 'package:polkadot_dart/types/generic/Block.dart';
 import 'package:polkadot_dart/types/generic/Call.dart';
+import 'package:polkadot_dart/types/generic/ConsensusEngineId.dart';
 import 'package:polkadot_dart/types/generic/LookupSource.dart';
 import 'package:polkadot_dart/types/generic/generic.dart';
+import 'package:polkadot_dart/types/interfaces/consensus/types.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/interfaces/system/types.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
@@ -60,8 +63,13 @@ class BalanceOf extends Balance {
   }
 }
 
-// /** @name Block */
-// class Block extends GenericBlock {}
+/** @name Block */
+class Block extends GenericBlock {
+  Block(Registry registry, [dynamic value]) : super(registry, value);
+  factory Block.from(Balance origin) {
+    return Block(origin.registry, origin.value);
+  }
+}
 
 class BlockNumber extends u32 {
   BlockNumber(Registry registry, [dynamic value = 0]) : super(registry, value ?? 0);
@@ -111,7 +119,11 @@ class Consensus extends Tuple2<Bytes, Bytes> {
 }
 
 // /** @name ConsensusEngineId */
-// class ConsensusEngineId extends GenericConsensusEngineId {}
+class ConsensusEngineId extends GenericConsensusEngineId {
+  ConsensusEngineId(Registry registry, [dynamic value = 0]) : super(registry, value);
+  factory ConsensusEngineId.from(GenericConsensusEngineId origin) =>
+      ConsensusEngineId(origin.registry, origin.originValue);
+}
 
 // /** @name Digest */
 // class Digest extends Struct {
@@ -119,20 +131,20 @@ class Consensus extends Tuple2<Bytes, Bytes> {
 // }
 
 // class DigestItem extends Enum {
-//   bool get isOther;
-//   Bytes get asOther;
-//   bool get isAuthoritiesChange;
-//   Vec<AuthorityId> get asAuthoritiesChange;
-//   bool get isChangesTrieRoot;
-//   Hash get asChangesTrieRoot;
-//   bool get isSealV0;
-//   SealV0 get asSealV0;
-//   bool get isConsensus;
-//   Consensus get asConsensus;
-//   bool get isSeal;
-//   Seal get asSeal;
-//   bool get isPreRuntime;
-//   PreRuntime get asPreRuntime;
+//   bool  isOther;
+//   Bytes  asOther;
+//   bool  isAuthoritiesChange;
+//   Vec<AuthorityId>  asAuthoritiesChange;
+//   bool  isChangesTrieRoot;
+//   Hash  asChangesTrieRoot;
+//   bool  isSealV0;
+//   SealV0  asSealV0;
+//   bool  isConsensus;
+//   Consensus  asConsensus;
+//   bool  isSeal;
+//   Seal  asSeal;
+//   bool  isPreRuntime;
+//   PreRuntime  asPreRuntime;
 // }
 
 // class DigestItem extends Enum {
