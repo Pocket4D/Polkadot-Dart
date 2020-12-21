@@ -48,8 +48,10 @@ class AssetId extends u32 {
 }
 
 class Balance extends UInt {
-  Balance(Registry registry, [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS])
-      : super(registry, value ?? 0, bitLength ?? DEFAULT_UINT_BITS);
+  Balance(Registry registry, [dynamic value = 0, int bitLength = 128])
+      : super(registry, value ?? 0, bitLength ?? 128) {
+    this.setRawType("Balance");
+  }
   factory Balance.from(UInt origin) {
     return Balance(origin.registry, origin.value, origin.bitLength)..setRawType(origin.typeName);
   }

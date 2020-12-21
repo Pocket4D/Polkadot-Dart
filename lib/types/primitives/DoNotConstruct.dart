@@ -12,5 +12,6 @@ class DoNotConstruct extends CodecNull {
   }
   static DoNotConstruct constructor(Registry registry, [dynamic typeName = 'DoNotConstruct']) =>
       DoNotConstruct(registry, typeName);
-  static Constructor<DoNotConstruct> withParams([String typeName]) => doNotConstructWith(typeName);
+  static Constructor<T> withParams<T extends DoNotConstruct>([String typeName]) =>
+      doNotConstructWith(typeName);
 }

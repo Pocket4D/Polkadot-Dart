@@ -95,6 +95,7 @@ class TypeRegistry implements Registry {
   Map<String, dynamic> _knownDefinitions;
   Map<String, String> _definitions;
   Map<String, bool> _unknownTypes;
+  RegisteredTypes _knownTypes;
   RegisteredTypes _registeredTypes;
   Map<String, Constructor> _classes;
   Map<String, Constructor> get cls => _classes;
@@ -162,12 +163,11 @@ class TypeRegistry implements Registry {
   @override
   Constructor<T> getConstructor<T extends BaseCodec>(String name, [bool withUnknown]) {
     var returnType = this._classes[name];
-
     // we have not already created the type, attempt it
     if (returnType == null) {
       final definition = this._definitions[name];
 
-      Constructor<BaseCodec> baseType;
+      Constructor<T> baseType;
       // we have a definition, so create the class now (lazily)
       if (definition != null) {
         baseType = classCreator.ClassOf(this, definition);
@@ -255,6 +255,8 @@ class TypeRegistry implements Registry {
     this._knownDefinitions.values.forEach((defs) {
       this.register(Map<String, dynamic>.from(defs["types"]));
     });
+
+    this._knownTypes = RegisteredTypes();
     // load balanceFormatter
     BalanceFormatter();
     return this;
@@ -262,7 +264,7 @@ class TypeRegistry implements Registry {
 
   @override
   // TODO: implement knownTypes
-  RegisteredTypes get knownTypes => throw UnimplementedError();
+  RegisteredTypes get knownTypes => this._knownTypes;
 
   @override
   void register(arg1, [arg2]) {
@@ -302,7 +304,7 @@ class TypeRegistry implements Registry {
 
   @override
   void setKnownTypes(RegisteredTypes types) {
-    // TODO: implement setKnownTypes
+    this._knownTypes = types;
   }
 
   @override

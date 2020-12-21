@@ -7,5 +7,5 @@ main() {
   codec.main();
   scaleCodec.main();
   create.main();
-  // primitives.main();
+  primitives.main();
 }

@@ -24,7 +24,7 @@ class CodecInt extends AbstractInt {
     return _typeName ?? super.toRawType();
   }
 
-  static Constructor<CodecInt> withParams(int bitLength, [String typeName]) =>
+  static Constructor<T> withParams<T extends CodecInt>(int bitLength, [String typeName]) =>
       intWith(bitLength, typeName);
 
   @override

@@ -20,7 +20,7 @@ class UInt extends AbstractInt {
           [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS]) =>
       UInt(registry, value, bitLength);
 
-  static Constructor<UInt> withParams(int bitLength, [String typeName]) =>
+  static Constructor<T> withParams<T extends UInt>(int bitLength, [String typeName]) =>
       uintWith(bitLength, typeName);
 
   String toRawType() {

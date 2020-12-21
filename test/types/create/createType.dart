@@ -169,9 +169,6 @@ void createTypeTest() {
       });
 
       test('allows for re-registration of a type', () {
-        final cc = registry.createType('Balance');
-        print(cc.runtimeType);
-
         final balDef = registry.createType('Balance');
         final bb = Balance.from(balDef);
         expect(bb.toRawType(), 'Balance');
@@ -218,7 +215,7 @@ void createTypeTest() {
 
         print(sk4);
         print(getTypeDef("(Hash, Option<AccountId>)").toMap());
-        print(registry.createType('Call').runtimeType);
+        // print(registry.createType('Call').runtimeType);
         // print(registry.createType("ExtrinsicOrHash").runtimeType);
       });
     });

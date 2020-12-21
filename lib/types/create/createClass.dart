@@ -25,7 +25,6 @@ Constructor<T> createClass<T extends BaseCodec>(Registry registry, String type) 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
 
   final typeDefResult = getTypeDef(type);
-
   final result = getTypeClass<T>(registry, typeDefResult);
   return result;
 }
@@ -75,7 +74,7 @@ List<String> getTypeClassArray(TypeDef value) {
   return getSubDefArray(value).map((def) => def.type).toList();
 }
 
-Constructor createInt(TypeDef def, dynamic clazz) {
+Constructor createInt<T>(TypeDef def, dynamic clazz) {
   assert(isNumber(def.length), "Expected bitLength information for ${def.displayName}<bitLength>");
   if (clazz.toString().startsWith("UInt")) {
     return UInt.withParams(def.length, def.displayName);
@@ -86,7 +85,7 @@ Constructor createInt(TypeDef def, dynamic clazz) {
   }
 }
 
-Constructor createHashMap(TypeDef value, dynamic clazz) {
+Constructor createHashMap<T>(TypeDef value, dynamic clazz) {
   final arr = getTypeClassArray(value);
   var keyType = arr[0];
   var valueType = arr[1];

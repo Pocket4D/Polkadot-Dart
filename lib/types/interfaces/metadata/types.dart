@@ -372,7 +372,7 @@ class MetadataLatest extends MetadataV12 {
 }
 
 /// @name MetadataV10 */
-class MetadataV10<S extends Map<String, dynamic>> extends Struct {
+class MetadataV10<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
   Vec<ModuleMetadataV10> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV10>>();
 
   MetadataV10(Registry registry, S types,
@@ -383,7 +383,7 @@ class MetadataV10<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name MetadataV11 */
-class MetadataV11<S extends Map<String, dynamic>> extends Struct {
+class MetadataV11<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
   Vec<ModuleMetadataV11> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV11>>();
   ExtrinsicMetadataV11 get extrinsic => super.getCodec("extrinsic").cast<ExtrinsicMetadataV11>();
 
@@ -395,7 +395,7 @@ class MetadataV11<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name MetadataV12 */
-class MetadataV12<S extends Map<String, dynamic>> extends Struct {
+class MetadataV12<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
   Vec<ModuleMetadataV12> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV12>>();
   ExtrinsicMetadataV12 get extrinsic => super.getCodec("extrinsic").cast<ExtrinsicMetadataV12>();
 
@@ -406,8 +406,10 @@ class MetadataV12<S extends Map<String, dynamic>> extends Struct {
       MetadataV12(origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
+abstract class MetaMapped {}
+
 /// @name MetadataV9 */
-class MetadataV9<S extends Map<String, dynamic>> extends Struct {
+class MetadataV9<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
   Vec<ModuleMetadataV9> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV9>>();
 
   MetadataV9(Registry registry, S types,
@@ -481,7 +483,7 @@ class ModuleMetadataLatest extends ModuleMetadataV12 {
 }
 
 /// @name ModuleMetadataV10 */
-class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct {
+class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Option<StorageMetadataV10> get storage =>
       super.getCodec("storage").cast<Option<StorageMetadataV10>>();
