@@ -1,69 +1,86 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polkadot_dart/types/types.dart' hide Call;
+import 'package:polkadot_dart/metadata/Metadata.dart';
+import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
+import 'package:polkadot_dart/types/types.dart' hide Call, Metadata;
 
-// /** @internal */
-// decodeLatestSubstrate<Modules extends BaseCodec> (Registry registry, int version, String rpcData, Map<String,dynamic>staticSubstrate) {
-//   test('decodes latest substrate properly', () {
-//     final metadata = Metadata(registry, rpcData);
+/** @internal */
+void decodeLatestSubstrate<Modules extends BaseCodec>(
+    Registry registry, int version, String rpcData, Map<String, dynamic> staticSubstrate) {
+  test('decodes latest substrate properly', () {
+    final metadata = Metadata(registry, rpcData);
 
-//     registry.setMetadata(metadata);
+    registry.setMetadata(metadata);
 
-//     try {
-//       expect(metadata.version).toBe(version);
-//       expect((metadata[`asV${version}` as keyof Metadata] as unknown as MetadataInterface<Modules>).modules.length).not.toBe(0);
-//       expect(metadata.toJSON()).toEqual(staticSubstrate);
-//     } catch (error) {
-//       console.error(JSON.stringify(metadata.toJSON()));
+    try {
+      expect(metadata.version, version);
+      // expect((metadata["asV${version}" as keyof Metadata] as unknown as MetadataInterface<Modules>).modules.length).not.toBe(0);
+      expect(metadata.toJSON(), staticSubstrate);
+    } catch (error) {
+      print(jsonEncode(metadata.toJSON()));
 
-//       throw error;
-//     }
-//   });
-// }
+      throw error;
+    }
+  });
+}
 
-// /** @internal */
-// export function toLatest<Modules extends Codec> (registry: Registry, version: number, rpcData: string, wtesthThrow = true): void {
-//   it(`converts v${version} to latest`, (): void => {
-//     const metadata = new Metadata(registry, rpcData);
+/** @internal */
+void toLatest<Modules extends Codec>(Registry registry, int version, String rpcData,
+    [bool withThrow = true]) {
+  test("converts v$version to latest", () {
+    final metadata = new Metadata(registry, rpcData);
 
-//     registry.setMetadata(metadata);
+    registry.setMetadata(metadata);
+    ExtractionMetadata metadataInit;
+    switch (version) {
+      case 9:
+        metadataInit = metadata.asV9;
+        break;
+      case 10:
+        metadataInit = metadata.asV10;
+        break;
+      case 11:
+        metadataInit = metadata.asV11;
+        break;
+      case 12:
+        metadataInit = metadata.asV12;
+        break;
+    }
 
-//     const metadataInit = metadata[`asV${version}` as keyof Metadata];
-//     const metadataLatest = metadata.asLatest;
+    final metadataLatest = metadata.asLatest;
 
-//     expect(
-//       getUniqTypes(registry, metadataInit as unknown as MetadataInterface<Modules>, withThrow)
-//     ).toEqual(
-//       getUniqTypes(registry, metadataLatest, withThrow)
-//     );
-//   });
-// }
+    expect(getUniqTypes(registry, metadataInit, withThrow),
+        getUniqTypes(registry, metadataLatest, withThrow));
+  });
+}
 
-// /** @internal */
-// export function defaultValues (registry: Registry, rpcData: string, withThrow = true): void {
-//   describe('storage with default values', (): void => {
-//     const metadata = new Metadata(registry, rpcData);
+/** @internal */
+void defaultValues(Registry registry, String rpcData, [bool withThrow = true]) {
+  group('storage with default values', () {
+    final metadata = new Metadata(registry, rpcData);
 
-//     metadata.asLatest.modules.filter(({ storage }): boolean => storage.isSome).forEach((mod): void => {
-//       mod.storage.unwrap().items.forEach(({ fallback, name, type }): void => {
-//         const inner = unwrapStorageType(type);
-//         const location = `${mod.name.toString()}.${name.toString()}: ${inner}`;
+    metadata.asLatest.modules.value.where((module) => module.storage.isSome).forEach((mod) {
+      mod.storage.unwrap().items.value.forEach((storage) {
+        final inner = unwrapStorageType(storage.type);
+        final location = "${mod.name.toString()}.${storage.name.toString()}: $inner";
 
-//         it(`creates default types for ${location}`, (): void => {
-//           expect((): void => {
-//             try {
-//               registry.createType(inner, fallback);
-//             } catch (error) {
-//               const message = `${location}:: ${(error as Error).message}`;
+        test("creates default types for $location", () {
+          expect(() {
+            try {
+              registry.createType(inner, storage.fallback);
+            } catch (error) {
+              final message = "$location:: $error";
 
-//               if (withThrow) {
-//                 throw new Error(message);
-//               } else {
-//                 console.warn(message);
-//               }
-//             }
-//           }).not.toThrow();
-//         });
-//       });
-//     });
-//   });
-// }
+              if (withThrow) {
+                throw message;
+              } else {
+                print(message);
+              }
+            }
+          }, returnsNormally);
+        });
+      });
+    });
+  });
+}

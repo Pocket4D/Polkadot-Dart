@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/metadata/Metadata.dart';
+import 'package:polkadot_dart/metadata/decorate/extrinsics/index.dart';
 import 'package:polkadot_dart/types/codec/codec.dart';
 import 'package:polkadot_dart/types/create/createClass.dart' as classCreator;
+import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart' as typesCreator;
+import 'package:polkadot_dart/types/create/getTypeDef.dart';
 import 'package:polkadot_dart/types/create/types.dart';
+import 'package:polkadot_dart/types/generic/Event.dart';
 import 'package:polkadot_dart/types/interfaces/definitions.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 
@@ -16,79 +21,74 @@ import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/format.dart';
 import 'package:polkadot_dart/utils/is.dart';
 import 'package:polkadot_dart/utils/u8a.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
-// // create error mapping from metadata
-// function decorateErrors (_: Registry, metadata: RegistryMetadata, metadataErrors: Record<string, RegistryError>): void {
-//   const modules = metadata.asLatest.modules;
-//   const isIndexed = modules.some(({ index }) => !index.eqn(255));
+// create error mapping from metadata
+void injectErrors(Registry _, Metadata metadata, Map<String, RegistryError> metadataErrors) {
+  final modules = metadata.asLatest.modules;
+  final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
 
-//   // decorate the errors
-//   modules.forEach((section, _sectionIndex): void => {
-//     const sectionIndex = isIndexed
-//       ? section.index.toNumber()
-//       : _sectionIndex;
-//     const sectionName = stringCamelCase(section.name);
+  // decorate the errors
+  modules.value.forEach((section) {
+    final sectionIndex = isIndexed ? section.index.toNumber() : modules.value.indexOf(section);
+    final sectionName = stringCamelCase(section.name.toString());
 
-//     section.errors.forEach(({ documentation, name }, index): void => {
-//       const eventIndex = new Uint8Array([sectionIndex, index]);
+    section.errors.value.forEach((errorModule) {
+      final index = section.errors.value.indexOf(errorModule);
+      final eventIndex = Uint8List.fromList([sectionIndex, index]);
 
-//       metadataErrors[u8aToHex(eventIndex)] = {
-//         documentation: documentation.map((d): string => d.toString()),
-//         index,
-//         name: name.toString(),
-//         section: sectionName
-//       };
-//     });
-//   });
-// }
+      metadataErrors[u8aToHex(eventIndex)] = RegistryError(
+          documentation:
+              errorModule.documentation.map((d, [index, list]) => d.value.toString()).toList(),
+          index: index,
+          name: errorModule.name.toString(),
+          section: sectionName);
+    });
+  });
+}
 
-// // create event classes from metadata
-// function decorateEvents (registry: Registry, metadata: RegistryMetadata, metadataEvents: Record<string, Constructor<GenericEventData>>): void {
-//   const modules = metadata.asLatest.modules;
-//   const isIndexed = modules.some(({ index }) => !index.eqn(255));
+void injectEvents(Registry registry, Metadata metadata,
+    Map<String, Constructor<GenericEventData>> metadataEvents) {
+  final modules = metadata.asLatest.modules;
+  final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
 
-//   // decorate the events
-//   modules
-//     .filter(({ events }): boolean => events.isSome)
-//     .forEach((section, _sectionIndex): void => {
-//       const sectionIndex = isIndexed
-//         ? section.index.toNumber()
-//         : _sectionIndex;
-//       const sectionName = stringCamelCase(section.name);
+  // decorate the events
+  final filtered = modules.value.where((module) => module.events.isSome).toList();
 
-//       section.events.unwrap().forEach((meta, methodIndex): void => {
-//         const methodName = meta.name.toString();
-//         const eventIndex = new Uint8Array([sectionIndex, methodIndex]);
-//         // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-//         const typeDef = meta.args.map((arg) => getTypeDef(arg));
-//         let Types: Constructor<Codec>[] = [];
+  filtered.forEach((section) {
+    final _sectionIndex = filtered.indexOf(section);
+    final sectionIndex = isIndexed ? section.index.toNumber() : _sectionIndex;
+    final sectionName = stringCamelCase(section.name.toString());
 
-//         try {
-//           Types = typeDef.map((typeDef): Constructor<Codec> => getTypeClass(registry, typeDef));
-//         } catch (error) {
-//           l.error(error);
-//         }
+    final events = section.events.unwrap().value;
+    events.forEach((meta) {
+      final methodIndex = events.indexOf(meta);
+      final methodName = meta.name.toString();
+      final eventIndex = Uint8List.fromList([sectionIndex, methodIndex]);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      final typeDef = meta.args.map((arg, [index, list]) => getTypeDef(arg.toString()));
+      List<Constructor<BaseCodec>> Types = [];
+      try {
+        Types = typeDef.map((typeDef) => getTypeClass(registry, typeDef));
+      } catch (error) {
+        print(error);
+      }
+      metadataEvents[u8aToHex(eventIndex)] = (Registry registry, [dynamic value]) {
+        return GenericEventData(
+            registry, value as Uint8List, Types, typeDef, meta, sectionName, methodName);
+      };
+    });
+  });
+}
 
-//         metadataEvents[u8aToHex(eventIndex)] = class extends GenericEventData {
-//           constructor (registry: Registry, value: Uint8Array) {
-//             super(registry, value, Types, typeDef, meta, sectionName, methodName);
-//           }
-//         };
-//       });
-//     });
-// }
-
-// // create extrinsic mapping from metadata
-// function decorateExtrinsics (registry: Registry, metadata: RegistryMetadata, metadataCalls: Record<string, CallFunction>): void {
-//   const extrinsics = extrinsicsFromMeta(registry, metadata);
-
-//   // decorate the extrinsics
-//   Object.values(extrinsics).forEach((methods): void =>
-//     Object.values(methods).forEach((method): void => {
-//       metadataCalls[u8aToHex(method.callIndex)] = method;
-//     })
-//   );
-// }
+void injectExtrinsics(
+    Registry registry, Metadata metadata, Map<String, CallFunction> metadataCalls) {
+  final extrinsics = decorateExtrinsics(registry, metadata.asLatest);
+  // decorate the extrinsics
+  (extrinsics.values).forEach((methods) => (methods.values).forEach((method) {
+        metadataCalls[u8aToHex(method.callIndex)] = method;
+      }));
+}
 
 class TypeRegistry implements Registry {
   Map<String, dynamic> _knownDefaults;
@@ -100,6 +100,13 @@ class TypeRegistry implements Registry {
   Map<String, Constructor> _classes;
   Map<String, Constructor> get cls => _classes;
   Map<String, String> get defs => _definitions;
+
+  Map<String, CallFunction> _metadataCalls = {};
+
+  Map<String, RegistryError> _metadataErrors = {};
+
+  Map<String, Constructor<GenericEventData>> _metadataEvents = {};
+
   TypeRegistry() {
     this._knownDefaults = {
       'Json': Json.constructor,
@@ -308,13 +315,29 @@ class TypeRegistry implements Registry {
   }
 
   @override
-  void setMetadata(RegistryMetadata metadata, [List<String> signedExtensions]) {
-    // TODO: implement setMetadata
+  void setMetadata(Metadata metadata, [List<String> signedExtensions]) {
+    injectExtrinsics(this, metadata, this._metadataCalls);
+    injectErrors(this, metadata, this._metadataErrors);
+    injectEvents(this, metadata, this._metadataEvents);
+
+    // this.setSignedExtensions(
+    //   signedExtensions || (
+    //     metadata.asLatest.extrinsic.version.gt(BN_ZERO)
+    //       ? metadata.asLatest.extrinsic.signedExtensions.map((key) => key.toString())
+    //       : defaultExtensions
+    //   )
+    // );
   }
 
   @override
   void setSignedExtensions([List<String> signedExtensions]) {
-    // TODO: implement setSignedExtensions
+    // this.#signedExtensions = signedExtensions;
+
+    // const unknown = findUnknownExtensions(this.#signedExtensions);
+
+    // if (unknown.length) {
+    //   l.warn(`Unknown signed extensions ${unknown.join(', ')} found, treating them as no-effect`);
+    // }
   }
 
   @override

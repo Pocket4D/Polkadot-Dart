@@ -14,4 +14,6 @@ class MagicNumber extends u32 {
   static MagicNumber constructor(Registry registry, [dynamic value]) {
     return MagicNumber(registry, value);
   }
+
+  factory MagicNumber.from(u32 origin) => MagicNumber(origin.registry, origin.originValue);
 }

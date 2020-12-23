@@ -1,3 +1,4 @@
+import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/codec/codec.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -11,7 +12,7 @@ class DoubleMapTypeLatest extends DoubleMapTypeV12 {
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
-class DoubleMapTypeV10<S extends Map<String, dynamic>> extends Struct {
+class DoubleMapTypeV10<S extends Map<String, dynamic>> extends Struct implements DoubleMap {
   StorageHasherV10 get hasher => super.getCodec("hasher").cast<StorageHasherV10>();
   CodecType get key1 => super.getCodec("key1").cast<CodecType>();
   CodecType get key2 => super.getCodec("key2").cast<CodecType>();
@@ -26,7 +27,7 @@ class DoubleMapTypeV10<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name DoubleMapTypeV11 */
-class DoubleMapTypeV11<S extends Map<String, dynamic>> extends Struct {
+class DoubleMapTypeV11<S extends Map<String, dynamic>> extends Struct implements DoubleMap {
   StorageHasherV11 get hasher => super.getCodec("hasher").cast<StorageHasherV11>();
   CodecType get key1 => super.getCodec("key1").cast<CodecType>();
   CodecType get key2 => super.getCodec("key2").cast<CodecType>();
@@ -50,7 +51,7 @@ class DoubleMapTypeV12 extends DoubleMapTypeV11 {
 }
 
 /// @name DoubleMapTypeV9 */
-class DoubleMapTypeV9<S extends Map<String, dynamic>> extends Struct {
+class DoubleMapTypeV9<S extends Map<String, dynamic>> extends Struct implements DoubleMap {
   StorageHasherV9 get hasher => super.getCodec("hasher").cast<StorageHasherV9>();
   CodecType get key1 => super.getCodec("key1").cast<CodecType>();
   CodecType get key2 => super.getCodec("key2").cast<CodecType>();
@@ -93,7 +94,7 @@ class ErrorMetadataV12 extends ErrorMetadataV11 {
 
 /// @name ErrorMetadataV9 */
 class ErrorMetadataV9<S extends Map<String, dynamic>> extends Struct {
-  CodecText get hasher => super.getCodec("hasher").cast<CodecText>();
+  CodecText get name => super.getCodec("name").cast<CodecText>();
   Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
 
   ErrorMetadataV9(Registry registry, S types,
@@ -140,7 +141,7 @@ class EventMetadataV12 extends EventMetadataV11 {
 }
 
 /// @name EventMetadataV9 */
-class EventMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class EventMetadataV9<S extends Map<String, dynamic>> extends Struct implements Event {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Vec<CodecType> get args => super.getCodec("args").cast<Vec<CodecType>>();
   Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
@@ -223,7 +224,7 @@ class FunctionArgumentMetadataV12 extends FunctionArgumentMetadataV11 {
 }
 
 /// @name FunctionArgumentMetadataV9 */
-class FunctionArgumentMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class FunctionArgumentMetadataV9<S extends Map<String, dynamic>> extends Struct implements Arg {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   CodecType get type => super.getCodec("type").cast<CodecText>();
 
@@ -271,7 +272,7 @@ class FunctionMetadataV12 extends FunctionMetadataV11 {
 }
 
 /// @name FunctionMetadataV9 */
-class FunctionMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class FunctionMetadataV9<S extends Map<String, dynamic>> extends Struct implements Call {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Vec<FunctionArgumentMetadataV9> get args =>
       super.getCodec("args").cast<Vec<FunctionArgumentMetadataV9>>();
@@ -294,7 +295,7 @@ class MapTypeLatest extends MapTypeV12 {
 }
 
 /// @name MapTypeV10 */
-class MapTypeV10<S extends Map<String, dynamic>> extends Struct {
+class MapTypeV10<S extends Map<String, dynamic>> extends Struct implements AsMap {
   StorageHasherV10 get hasher => super.getCodec("hasher").cast<StorageHasherV10>();
   CodecType get key => super.getCodec("key").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
@@ -308,7 +309,7 @@ class MapTypeV10<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name MapTypeV11 */
-class MapTypeV11<S extends Map<String, dynamic>> extends Struct {
+class MapTypeV11<S extends Map<String, dynamic>> extends Struct implements AsMap {
   StorageHasherV11 get hasher => super.getCodec("hasher").cast<StorageHasherV11>();
   CodecType get key => super.getCodec("key").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
@@ -331,7 +332,7 @@ class MapTypeV12 extends MapTypeV11 {
 }
 
 /// @name MapTypeV9 */
-class MapTypeV9<S extends Map<String, dynamic>> extends Struct {
+class MapTypeV9<S extends Map<String, dynamic>> extends Struct implements AsMap {
   StorageHasherV9 get hasher => super.getCodec("hasher").cast<StorageHasherV9>();
   CodecType get key => super.getCodec("key").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
@@ -363,7 +364,7 @@ class MetadataAll extends Enum {
 }
 
 /// @name MetadataLatest */
-class MetadataLatest extends MetadataV12 {
+class MetadataLatest extends MetadataV12 implements MetaMapped {
   MetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
@@ -372,9 +373,10 @@ class MetadataLatest extends MetadataV12 {
 }
 
 /// @name MetadataV10 */
-class MetadataV10<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
+class MetadataV10<S extends Map<String, dynamic>> extends Struct
+    implements MetaMapped, ExtractionMetadata {
   Vec<ModuleMetadataV10> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV10>>();
-
+  OuterEvent get outerEvent => null;
   MetadataV10(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
       : super(registry, types, value, jsonMap);
@@ -383,9 +385,11 @@ class MetadataV10<S extends Map<String, dynamic>> extends Struct implements Meta
 }
 
 /// @name MetadataV11 */
-class MetadataV11<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
+class MetadataV11<S extends Map<String, dynamic>> extends Struct
+    implements MetaMapped, ExtractionMetadata {
   Vec<ModuleMetadataV11> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV11>>();
   ExtrinsicMetadataV11 get extrinsic => super.getCodec("extrinsic").cast<ExtrinsicMetadataV11>();
+  OuterEvent get outerEvent => null;
 
   MetadataV11(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -395,9 +399,11 @@ class MetadataV11<S extends Map<String, dynamic>> extends Struct implements Meta
 }
 
 /// @name MetadataV12 */
-class MetadataV12<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
+class MetadataV12<S extends Map<String, dynamic>> extends Struct
+    implements MetaMapped, ExtractionMetadata {
   Vec<ModuleMetadataV12> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV12>>();
   ExtrinsicMetadataV12 get extrinsic => super.getCodec("extrinsic").cast<ExtrinsicMetadataV12>();
+  OuterEvent get outerEvent => null;
 
   MetadataV12(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -406,12 +412,15 @@ class MetadataV12<S extends Map<String, dynamic>> extends Struct implements Meta
       MetadataV12(origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
-abstract class MetaMapped {}
+abstract class MetaMapped {
+  MetaMapped.from(Struct origin);
+}
 
 /// @name MetadataV9 */
-class MetadataV9<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
+class MetadataV9<S extends Map<String, dynamic>> extends Struct
+    implements MetaMapped, ExtractionMetadata {
   Vec<ModuleMetadataV9> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV9>>();
-
+  OuterEvent get outerEvent => null;
   MetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
       : super(registry, types, value, jsonMap);
@@ -460,7 +469,8 @@ class ModuleConstantMetadataV12 extends ModuleConstantMetadataV11 {
 }
 
 /// @name ModuleConstantMetadataV9 */
-class ModuleConstantMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class ModuleConstantMetadataV9<S extends Map<String, dynamic>> extends Struct
+    implements ConstantText {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   CodecType get type => super.getCodec("type").cast<CodecType>();
   Bytes get thisValue => super.getCodec("value").cast<Bytes>();
@@ -483,7 +493,8 @@ class ModuleMetadataLatest extends ModuleMetadataV12 {
 }
 
 /// @name ModuleMetadataV10 */
-class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct implements MetaMapped {
+class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct implements Module {
+  ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Option<StorageMetadataV10> get storage =>
       super.getCodec("storage").cast<Option<StorageMetadataV10>>();
@@ -503,7 +514,8 @@ class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct implement
 }
 
 /// @name ModuleMetadataV11 */
-class ModuleMetadataV11<S extends Map<String, dynamic>> extends Struct {
+class ModuleMetadataV11<S extends Map<String, dynamic>> extends Struct implements Module {
+  ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Option<StorageMetadataV11> get storage =>
       super.getCodec("storage").cast<Option<StorageMetadataV11>>();
@@ -523,7 +535,8 @@ class ModuleMetadataV11<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name ModuleMetadataV12 */
-class ModuleMetadataV12<S extends Map<String, dynamic>> extends Struct {
+class ModuleMetadataV12<S extends Map<String, dynamic>> extends Struct implements Module {
+  ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Option<StorageMetadataV12> get storage =>
       super.getCodec("storage").cast<Option<StorageMetadataV12>>();
@@ -544,7 +557,8 @@ class ModuleMetadataV12<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name ModuleMetadataV9 */
-class ModuleMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class ModuleMetadataV9<S extends Map<String, dynamic>> extends Struct implements Module {
+  ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
   Option<StorageMetadataV9> get storage =>
       super.getCodec("storage").cast<Option<StorageMetadataV9>>();
@@ -574,7 +588,7 @@ class StorageEntryMetadataLatest extends StorageEntryMetadataV12 {
 }
 
 /// @name StorageEntryMetadataV10 */
-class StorageEntryMetadataV10<S extends Map<String, dynamic>> extends Struct {
+class StorageEntryMetadataV10<S extends Map<String, dynamic>> extends Struct implements Item {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   StorageEntryModifierV10 get modifier =>
       super.getCodec("modifier").cast<StorageEntryModifierV10>();
@@ -590,7 +604,7 @@ class StorageEntryMetadataV10<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name StorageEntryMetadataV11 */
-class StorageEntryMetadataV11<S extends Map<String, dynamic>> extends Struct {
+class StorageEntryMetadataV11<S extends Map<String, dynamic>> extends Struct implements Item {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   StorageEntryModifierV11 get modifier =>
       super.getCodec("modifier").cast<StorageEntryModifierV11>();
@@ -615,7 +629,7 @@ class StorageEntryMetadataV12 extends StorageEntryMetadataV11 {
 }
 
 /// @name StorageEntryMetadataV9 */
-class StorageEntryMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class StorageEntryMetadataV9<S extends Map<String, dynamic>> extends Struct implements Item {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   StorageEntryModifierV9 get modifier => super.getCodec("modifier").cast<StorageEntryModifierV9>();
   StorageEntryTypeV9 get type => super.getCodec("type").cast<StorageEntryTypeV9>();
@@ -673,7 +687,7 @@ class StorageEntryTypeLatest extends StorageEntryTypeV12 {
 }
 
 /// @name StorageEntryTypeV10 */
-class StorageEntryTypeV10 extends Enum {
+class StorageEntryTypeV10 extends Enum implements ItemType {
   StorageEntryTypeV10(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
   factory StorageEntryTypeV10.from(Enum origin) =>
@@ -687,7 +701,7 @@ class StorageEntryTypeV10 extends Enum {
 }
 
 // /** @name StorageEntryTypeV11 */
-class StorageEntryTypeV11 extends Enum {
+class StorageEntryTypeV11 extends Enum implements ItemType {
   bool get isPlain => super.isKey("Plain");
   CodecType get asPlain => super.askey("Plain").cast<CodecType>();
   bool get isMap => super.isKey("Map");
@@ -710,7 +724,7 @@ class StorageEntryTypeV12 extends StorageEntryTypeV11 {
 }
 
 /// @name StorageEntryTypeV9 */
-class StorageEntryTypeV9 extends Enum {
+class StorageEntryTypeV9 extends Enum implements ItemType {
   bool get isPlain => super.isKey("Plain");
   CodecType get asPlain => super.askey("Plain").cast<CodecType>();
   bool get isMap => super.isKey("Map");
@@ -795,7 +809,8 @@ class StorageMetadataLatest extends StorageMetadataV12 {
 }
 
 /// @name StorageMetadataV10 */
-class StorageMetadataV10<S extends Map<String, dynamic>> extends Struct {
+class StorageMetadataV10<S extends Map<String, dynamic>> extends Struct implements Items2 {
+  Vec<Item> get functions => null;
   CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
   Vec<StorageEntryMetadataV10> get items =>
       super.getCodec("items").cast<Vec<StorageEntryMetadataV10>>();
@@ -808,7 +823,8 @@ class StorageMetadataV10<S extends Map<String, dynamic>> extends Struct {
 }
 
 /// @name StorageMetadataV11 */
-class StorageMetadataV11<S extends Map<String, dynamic>> extends Struct {
+class StorageMetadataV11<S extends Map<String, dynamic>> extends Struct implements Items2 {
+  Vec<Item> get functions => null;
   CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
   Vec<StorageEntryMetadataV11> get items =>
       super.getCodec("items").cast<Vec<StorageEntryMetadataV11>>();
@@ -830,7 +846,8 @@ class StorageMetadataV12 extends StorageMetadataV11 {
 }
 
 /// @name StorageMetadataV9 */
-class StorageMetadataV9<S extends Map<String, dynamic>> extends Struct {
+class StorageMetadataV9<S extends Map<String, dynamic>> extends Struct implements Items2 {
+  Vec<Item> get functions => null;
   CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
   Vec<StorageEntryMetadataV9> get items =>
       super.getCodec("items").cast<Vec<StorageEntryMetadataV9>>();

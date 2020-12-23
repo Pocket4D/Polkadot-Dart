@@ -1,81 +1,99 @@
+import 'dart:typed_data';
+
 import 'package:polkadot_dart/metadata/util/fluttenUniq.dart';
 import 'package:polkadot_dart/metadata/util/validateTypes.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart' hide Call;
 
 abstract class Arg extends BaseCodec {
-  CodecType type;
+  CodecType get type;
 }
 
 abstract class DoubleMap {
-  CodecText key1;
-  CodecText key2;
-  CodecText value;
+  CodecText get key1;
+  CodecText get key2;
+  CodecText get thisValue;
 }
 
 abstract class AsMap {
-  CodecText key;
-  CodecText value;
+  CodecText get key;
+  CodecText get thisValue;
 }
 
 abstract class ItemType {
-  bool isDoubleMap;
-  bool isMap;
-  bool isPlain;
-  DoubleMap asDoubleMap;
-  AsMap asMap;
-  CodecText asPlain;
+  bool get isDoubleMap;
+  bool get isMap;
+  bool get isPlain;
+  DoubleMap get asDoubleMap;
+  AsMap get asMap;
+  CodecText get asPlain;
 }
 
 abstract class Item extends BaseCodec {
-  ItemType type;
+  ItemType get type;
 }
 
 abstract class Items extends BaseCodec {
-  Vec<Item> functions;
-  Vec<Item> items;
+  Vec<Item> get functions;
+  Vec<Item> get items;
 }
 
 abstract class Call extends BaseCodec {
-  Vec<Arg> args;
+  Vec<Arg> get args;
 }
 
 // type Calls = Option<Vec<Call>>;
 
 abstract class Event extends BaseCodec {
-  Vec<Arg> args;
+  Vec<CodecType> get args;
 }
 
 // type Events = Option<Vec<Event>>;
 
 abstract class CallFunctions {
-  Vec<Call> functions;
+  Vec<Call> get functions;
 }
 
 abstract class ConstantText extends BaseCodec {
-  CodecText type;
+  CodecText get type;
 }
 
 abstract class ModuleCall {
-  CallFunctions call;
+  CallFunctions get call;
+}
+
+abstract class Items2 extends BaseCodec {
+  Vec<Item> get functions;
+  Vec<Item> get items;
 }
 
 abstract class Module extends BaseCodec {
-  ModuleCall module;
-  Option<Vec<Call>> calls;
-  Vec<ConstantText> constants;
-  Option<Vec<Event>> events;
-  dynamic storage; // Option<Vec<Item> | Items
+  ModuleCall get module;
+  Option<Vec<Call>> get calls;
+  Vec<ConstantText> get constants;
+  Option<Vec<Event>> get events;
+  Option<Items2> get storage; // Option<Vec<Item> | Items
 }
 
-abstract class OuterEvent {
+class OuterEvent {
   Vec<ITuple<CodecText, Vec<Event>>> events;
+  OuterEvent({this.events});
+  factory OuterEvent.fromMap(Map<String, dynamic> map) {
+    return OuterEvent(events: map["events"]);
+  }
 }
 
 // [Text, Vec<Event>] & Codec
 
 abstract class ExtractionMetadata {
-  Vec<Module> modules;
-  OuterEvent outerEvent;
+  Vec<Module> get modules;
+  OuterEvent get outerEvent;
+  // ExtractionMetadata({this.modules, this.outerEvent});
+  // factory ExtractionMetadata.fromMap(Map<String, dynamic> map) {
+  //   var _modules = map["modules"];
+  //   var outerEvent = map["outerEvent"] is Map ? OuterEvent.fromMap(map["outerEvent"]) : null;
+  //   return ExtractionMetadata(modules: _modules, outerEvent: outerEvent);
+  // }
 }
 
 List<Call> unwrapCalls(Module mod) {
@@ -154,10 +172,10 @@ List<List<List<String>>> getStorageNames(ExtractionMetadata extractionMetadata) 
               return [
                 item.type.asDoubleMap.key1.toString(),
                 item.type.asDoubleMap.key2.toString(),
-                item.type.asDoubleMap.value.toString()
+                item.type.asDoubleMap.thisValue.toString()
               ];
             } else if (item.type.isMap) {
-              return [item.type.asMap.key.toString(), item.type.asMap.value.toString()];
+              return [item.type.asMap.key.toString(), item.type.asMap.thisValue.toString()];
             } else {
               return [item.type.asPlain.toString()];
             }

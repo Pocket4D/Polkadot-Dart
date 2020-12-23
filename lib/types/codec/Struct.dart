@@ -14,6 +14,7 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
     Map<String, Constructor> types, dynamic value, Map<dynamic, String> jsonMap) {
   Map<String, dynamic> jsonObj;
   final keys = types.keys.toList();
+
   return (keys).fold(Map<dynamic, BaseCodec>.from({}) as T, (raw, key) {
     // The key in the JSON can be snake_case (or other cases), but in our
     // Types, result or any other maps, it's camelCase
@@ -23,52 +24,52 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
 
     final jsonKey = (jsonMap[key] != null && value[key] == null) ? jsonMap[key] : key;
 
-    try {
-      if ((value is List)) {
-        // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-        (raw as dynamic)[key] =
-            value[index] is T ? value[index] : types[key](registry, value[index]);
-      }
-      // else if (value is Map) {
-      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      //   final mapped = value[jsonKey];
-      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      //   (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
-      // }
-      else if (value is Struct) {
-        final mapped = value.value[jsonKey];
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
-      } else if (value is Map) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        var assign = value[jsonKey];
+    // try {
+    if ((value is List)) {
+      // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+      (raw as dynamic)[key] = value[index] is T ? value[index] : types[key](registry, value[index]);
+    }
+    // else if (value is Map) {
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    //   final mapped = value[jsonKey];
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    //   (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
+    // }
+    else if (value is Struct) {
+      final mapped = value.value[jsonKey];
 
-        if ((assign == null)) {
-          if ((jsonObj == null)) {
-            jsonObj = value.entries.fold({}, (all, entry) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              all[stringCamelCase(entry.key)] = entry.value;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
+    } else if (value is Map) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      var assign = value[jsonKey];
 
-              return all;
-            });
-          }
+      if ((assign == null)) {
+        if ((jsonObj == null)) {
+          jsonObj = value.entries.fold({}, (all, entry) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            all[stringCamelCase(entry.key)] = entry.value;
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          assign = jsonObj[jsonKey];
+            return all;
+          });
         }
 
-        (raw)[key] = assign.runtimeType == types[key](registry, assign)
-            ? assign
-            : types[key](registry, assign);
-      } else {
-        throw "Cannot decode value ${jsonEncode(value)}";
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        assign = jsonObj[jsonKey];
       }
-    } catch (error) {
-      var type = types[key](registry).toRawType();
 
-      throw "Struct: failed on $jsonKey: $type:: $error";
+      (raw)[key] = assign.runtimeType == types[key](registry, assign)
+          ? assign
+          : types[key](registry, assign);
+    } else {
+      throw "Cannot decode value ${jsonEncode(value)}";
     }
+    // } catch (error) {
+    //   var type = types[key](registry).toRawType();
+
+    //   throw "Struct: failed on $jsonKey: $type:: $error";
+    // }
 
     return raw;
   });

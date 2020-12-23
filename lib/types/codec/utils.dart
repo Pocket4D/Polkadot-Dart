@@ -24,7 +24,6 @@ Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> in
 
 List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   final types = _types is List ? _types : (_types as Map<String, Constructor>).entries.toList();
-
   if (types.length == 0) {
     return [];
   }

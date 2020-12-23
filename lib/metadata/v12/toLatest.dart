@@ -1,5 +1,7 @@
+import 'package:polkadot_dart/types-known/modules.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 const KNOWN_ORIGINS = {
   "Council": 'CollectiveOrigin',
@@ -109,28 +111,32 @@ void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
   });
 }
 
-// Map<String,String>getModuleTypes(Registry registry, String section) {
-//   return {
-//     ...(typesModules[section] || {}),
-//     ...(knownTypes.typesAlias?.[section] || {})
-//   };
-// }
+Map<String, String> getModuleTypes(Registry registry, String section) {
+  return {...(typesModules[section] ?? {}), ...(registry.knownTypes.typesAlias[section] ?? {})};
+}
 
 // { calls, events, storage }: { calls: FunctionMetadataV12[] | null, events: EventMetadataV12[] | null, storage: StorageMetadataV12 | null }
 
-// createModule(Registry registry, ModuleMetadataV12 mod, {List<FunctionMetadataV12> call,List<EventMetadataV12> events,StorageMetadataV12 storage}) {
-//   final sectionTypes = getModuleTypes(registry, stringCamelCase(mod.name));
+ModuleMetadataLatest createModule(Registry registry, ModuleMetadataV12 mod,
+    {List<FunctionMetadataV12> calls, List<EventMetadataV12> events, StorageMetadataV12 storage}) {
+  final sectionTypes = getModuleTypes(registry, stringCamelCase(mod.name.toString()));
 
-//   return registry.createType('ModuleMetadataLatest', {
-//     ...mod,
-//     calls: calls
-//       ? convertCalls(registry, calls, sectionTypes)
-//       : null,
-//     events: events
-//       ? convertEvents(registry, events, sectionTypes)
-//       : null,
-//     storage: storage
-//       ? convertStorage(registry, storage, sectionTypes)
-//       : null
-//   });
-// }
+  return ModuleMetadataLatest.from(registry.createType('ModuleMetadataLatest', {
+    ...mod.value,
+    "calls": calls != null ? convertCalls(registry, calls, sectionTypes) : null,
+    "events": events != null ? convertEvents(registry, events, sectionTypes) : null,
+    "storage": storage != null ? convertStorage(registry, storage, sectionTypes) : null
+  }));
+}
+
+MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
+  registerOriginCaller(registry, v12.modules.value);
+
+  return registry.createType('MetadataLatest', {
+    "extrinsic": v12.extrinsic,
+    "modules": v12.modules.map((mod, [index, list]) => createModule(registry, mod,
+        calls: mod.calls.unwrapOr(null),
+        events: mod.events.unwrapOr(null),
+        storage: mod.storage.unwrapOr(null)))
+  });
+}

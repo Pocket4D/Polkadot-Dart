@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/types/interfaces/types.dart';
-import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/types/types.dart' hide Metadata;
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/definitions.dart';
 
@@ -45,11 +46,19 @@ abstract class RegistryMetadataCalls {
   List<RegistryMetadataCall> unwrap();
 }
 
-abstract class RegistryError {
+class RegistryError {
   List<String> documentation;
   int index;
   String name;
   String section;
+  RegistryError({this.documentation, this.index, this.name, this.section});
+  factory RegistryError.fromMap(Map<String, dynamic> map) {
+    return RegistryError(
+        documentation: map["documentation"],
+        index: map["index"],
+        name: map["name"],
+        section: map["section"]);
+  }
 }
 
 abstract class RegistryMetadataError {
@@ -61,8 +70,8 @@ abstract class RegistryMetadataError {
 // export type RegistryMetadataErrors = RegistryMetadataError[];
 
 abstract class RegistryMetadataEvent {
-  List<dynamic> args;
-  RegistryMetadataText name;
+  List<dynamic> get args;
+  RegistryMetadataText get name;
 }
 
 abstract class RegistryMetadataEvents {
@@ -81,43 +90,43 @@ class RegistryMetadataExtrinsic {
   }
 }
 
-class RegistryMetadataModule {
-  RegistryMetadataCalls calls;
-  List<RegistryMetadataError> errors;
-  RegistryMetadataEvents events;
-  u8 index;
-  RegistryMetadataText name;
+abstract class RegistryMetadataModule {
+  RegistryMetadataCalls get calls;
+  List<RegistryMetadataError> get errors;
+  RegistryMetadataEvents get events;
+  u8 get index;
+  RegistryMetadataText get name;
 
-  RegistryMetadataModule({this.calls, this.errors, this.events, this.index, this.name});
-  factory RegistryMetadataModule.fromMap(Map<String, dynamic> map) {
-    return RegistryMetadataModule(
-        calls: map["calls"] as RegistryMetadataCalls,
-        errors: map["errors"] as List<RegistryMetadataError>,
-        events: map["events"] as RegistryMetadataEvents,
-        index: map["index"] as u8,
-        name: map["name"] as RegistryMetadataText);
-  }
+  // RegistryMetadataModule({this.calls, this.errors, this.events, this.index, this.name});
+  // factory RegistryMetadataModule.fromMap(Map<String, dynamic> map) {
+  //   return RegistryMetadataModule(
+  //       calls: map["calls"] as RegistryMetadataCalls,
+  //       errors: map["errors"] as List<RegistryMetadataError>,
+  //       events: map["events"] as RegistryMetadataEvents,
+  //       index: map["index"] as u8,
+  //       name: map["name"] as RegistryMetadataText);
+  // }
 }
 
-class RegistryMetadataLatest {
-  List<RegistryMetadataModule> modules;
-  RegistryMetadataExtrinsic extrinsic;
-  RegistryMetadataLatest({this.modules, this.extrinsic});
-  factory RegistryMetadataLatest.fromMap(Map<String, dynamic> map) {
-    return RegistryMetadataLatest(
-        modules: map["modules"] as List<RegistryMetadataModule>,
-        extrinsic: map["extrinsic"] as RegistryMetadataExtrinsic);
-  }
+abstract class RegistryMetadataLatest {
+  List<RegistryMetadataModule> get modules;
+  RegistryMetadataExtrinsic get extrinsic;
+  // RegistryMetadataLatest({this.modules, this.extrinsic});
+  // // factory RegistryMetadataLatest.fromMap(Map<String, dynamic> map) {
+  //   return RegistryMetadataLatest(
+  //       modules: map["modules"] as List<RegistryMetadataModule>,
+  //       extrinsic: map["extrinsic"] as RegistryMetadataExtrinsic);
+  // }
 }
 
-class RegistryMetadata {
-  RegistryMetadataLatest asLatest;
-  int version;
-  RegistryMetadata({this.asLatest, this.version});
-  factory RegistryMetadata.fromMap(Map<String, dynamic> map) {
-    return RegistryMetadata(
-        asLatest: map["asLatest"] as RegistryMetadataLatest, version: map["version"] as int);
-  }
+abstract class RegistryMetadata {
+  RegistryMetadataLatest get asLatest;
+  int get version;
+  // RegistryMetadata({this.asLatest, this.version});
+  // factory RegistryMetadata.fromMap(Map<String, dynamic> map) {
+  //   return RegistryMetadata(
+  //       asLatest: map["asLatest"] as RegistryMetadataLatest, version: map["version"] as int);
+  // }
 }
 
 class OverrideVersionedType {
@@ -264,7 +273,7 @@ abstract class Registry {
   // setHasher(hasher?:(data: Uint8Array) => Uint8Array): void;
   void setHasher(Uint8List Function(Uint8List) hasher);
   // setMetadata(metadata: RegistryMetadata, signedExtensions?: string[]): void;
-  void setMetadata(RegistryMetadata metadata, [List<String> signedExtensions]);
+  void setMetadata(Metadata metadata, [List<String> signedExtensions]);
   // setSignedExtensions(signedExtensions?: string[]): void;
   void setSignedExtensions([List<String> signedExtensions]);
 }

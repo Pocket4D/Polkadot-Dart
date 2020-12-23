@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:polkadot_dart/metadata/MagicNumber.dart';
+import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/types/extrinsic/Extrinsic.dart';
 import 'package:polkadot_dart/types/extrinsic/ExtrinsicUnknown.dart';
 import 'package:polkadot_dart/types/extrinsic/index.dart';
@@ -11,7 +13,7 @@ import 'package:polkadot_dart/types/generic/LookupSource.dart';
 import 'package:polkadot_dart/types/generic/MultiAddress.dart';
 import 'package:polkadot_dart/types/generic/Vote.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
-import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/types/types.dart' hide Metadata;
 
 enum TypeDefInfo {
   BTreeMap,
@@ -244,5 +246,7 @@ Map<String, Constructor> baseTypes = {
   'GenericExtrinsicSignatureV4': GenericExtrinsicSignatureV4.constructor,
   'GenericLookupSource': GenericLookupSource.constructor,
   'GenericMultiAddress': GenericMultiAddress.constructor,
-  'GenericVote': GenericVote.constructor
+  'GenericVote': GenericVote.constructor,
+  'Metadata': Metadata.constructor,
+  'MagicNumber': MagicNumber.constructor
 };

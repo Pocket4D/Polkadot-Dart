@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/codec/Tuple.dart';
 import 'package:polkadot_dart/types/interfaces/system/types.dart';
 import 'package:polkadot_dart/types/interfaces/types.dart';
 // import 'package:polkadot_dart/types/interfaces/builders.dart';
-import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/types/types.dart' hide Event;
 import 'package:polkadot_dart/types/types/registry.dart';
 
 class GenericEventData extends Tuple {
@@ -20,12 +21,12 @@ class GenericEventData extends Tuple {
   GenericEventData(Registry registry, Uint8List value,
       [List<Constructor> types,
       List<TypeDef> typeDef,
-      RegistryMetadataEvent meta,
+      EventMetadataLatest meta,
       String section = '<unknown>',
       String method = '<unknown>'])
       : super(registry, types ?? [], value) {
     // this._types = types ?? [];
-    this._meta = meta as EventMetadataLatest;
+    this._meta = meta;
     this._method = method;
     this._section = section;
     this._typeDef = typeDef ?? [];
@@ -35,7 +36,7 @@ class GenericEventData extends Tuple {
           [dynamic value,
           List<Constructor> types,
           List<TypeDef> typeDef,
-          RegistryMetadataEvent meta,
+          Event meta,
           String section = '<unknown>',
           String method = '<unknown>']) =>
       GenericEventData(registry, value as Uint8List, types, typeDef, meta, section, method);
