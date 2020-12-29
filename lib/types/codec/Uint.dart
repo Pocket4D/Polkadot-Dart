@@ -14,14 +14,15 @@ class UInt extends AbstractInt {
   String _typeName;
   String get typeName => _typeName;
   UInt(Registry registry, [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS])
-      : super(registry, value, bitLength);
-
+      : super.withReg(registry, value, bitLength);
   static UInt constructor(Registry registry,
           [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS]) =>
       UInt(registry, value, bitLength);
 
   static Constructor<T> withParams<T extends UInt>(int bitLength, [String typeName]) =>
       uintWith(bitLength, typeName);
+
+  static getExtends(int bitLength, [String typeName]) {}
 
   String toRawType() {
     return _typeName ?? super.toRawType();

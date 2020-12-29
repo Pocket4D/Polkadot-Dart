@@ -14,11 +14,10 @@ abstract class ICompact<T> extends BaseCodec {
   T unwrap();
 }
 
-abstract class IKeyringPair {
+abstract class IKeyringPair extends KeyringPair {
   String address;
   Uint8List addressRaw;
   Uint8List publicKey;
-  Uint8List sign(Uint8List data, [SignOptions options]);
 }
 
 abstract class IMethod extends BaseCodec {

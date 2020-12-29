@@ -208,11 +208,14 @@ class RegisteredTypes {
 
   RegisteredTypes({this.types, this.typesAlias, this.typesBundle, this.typesChain, this.typesSpec});
   factory RegisteredTypes.fromMap(Map<String, dynamic> map) {
-    var _types = map["types"] as Map<String, dynamic>;
-    var _typesAlias = map["typesAlias"] as Map<String, Map<String, String>>;
+    var _types = map["types"] as Map<String, dynamic> ?? Map<String, dynamic>();
+    var _typesAlias =
+        map["typesAlias"] as Map<String, Map<String, String>> ?? Map<String, Map<String, String>>();
     var _typesBundle = map["typesBundle"] as OverrideBundleType;
-    var _typesChain = map["typesChain"] as Map<String, Map<String, dynamic>>;
-    var _typesSepc = map["typesSpec"] as Map<String, Map<String, dynamic>>;
+    var _typesChain = map["typesChain"] as Map<String, Map<String, dynamic>> ??
+        Map<String, Map<String, dynamic>>();
+    var _typesSepc = map["typesSpec"] as Map<String, Map<String, dynamic>> ??
+        Map<String, Map<String, dynamic>>();
     return RegisteredTypes(
         types: _types,
         typesAlias: _typesAlias,

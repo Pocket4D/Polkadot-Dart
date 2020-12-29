@@ -59,6 +59,9 @@ class GenericAccountIndex extends u32 {
   }
 
   static List<int> readLength(Uint8List input) {
+    if (input.isEmpty) {
+      input = Uint8List.fromList([0]);
+    }
     final first = input[0];
 
     if (first == PREFIX_2BYTE) {

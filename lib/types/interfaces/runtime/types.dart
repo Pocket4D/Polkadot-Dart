@@ -37,7 +37,7 @@ class AccountIndex extends GenericAccountIndex {
 // /** @name Address */
 class Address extends LookupSource {
   Address(Registry registry, [dynamic value]) : super(registry, value ?? Uint8List.fromList([]));
-  factory Address.from(LookupSource origin) => Address(origin.registry, origin.raw);
+  factory Address.from(Base origin) => Address(origin.registry, origin.raw);
 }
 
 class AssetId extends u32 {
@@ -76,7 +76,7 @@ class Block extends GenericBlock {
 class BlockNumber extends u32 {
   BlockNumber(Registry registry, [dynamic value = 0]) : super(registry, value ?? 0);
   factory BlockNumber.from(u32 origin) {
-    return BlockNumber(origin.registry, origin.value);
+    return BlockNumber(origin.registry, origin.value)..setRawType("BlockNumber");
   }
 }
 
@@ -253,7 +253,7 @@ class H512 extends U8aFixed {
 class Hash extends H256 {
   Hash(Registry registry, [dynamic value, int bitLength = 256, String typeName = "Hash"])
       : super(registry, value, bitLength ?? 256, typeName);
-  factory Hash.from(H256 origin) {
+  factory Hash.from(U8aFixed origin) {
     return Hash(origin.registry, origin.value, origin.bitLength, origin.typeName);
   }
 }
@@ -286,8 +286,7 @@ class Index extends u32 {
 class IndicesLookupSource extends GenericLookupSource {
   IndicesLookupSource(Registry registry, [dynamic value])
       : super(registry, value ?? Uint8List.fromList([]));
-  factory IndicesLookupSource.from(GenericLookupSource origin) =>
-      IndicesLookupSource(origin.registry, origin.raw);
+  factory IndicesLookupSource.from(Base origin) => IndicesLookupSource(origin.registry, origin.raw);
 }
 
 class Justification extends Bytes {
@@ -316,8 +315,7 @@ class LockIdentifier extends U8aFixed {
 class LookupSource extends IndicesLookupSource {
   LookupSource(Registry registry, [dynamic value])
       : super(registry, value ?? Uint8List.fromList([]));
-  factory LookupSource.from(IndicesLookupSource origin) =>
-      LookupSource(origin.registry, origin.raw);
+  factory LookupSource.from(Base origin) => LookupSource(origin.registry, origin.raw);
 }
 
 class LookupTarget extends AccountId {

@@ -2,22 +2,23 @@ import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/codec/codec.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
+import 'package:polkadot_dart/types/types/types.dart';
 
 // /** @name DoubleMapTypeLatest */
 class DoubleMapTypeLatest extends DoubleMapTypeV12 {
   DoubleMapTypeLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory DoubleMapTypeLatest.from(DoubleMapTypeV12 origin) => DoubleMapTypeLatest(
+  factory DoubleMapTypeLatest.from(Struct origin) => DoubleMapTypeLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 class DoubleMapTypeV10<S extends Map<String, dynamic>> extends Struct implements DoubleMap {
-  StorageHasherV10 get hasher => super.getCodec("hasher").cast<StorageHasherV10>();
+  StorageHasherV10 get hasher => StorageHasherV10.from(super.getCodec("hasher"));
   CodecType get key1 => super.getCodec("key1").cast<CodecType>();
   CodecType get key2 => super.getCodec("key2").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
-  StorageHasherV10 get key2Hasher => super.getCodec("key2Hasher").cast<StorageHasherV10>();
+  StorageHasherV10 get key2Hasher => StorageHasherV10.from(super.getCodec("key2Hasher"));
 
   DoubleMapTypeV10(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -28,11 +29,11 @@ class DoubleMapTypeV10<S extends Map<String, dynamic>> extends Struct implements
 
 /// @name DoubleMapTypeV11 */
 class DoubleMapTypeV11<S extends Map<String, dynamic>> extends Struct implements DoubleMap {
-  StorageHasherV11 get hasher => super.getCodec("hasher").cast<StorageHasherV11>();
+  StorageHasherV11 get hasher => StorageHasherV11.from(super.getCodec("hasher"));
   CodecType get key1 => super.getCodec("key1").cast<CodecType>();
   CodecType get key2 => super.getCodec("key2").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
-  StorageHasherV11 get key2Hasher => super.getCodec("key2Hasher").cast<StorageHasherV11>();
+  StorageHasherV11 get key2Hasher => StorageHasherV11.from(super.getCodec("key2Hasher"));
 
   DoubleMapTypeV11(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -46,17 +47,17 @@ class DoubleMapTypeV12 extends DoubleMapTypeV11 {
   DoubleMapTypeV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory DoubleMapTypeV12.from(DoubleMapTypeV11 origin) => DoubleMapTypeV12(
+  factory DoubleMapTypeV12.from(Struct origin) => DoubleMapTypeV12(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name DoubleMapTypeV9 */
 class DoubleMapTypeV9<S extends Map<String, dynamic>> extends Struct implements DoubleMap {
-  StorageHasherV9 get hasher => super.getCodec("hasher").cast<StorageHasherV9>();
+  StorageHasherV9 get hasher => StorageHasherV9.from(super.getCodec("hasher"));
   CodecType get key1 => super.getCodec("key1").cast<CodecType>();
   CodecType get key2 => super.getCodec("key2").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
-  StorageHasherV9 get key2Hasher => super.getCodec("key2Hasher").cast<StorageHasherV9>();
+  StorageHasherV9 get key2Hasher => StorageHasherV9.from(super.getCodec("key2Hasher"));
 
   DoubleMapTypeV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -70,7 +71,7 @@ class ErrorMetadataV10 extends ErrorMetadataV9 {
   ErrorMetadataV10(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ErrorMetadataV10.from(ErrorMetadataV10 origin) => ErrorMetadataV10(
+  factory ErrorMetadataV10.from(Struct origin) => ErrorMetadataV10(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -79,7 +80,7 @@ class ErrorMetadataV11 extends ErrorMetadataV10 {
   ErrorMetadataV11(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ErrorMetadataV11.from(ErrorMetadataV10 origin) => ErrorMetadataV11(
+  factory ErrorMetadataV11.from(Struct origin) => ErrorMetadataV11(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -88,14 +89,28 @@ class ErrorMetadataV12 extends ErrorMetadataV11 {
   ErrorMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ErrorMetadataV12.from(ErrorMetadataV11 origin) => ErrorMetadataV12(
+  factory ErrorMetadataV12.from(Struct origin) => ErrorMetadataV12(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+}
+
+class ErrorMetadataLatest extends ErrorMetadataV12 {
+  ErrorMetadataLatest(Registry registry, Map<String, dynamic> types,
+      [dynamic thisValue, Map<dynamic, String> jsonMap])
+      : super(registry, types, thisValue, jsonMap);
+  factory ErrorMetadataLatest.from(Struct origin) => ErrorMetadataLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name ErrorMetadataV9 */
 class ErrorMetadataV9<S extends Map<String, dynamic>> extends Struct {
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   ErrorMetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -109,7 +124,7 @@ class EventMetadataLatest extends EventMetadataV12 {
   EventMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory EventMetadataLatest.from(EventMetadataV12 origin) => EventMetadataLatest(
+  factory EventMetadataLatest.from(Struct origin) => EventMetadataLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -118,7 +133,7 @@ class EventMetadataV10 extends EventMetadataV9 {
   EventMetadataV10(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory EventMetadataV10.from(EventMetadataV9 origin) => EventMetadataV10(
+  factory EventMetadataV10.from(Struct origin) => EventMetadataV10(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -127,7 +142,7 @@ class EventMetadataV11 extends EventMetadataV10 {
   EventMetadataV11(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory EventMetadataV11.from(EventMetadataV10 origin) => EventMetadataV11(
+  factory EventMetadataV11.from(Struct origin) => EventMetadataV11(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -136,15 +151,28 @@ class EventMetadataV12 extends EventMetadataV11 {
   EventMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory EventMetadataV12.from(EventMetadataV11 origin) => EventMetadataV12(
+  factory EventMetadataV12.from(Struct origin) => EventMetadataV12(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name EventMetadataV9 */
 class EventMetadataV9<S extends Map<String, dynamic>> extends Struct implements Event {
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Vec<CodecType> get args => super.getCodec("args").cast<Vec<CodecType>>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  Vec<CodecType> get args {
+    var data = (super.getCodec("args") as Vec);
+    var newList = data.value.map((element) {
+      return CodecType(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Type');
+  }
+
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   EventMetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -158,14 +186,20 @@ class ExtrinsicMetadataLatest extends ExtrinsicMetadataV12 {
   ExtrinsicMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ExtrinsicMetadataLatest.from(ExtrinsicMetadataV12 origin) => ExtrinsicMetadataLatest(
+  factory ExtrinsicMetadataLatest.from(Struct origin) => ExtrinsicMetadataLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name ExtrinsicMetadataV11 */
 class ExtrinsicMetadataV11<S extends Map<String, dynamic>> extends Struct {
   u8 get version => super.getCodec("version").cast<u8>();
-  Vec<CodecText> get signedExtensions => super.getCodec("signedExtensions").cast<Vec<CodecText>>();
+  Vec<CodecText> get signedExtensions {
+    var data = (super.getCodec("signedExtensions") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   ExtrinsicMetadataV11(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -179,7 +213,7 @@ class ExtrinsicMetadataV12 extends ExtrinsicMetadataV11 {
   ExtrinsicMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ExtrinsicMetadataV12.from(ExtrinsicMetadataV11 origin) => ExtrinsicMetadataV12(
+  factory ExtrinsicMetadataV12.from(Struct origin) => ExtrinsicMetadataV12(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -188,9 +222,8 @@ class FunctionArgumentMetadataLatest extends FunctionArgumentMetadataV12 {
   FunctionArgumentMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionArgumentMetadataLatest.from(FunctionArgumentMetadataV12 origin) =>
-      FunctionArgumentMetadataLatest(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory FunctionArgumentMetadataLatest.from(Struct origin) => FunctionArgumentMetadataLatest(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionArgumentMetadataV10 */
@@ -198,9 +231,8 @@ class FunctionArgumentMetadataV10 extends FunctionArgumentMetadataV9 {
   FunctionArgumentMetadataV10(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionArgumentMetadataV10.from(FunctionArgumentMetadataV9 origin) =>
-      FunctionArgumentMetadataV10(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory FunctionArgumentMetadataV10.from(Struct origin) => FunctionArgumentMetadataV10(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionArgumentMetadataV11 */
@@ -208,9 +240,8 @@ class FunctionArgumentMetadataV11 extends FunctionArgumentMetadataV10 {
   FunctionArgumentMetadataV11(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionArgumentMetadataV11.from(FunctionArgumentMetadataV10 origin) =>
-      FunctionArgumentMetadataV11(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory FunctionArgumentMetadataV11.from(Struct origin) => FunctionArgumentMetadataV11(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionArgumentMetadataV12 */
@@ -218,9 +249,8 @@ class FunctionArgumentMetadataV12 extends FunctionArgumentMetadataV11 {
   FunctionArgumentMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionArgumentMetadataV12.from(FunctionArgumentMetadataV11 origin) =>
-      FunctionArgumentMetadataV12(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory FunctionArgumentMetadataV12.from(Struct origin) => FunctionArgumentMetadataV12(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionArgumentMetadataV9 */
@@ -237,46 +267,132 @@ class FunctionArgumentMetadataV9<S extends Map<String, dynamic>> extends Struct 
 
 /// @name FunctionMetadataLatest */
 class FunctionMetadataLatest extends FunctionMetadataV12 {
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+  Vec<FunctionArgumentMetadataLatest> get args {
+    var data = (super.getCodec("args") as Vec);
+    var newList = data.value.map((element) {
+      return FunctionArgumentMetadataLatest.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'FunctionArgumentMetadataLatest');
+  }
+
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
+
   FunctionMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionMetadataLatest.from(FunctionMetadataV12 origin) => FunctionMetadataLatest(
+  factory FunctionMetadataLatest.from(Struct origin) => FunctionMetadataLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory FunctionMetadataLatest.create(
+    Registry registry,
+    Map<String, dynamic> types,
+  ) {
+    return FunctionMetadataLatest.from(registry.createType("FunctionMetadataLatest", types));
+  }
 }
 
 /// @name FunctionMetadataV10 */
 class FunctionMetadataV10 extends FunctionMetadataV9 {
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+  Vec<FunctionArgumentMetadataV10> get args {
+    var data = (super.getCodec("args") as Vec);
+    var newList = data.value.map((element) {
+      return FunctionArgumentMetadataV10.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'FunctionArgumentMetadataV10');
+  }
+
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
+
   FunctionMetadataV10(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionMetadataV10.from(FunctionMetadataV9 origin) => FunctionMetadataV10(
+  factory FunctionMetadataV10.from(Struct origin) => FunctionMetadataV10(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionMetadataV11 */
 class FunctionMetadataV11 extends FunctionMetadataV10 {
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+  Vec<FunctionArgumentMetadataV11> get args {
+    var data = (super.getCodec("args") as Vec);
+    var newList = data.value.map((element) {
+      return FunctionArgumentMetadataV11.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'FunctionArgumentMetadataV11');
+  }
+
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
+
   FunctionMetadataV11(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionMetadataV11.from(FunctionMetadataV10 origin) => FunctionMetadataV11(
+  factory FunctionMetadataV11.from(Struct origin) => FunctionMetadataV11(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionMetadataV12 */
 class FunctionMetadataV12 extends FunctionMetadataV11 {
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+  Vec<FunctionArgumentMetadataV12> get args {
+    var data = (super.getCodec("args") as Vec);
+    var newList = data.value.map((element) {
+      return FunctionArgumentMetadataV12.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'FunctionArgumentMetadataV12');
+  }
+
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
+
   FunctionMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory FunctionMetadataV12.from(FunctionMetadataV11 origin) => FunctionMetadataV12(
+  factory FunctionMetadataV12.from(Struct origin) => FunctionMetadataV12(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name FunctionMetadataV9 */
 class FunctionMetadataV9<S extends Map<String, dynamic>> extends Struct implements Call {
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Vec<FunctionArgumentMetadataV9> get args =>
-      super.getCodec("args").cast<Vec<FunctionArgumentMetadataV9>>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  Vec<FunctionArgumentMetadataV9> get args {
+    var data = (super.getCodec("args") as Vec);
+    var newList = data.value.map((element) {
+      return FunctionArgumentMetadataV9.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'FunctionArgumentMetadataV9');
+  }
+
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   FunctionMetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -290,13 +406,13 @@ class MapTypeLatest extends MapTypeV12 {
   MapTypeLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory MapTypeLatest.from(MapTypeV12 origin) =>
+  factory MapTypeLatest.from(Struct origin) =>
       MapTypeLatest(origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name MapTypeV10 */
 class MapTypeV10<S extends Map<String, dynamic>> extends Struct implements AsMap {
-  StorageHasherV10 get hasher => super.getCodec("hasher").cast<StorageHasherV10>();
+  StorageHasherV10 get hasher => StorageHasherV10.from(super.getCodec("hasher"));
   CodecType get key => super.getCodec("key").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
   bool get linked => super.getCodec("linked").cast<CodecBool>().value;
@@ -310,7 +426,7 @@ class MapTypeV10<S extends Map<String, dynamic>> extends Struct implements AsMap
 
 /// @name MapTypeV11 */
 class MapTypeV11<S extends Map<String, dynamic>> extends Struct implements AsMap {
-  StorageHasherV11 get hasher => super.getCodec("hasher").cast<StorageHasherV11>();
+  StorageHasherV11 get hasher => StorageHasherV11.from(super.getCodec("hasher"));
   CodecType get key => super.getCodec("key").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
   bool get linked => super.getCodec("linked").cast<CodecBool>().value;
@@ -327,13 +443,13 @@ class MapTypeV12 extends MapTypeV11 {
   MapTypeV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory MapTypeV12.from(MapTypeV11 origin) =>
+  factory MapTypeV12.from(Struct origin) =>
       MapTypeV12(origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name MapTypeV9 */
 class MapTypeV9<S extends Map<String, dynamic>> extends Struct implements AsMap {
-  StorageHasherV9 get hasher => super.getCodec("hasher").cast<StorageHasherV9>();
+  StorageHasherV9 get hasher => StorageHasherV9.from(super.getCodec("hasher"));
   CodecType get key => super.getCodec("key").cast<CodecType>();
   CodecType get thisValue => super.getCodec("value").cast<CodecType>();
   bool get linked => super.getCodec("linked").cast<CodecBool>().value;
@@ -354,28 +470,46 @@ class MetadataAll extends Enum {
       MetadataAll(origin.registry, origin.def, origin.originValue, origin.originIndex);
 
   bool get isV9 => super.isKey("V9");
-  MetadataV9 get asV9 => super.askey("V9").cast<MetadataV9>();
+  MetadataV9 get asV9 => MetadataV9.from(super.askey("V9"));
   bool get isV10 => super.isKey("V10");
-  MetadataV10 get asV10 => super.askey("V10").cast<MetadataV10>();
+  MetadataV10 get asV10 => MetadataV10.from(super.askey("V10"));
   bool get isV11 => super.isKey("V11");
-  MetadataV11 get asV11 => super.askey("V11").cast<MetadataV11>();
+  MetadataV11 get asV11 => MetadataV11.from(super.askey("V11"));
   bool get isV12 => super.isKey("V12");
-  MetadataV12 get asV12 => super.askey("V12").cast<MetadataV12>();
+  MetadataV12 get asV12 => MetadataV12.from(super.askey("V12"));
 }
 
 /// @name MetadataLatest */
 class MetadataLatest extends MetadataV12 implements MetaMapped {
+  Vec<ModuleMetadataLatest> get modules {
+    var data = (super.getCodec("modules") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleMetadataLatest.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleMetadataLatest');
+  }
+
+  ExtrinsicMetadataLatest get extrinsic =>
+      ExtrinsicMetadataLatest.from(super.getCodec("extrinsic"));
+  OuterEvent get outerEvent => null;
   MetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory MetadataLatest.from(MetadataV12 origin) =>
+  factory MetadataLatest.from(Struct origin) =>
       MetadataLatest(origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name MetadataV10 */
 class MetadataV10<S extends Map<String, dynamic>> extends Struct
     implements MetaMapped, ExtractionMetadata {
-  Vec<ModuleMetadataV10> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV10>>();
+  Vec<ModuleMetadataV10> get modules {
+    var data = (super.getCodec("modules") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleMetadataV10.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleMetadataV10');
+  }
+
   OuterEvent get outerEvent => null;
   MetadataV10(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -387,8 +521,15 @@ class MetadataV10<S extends Map<String, dynamic>> extends Struct
 /// @name MetadataV11 */
 class MetadataV11<S extends Map<String, dynamic>> extends Struct
     implements MetaMapped, ExtractionMetadata {
-  Vec<ModuleMetadataV11> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV11>>();
-  ExtrinsicMetadataV11 get extrinsic => super.getCodec("extrinsic").cast<ExtrinsicMetadataV11>();
+  Vec<ModuleMetadataV11> get modules {
+    var data = (super.getCodec("modules") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleMetadataV11.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleMetadataV11');
+  }
+
+  ExtrinsicMetadataV11 get extrinsic => ExtrinsicMetadataV11.from(super.getCodec("extrinsic"));
   OuterEvent get outerEvent => null;
 
   MetadataV11(Registry registry, S types,
@@ -401,8 +542,15 @@ class MetadataV11<S extends Map<String, dynamic>> extends Struct
 /// @name MetadataV12 */
 class MetadataV12<S extends Map<String, dynamic>> extends Struct
     implements MetaMapped, ExtractionMetadata {
-  Vec<ModuleMetadataV12> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV12>>();
-  ExtrinsicMetadataV12 get extrinsic => super.getCodec("extrinsic").cast<ExtrinsicMetadataV12>();
+  Vec<ModuleMetadataV12> get modules {
+    var data = (super.getCodec("modules") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleMetadataV12.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleMetadataV12');
+  }
+
+  ExtrinsicMetadataV12 get extrinsic => ExtrinsicMetadataV12.from(super.getCodec("extrinsic"));
   OuterEvent get outerEvent => null;
 
   MetadataV12(Registry registry, S types,
@@ -419,7 +567,14 @@ abstract class MetaMapped {
 /// @name MetadataV9 */
 class MetadataV9<S extends Map<String, dynamic>> extends Struct
     implements MetaMapped, ExtractionMetadata {
-  Vec<ModuleMetadataV9> get modules => super.getCodec("modules").cast<Vec<ModuleMetadataV9>>();
+  Vec<ModuleMetadataV9> get modules {
+    var data = (super.getCodec("modules") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleMetadataV9.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleMetadataV9');
+  }
+
   OuterEvent get outerEvent => null;
   MetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -433,9 +588,8 @@ class ModuleConstantMetadataLatest extends ModuleConstantMetadataV12 {
   ModuleConstantMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ModuleConstantMetadataLatest.from(ModuleConstantMetadataV12 origin) =>
-      ModuleConstantMetadataLatest(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory ModuleConstantMetadataLatest.from(Struct origin) => ModuleConstantMetadataLatest(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name ModuleConstantMetadataV10 */
@@ -443,9 +597,8 @@ class ModuleConstantMetadataV10 extends ModuleConstantMetadataV9 {
   ModuleConstantMetadataV10(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ModuleConstantMetadataV10.from(ModuleConstantMetadataV9 origin) =>
-      ModuleConstantMetadataV10(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory ModuleConstantMetadataV10.from(Struct origin) => ModuleConstantMetadataV10(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name ModuleConstantMetadataV11 */
@@ -453,9 +606,8 @@ class ModuleConstantMetadataV11 extends ModuleConstantMetadataV10 {
   ModuleConstantMetadataV11(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ModuleConstantMetadataV11.from(ModuleConstantMetadataV10 origin) =>
-      ModuleConstantMetadataV11(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory ModuleConstantMetadataV11.from(Struct origin) => ModuleConstantMetadataV11(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name ModuleConstantMetadataV12 */
@@ -463,9 +615,8 @@ class ModuleConstantMetadataV12 extends ModuleConstantMetadataV11 {
   ModuleConstantMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ModuleConstantMetadataV12.from(ModuleConstantMetadataV11 origin) =>
-      ModuleConstantMetadataV12(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory ModuleConstantMetadataV12.from(Struct origin) => ModuleConstantMetadataV12(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name ModuleConstantMetadataV9 */
@@ -473,8 +624,14 @@ class ModuleConstantMetadataV9<S extends Map<String, dynamic>> extends Struct
     implements ConstantText {
   CodecText get name => super.getCodec("name").cast<CodecText>();
   CodecType get type => super.getCodec("type").cast<CodecType>();
-  Bytes get thisValue => super.getCodec("value").cast<Bytes>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  Bytes get thisValue => Bytes.from(super.getCodec("value"));
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   ModuleConstantMetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -485,10 +642,69 @@ class ModuleConstantMetadataV9<S extends Map<String, dynamic>> extends Struct
 
 /// @name ModuleMetadataLatest */
 class ModuleMetadataLatest extends ModuleMetadataV12 {
+  ModuleCall get module => null;
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+
+  Option<StorageMetadataLatest> get storage {
+    var data = (super.getCodec("storage") as Option);
+    return data.value is CodecNull
+        ? null //Option.from(data.value, data.registry, data.originTypeName)
+        : Option.from(StorageMetadataLatest.from(data.value), data.registry, data.originTypeName);
+  }
+
+  Option<Vec<FunctionMetadataLatest>> get calls {
+    var data = (super.getCodec("calls") as Option);
+
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return FunctionMetadataLatest.from(element);
+    }).toList();
+
+    final result = Option.from(Vec.fromList(newList, data.registry, 'FunctionMetadataLatest'),
+        data.registry, data.originTypeName);
+
+    return result;
+  }
+
+  Option<Vec<EventMetadataLatest>> get events {
+    // super.getCodec("events").cast<Option<Vec<EventMetadataLatest>>>();
+    var data = (super.getCodec("events") as Option);
+    if (data.value is CodecNull) {
+      return null; //Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return EventMetadataLatest.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'EventMetadataLatest'), data.registry,
+        data.originTypeName);
+  }
+
+  Vec<ModuleConstantMetadataLatest> get constants {
+    var data = (super.getCodec("constants") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleConstantMetadataLatest.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleConstantMetadataLatest');
+  }
+
+  Vec<ErrorMetadataLatest> get errors {
+    var data = (super.getCodec("errors") as Vec);
+    var newList = data.value.map((element) {
+      return ErrorMetadataLatest.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ErrorMetadataLatest');
+  }
+
+  u8 get index => super.getCodec("index").cast<u8>();
   ModuleMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory ModuleMetadataLatest.from(ModuleMetadataV12 origin) => ModuleMetadataLatest(
+  factory ModuleMetadataLatest.from(Struct origin) => ModuleMetadataLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -496,15 +712,58 @@ class ModuleMetadataLatest extends ModuleMetadataV12 {
 class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct implements Module {
   ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Option<StorageMetadataV10> get storage =>
-      super.getCodec("storage").cast<Option<StorageMetadataV10>>();
-  Option<Vec<FunctionMetadataV10>> get calls =>
-      super.getCodec("calls").cast<Option<Vec<FunctionMetadataV10>>>();
-  Option<Vec<EventMetadataV10>> get events =>
-      super.getCodec("events").cast<Option<Vec<EventMetadataV10>>>();
-  Vec<ModuleConstantMetadataV10> get constants =>
-      super.getCodec("constants").cast<Vec<ModuleConstantMetadataV10>>();
-  Vec<ErrorMetadataV10> get errors => super.getCodec("errors").cast<Vec<ErrorMetadataV10>>();
+
+  Option<StorageMetadataV10> get storage {
+    var data = (super.getCodec("storage") as Option);
+    return data.value is CodecNull
+        ? null // Option.from(data.value, data.registry, data.originTypeName)
+        : Option.from(StorageMetadataV10.from(data.value), data.registry, data.originTypeName);
+  }
+
+  Option<Vec<FunctionMetadataV10>> get calls {
+    var data = (super.getCodec("calls") as Option);
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return FunctionMetadataV10.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'FunctionMetadataV10'), data.registry,
+        data.originTypeName);
+  }
+
+  Option<Vec<EventMetadataV10>> get events {
+    // super.getCodec("events").cast<Option<Vec<EventMetadataV10>>>();
+    var data = (super.getCodec("events") as Option);
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return EventMetadataV10.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'EventMetadataV10'), data.registry,
+        data.originTypeName);
+  }
+
+  Vec<ModuleConstantMetadataV10> get constants {
+    var data = (super.getCodec("constants") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleConstantMetadataV10.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleConstantMetadataV10');
+  }
+
+  Vec<ErrorMetadataV10> get errors {
+    var data = (super.getCodec("errors") as Vec);
+    var newList = data.value.map((element) {
+      return ErrorMetadataV10.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ErrorMetadataV10');
+  }
 
   ModuleMetadataV10(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -517,15 +776,58 @@ class ModuleMetadataV10<S extends Map<String, dynamic>> extends Struct implement
 class ModuleMetadataV11<S extends Map<String, dynamic>> extends Struct implements Module {
   ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Option<StorageMetadataV11> get storage =>
-      super.getCodec("storage").cast<Option<StorageMetadataV11>>();
-  Option<Vec<FunctionMetadataV11>> get calls =>
-      super.getCodec("calls").cast<Option<Vec<FunctionMetadataV11>>>();
-  Option<Vec<EventMetadataV11>> get events =>
-      super.getCodec("events").cast<Option<Vec<EventMetadataV11>>>();
-  Vec<ModuleConstantMetadataV11> get constants =>
-      super.getCodec("constants").cast<Vec<ModuleConstantMetadataV11>>();
-  Vec<ErrorMetadataV11> get errors => super.getCodec("errors").cast<Vec<ErrorMetadataV11>>();
+
+  Option<StorageMetadataV11> get storage {
+    var data = (super.getCodec("storage") as Option);
+    return data.value is CodecNull
+        ? null // Option.from(data.value, data.registry, data.originTypeName)
+        : Option.from(StorageMetadataV11.from(data.value), data.registry, data.originTypeName);
+  }
+
+  Option<Vec<FunctionMetadataV11>> get calls {
+    var data = (super.getCodec("calls") as Option);
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return FunctionMetadataV11.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'FunctionMetadataV11'), data.registry,
+        data.originTypeName);
+  }
+
+  Option<Vec<EventMetadataV11>> get events {
+    // super.getCodec("events").cast<Option<Vec<EventMetadataV11>>>();
+    var data = (super.getCodec("events") as Option);
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return EventMetadataV11.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'EventMetadataV11'), data.registry,
+        data.originTypeName);
+  }
+
+  Vec<ModuleConstantMetadataV11> get constants {
+    var data = (super.getCodec("constants") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleConstantMetadataV11.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleConstantMetadataV11');
+  }
+
+  Vec<ErrorMetadataV11> get errors {
+    var data = (super.getCodec("errors") as Vec);
+    var newList = data.value.map((element) {
+      return ErrorMetadataV11.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ErrorMetadataV11');
+  }
 
   ModuleMetadataV11(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -538,15 +840,62 @@ class ModuleMetadataV11<S extends Map<String, dynamic>> extends Struct implement
 class ModuleMetadataV12<S extends Map<String, dynamic>> extends Struct implements Module {
   ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Option<StorageMetadataV12> get storage =>
-      super.getCodec("storage").cast<Option<StorageMetadataV12>>();
-  Option<Vec<FunctionMetadataV12>> get calls =>
-      super.getCodec("calls").cast<Option<Vec<FunctionMetadataV12>>>();
-  Option<Vec<EventMetadataV12>> get events =>
-      super.getCodec("events").cast<Option<Vec<EventMetadataV12>>>();
-  Vec<ModuleConstantMetadataV12> get constants =>
-      super.getCodec("constants").cast<Vec<ModuleConstantMetadataV12>>();
-  Vec<ErrorMetadataV12> get errors => super.getCodec("errors").cast<Vec<ErrorMetadataV12>>();
+
+  Option<StorageMetadataV12> get storage {
+    var data = (super.getCodec("storage") as Option);
+    return data.value is CodecNull
+        ? null //Option.from(data.value, data.registry, data.originTypeName)
+        : Option.from(StorageMetadataV12.from(data.value), data.registry, data.originTypeName);
+  }
+
+  Option<Vec<FunctionMetadataV12>> get calls {
+    var data = (super.getCodec("calls") as Option);
+
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return FunctionMetadataV12.from(element);
+    }).toList();
+
+    final result = Option.from(Vec.fromList(newList, data.registry, 'FunctionMetadataV12'),
+        data.registry, data.originTypeName);
+
+    return result;
+  }
+
+  Option<Vec<EventMetadataV12>> get events {
+    // super.getCodec("events").cast<Option<Vec<EventMetadataV12>>>();
+    var data = (super.getCodec("events") as Option);
+    if (data.value is CodecNull) {
+      return null; //Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return EventMetadataV12.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'EventMetadataV12'), data.registry,
+        data.originTypeName);
+  }
+
+  Vec<ModuleConstantMetadataV12> get constants {
+    var data = (super.getCodec("constants") as Vec);
+    var newList = data.value.map((element) {
+      return ModuleConstantMetadataV12.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ModuleConstantMetadataV12');
+  }
+
+  Vec<ErrorMetadataV12> get errors {
+    var data = (super.getCodec("errors") as Vec);
+    var newList = data.value.map((element) {
+      return ErrorMetadataV12.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'ErrorMetadataV12');
+  }
+
   u8 get index => super.getCodec("index").cast<u8>();
 
   ModuleMetadataV12(Registry registry, S types,
@@ -557,18 +906,59 @@ class ModuleMetadataV12<S extends Map<String, dynamic>> extends Struct implement
 }
 
 /// @name ModuleMetadataV9 */
-class ModuleMetadataV9<S extends Map<String, dynamic>> extends Struct implements Module {
+class ModuleMetadataV9<S extends Map<String, dynamic>> extends Struct implements Module, Castable {
   ModuleCall get module => null;
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  Option<StorageMetadataV9> get storage =>
-      super.getCodec("storage").cast<Option<StorageMetadataV9>>();
-  Option<Vec<FunctionMetadataV9>> get calls =>
-      super.getCodec("calls").cast<Option<Vec<FunctionMetadataV9>>>();
-  Option<Vec<EventMetadataV9>> get events =>
-      super.getCodec("events").cast<Option<Vec<EventMetadataV9>>>();
-  Vec<ModuleConstantMetadataV9> get constants =>
-      super.getCodec("constants").cast<Vec<ModuleConstantMetadataV9>>();
-  Vec<ErrorMetadataV9> get errors => super.getCodec("errors").cast<Vec<ErrorMetadataV9>>();
+  Option<StorageMetadataV9> get storage {
+    var data = (super.getCodec("storage") as Option);
+    return data.value is CodecNull
+        ? null //Option.from(data.value, data.registry, data.originTypeName)
+        : Option.from(StorageMetadataV9.from(data.value), data.registry, data.originTypeName);
+  }
+
+  Option<Vec<FunctionMetadataV9>> get calls {
+    var data = (super.getCodec("calls") as Option);
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return FunctionMetadataV9.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'FunctionMetadataV9'), data.registry,
+        data.originTypeName);
+  }
+
+  Option<Vec<EventMetadataV9>> get events {
+    var data = (super.getCodec("events") as Option);
+    if (data.value is CodecNull) {
+      return null;
+      // Option.from(data.value, data.registry, data.originTypeName);
+    }
+    var vecData = (data.value as Vec);
+    var newList = vecData.value.map((element) {
+      return EventMetadataV9.from(element);
+    }).toList();
+    return Option.from(Vec.fromList(newList, data.registry, 'EventMetadataV9'), data.registry,
+        data.originTypeName);
+  }
+
+  Vec<ModuleConstantMetadataV9> get constants {
+    var vecData = (super.getCodec("constants") as Vec);
+    var newList = vecData.value.map((element) {
+      return ModuleConstantMetadataV9.from(element);
+    }).toList();
+    return Vec.fromList(newList, vecData.registry, 'ModuleConstantMetadataV9');
+  }
+
+  Vec<ErrorMetadataV9> get errors {
+    var vecData = (super.getCodec("errors") as Vec);
+    var newList = vecData.value.map((element) {
+      return ErrorMetadataV9.from(element);
+    }).toList();
+    return Vec.fromList(newList, vecData.registry, 'ErrorMetadataV9');
+  }
 
   ModuleMetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -579,22 +969,39 @@ class ModuleMetadataV9<S extends Map<String, dynamic>> extends Struct implements
 
 /// @name StorageEntryMetadataLatest */
 class StorageEntryMetadataLatest extends StorageEntryMetadataV12 {
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+  StorageEntryModifierLatest get modifier =>
+      StorageEntryModifierLatest.from(super.getCodec("modifier"));
+  StorageEntryTypeLatest get type => StorageEntryTypeLatest.from(super.getCodec("type"));
+  Bytes get fallback => Bytes.from(super.getCodec("fallback"));
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
+
   StorageEntryMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory StorageEntryMetadataLatest.from(StorageEntryMetadataV12 origin) =>
-      StorageEntryMetadataLatest(
-          origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
+  factory StorageEntryMetadataLatest.from(Struct origin) => StorageEntryMetadataLatest(
+      origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name StorageEntryMetadataV10 */
 class StorageEntryMetadataV10<S extends Map<String, dynamic>> extends Struct implements Item {
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  StorageEntryModifierV10 get modifier =>
-      super.getCodec("modifier").cast<StorageEntryModifierV10>();
-  StorageEntryTypeV10 get type => super.getCodec("type").cast<StorageEntryTypeV10>();
-  Bytes get fallback => super.getCodec("fallback").cast<Bytes>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  StorageEntryModifierV10 get modifier => StorageEntryModifierV10.from(super.getCodec("modifier"));
+  StorageEntryTypeV10 get type => StorageEntryTypeV10.from(super.getCodec("type"));
+  Bytes get fallback => Bytes.from(super.getCodec("fallback"));
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   StorageEntryMetadataV10(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -606,11 +1013,16 @@ class StorageEntryMetadataV10<S extends Map<String, dynamic>> extends Struct imp
 /// @name StorageEntryMetadataV11 */
 class StorageEntryMetadataV11<S extends Map<String, dynamic>> extends Struct implements Item {
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  StorageEntryModifierV11 get modifier =>
-      super.getCodec("modifier").cast<StorageEntryModifierV11>();
-  StorageEntryTypeV11 get type => super.getCodec("type").cast<StorageEntryTypeV11>();
-  Bytes get fallback => super.getCodec("fallback").cast<Bytes>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  StorageEntryModifierV11 get modifier => StorageEntryModifierV11.from(super.getCodec("modifier"));
+  StorageEntryTypeV11 get type => StorageEntryTypeV11.from(super.getCodec("type"));
+  Bytes get fallback => Bytes.from(super.getCodec("fallback"));
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   StorageEntryMetadataV11(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -621,20 +1033,38 @@ class StorageEntryMetadataV11<S extends Map<String, dynamic>> extends Struct imp
 
 /// @name StorageEntryMetadataV12 */
 class StorageEntryMetadataV12 extends StorageEntryMetadataV11 {
+  CodecText get name => super.getCodec("name").cast<CodecText>();
+  StorageEntryModifierV12 get modifier => StorageEntryModifierV12.from(super.getCodec("modifier"));
+  StorageEntryTypeV12 get type => StorageEntryTypeV12.from(super.getCodec("type"));
+  Bytes get fallback => Bytes.from(super.getCodec("fallback"));
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
+
   StorageEntryMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory StorageEntryMetadataV12.from(StorageEntryMetadataV11 origin) => StorageEntryMetadataV12(
+  factory StorageEntryMetadataV12.from(Struct origin) => StorageEntryMetadataV12(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
 /// @name StorageEntryMetadataV9 */
 class StorageEntryMetadataV9<S extends Map<String, dynamic>> extends Struct implements Item {
   CodecText get name => super.getCodec("name").cast<CodecText>();
-  StorageEntryModifierV9 get modifier => super.getCodec("modifier").cast<StorageEntryModifierV9>();
-  StorageEntryTypeV9 get type => super.getCodec("type").cast<StorageEntryTypeV9>();
-  Bytes get fallback => super.getCodec("fallback").cast<Bytes>();
-  Vec<CodecText> get documentation => super.getCodec("documentation").cast<Vec<CodecText>>();
+  StorageEntryModifierV9 get modifier => StorageEntryModifierV9.from(super.getCodec("modifier"));
+  StorageEntryTypeV9 get type => StorageEntryTypeV9.from(super.getCodec("type"));
+  Bytes get fallback => Bytes.from(super.getCodec("fallback"));
+  Vec<CodecText> get documentation {
+    var data = (super.getCodec("documentation") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'Text');
+  }
 
   StorageEntryMetadataV9(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -647,24 +1077,32 @@ class StorageEntryMetadataV9<S extends Map<String, dynamic>> extends Struct impl
 class StorageEntryModifierLatest extends StorageEntryModifierV12 {
   StorageEntryModifierLatest(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
+  factory StorageEntryModifierLatest.from(Enum origin) => StorageEntryModifierLatest(
+      origin.registry, origin.def, origin.originValue, origin.originIndex);
 }
 
 /// @name StorageEntryModifierV10 */
 class StorageEntryModifierV10 extends StorageEntryModifierV9 {
   StorageEntryModifierV10(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
+  factory StorageEntryModifierV10.from(Enum origin) =>
+      StorageEntryModifierV10(origin.registry, origin.def, origin.originValue, origin.originIndex);
 }
 
 /// @name StorageEntryModifierV11 */
 class StorageEntryModifierV11 extends StorageEntryModifierV10 {
   StorageEntryModifierV11(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
+  factory StorageEntryModifierV11.from(Enum origin) =>
+      StorageEntryModifierV11(origin.registry, origin.def, origin.originValue, origin.originIndex);
 }
 
 // /** @name StorageEntryModifierV12 */
 class StorageEntryModifierV12 extends StorageEntryModifierV11 {
   StorageEntryModifierV12(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
+  factory StorageEntryModifierV12.from(Enum origin) =>
+      StorageEntryModifierV12(origin.registry, origin.def, origin.originValue, origin.originIndex);
 }
 
 /// @name StorageEntryModifierV9 */
@@ -682,8 +1120,14 @@ class StorageEntryModifierV9 extends Enum {
 class StorageEntryTypeLatest extends StorageEntryTypeV12 {
   StorageEntryTypeLatest(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
-  factory StorageEntryTypeLatest.from(StorageEntryTypeV12 origin) =>
+  factory StorageEntryTypeLatest.from(Enum origin) =>
       StorageEntryTypeLatest(origin.registry, origin.def, origin.originValue, origin.originIndex);
+  bool get isPlain => super.isKey("Plain");
+  CodecType get asPlain => super.askey("Plain").cast<CodecType>();
+  bool get isMap => super.isKey("Map");
+  MapTypeLatest get asMap => MapTypeLatest.from(super.askey("Map"));
+  bool get isDoubleMap => super.isKey("DoubleMap");
+  DoubleMapTypeLatest get asDoubleMap => DoubleMapTypeLatest.from(super.askey("DoubleMap"));
 }
 
 /// @name StorageEntryTypeV10 */
@@ -695,9 +1139,9 @@ class StorageEntryTypeV10 extends Enum implements ItemType {
   bool get isPlain => super.isKey("Plain");
   CodecType get asPlain => super.askey("Plain").cast<CodecType>();
   bool get isMap => super.isKey("Map");
-  MapTypeV10 get asMap => super.askey("Map").cast<MapTypeV10>();
+  MapTypeV10 get asMap => MapTypeV10.from(super.askey("Map"));
   bool get isDoubleMap => super.isKey("DoubleMap");
-  DoubleMapTypeV10 get asDoubleMap => super.askey("DoubleMap").cast<DoubleMapTypeV10>();
+  DoubleMapTypeV10 get asDoubleMap => DoubleMapTypeV10.from(super.askey("DoubleMap"));
 }
 
 // /** @name StorageEntryTypeV11 */
@@ -705,9 +1149,9 @@ class StorageEntryTypeV11 extends Enum implements ItemType {
   bool get isPlain => super.isKey("Plain");
   CodecType get asPlain => super.askey("Plain").cast<CodecType>();
   bool get isMap => super.isKey("Map");
-  MapTypeV11 get asMap => super.askey("Map").cast<MapTypeV11>();
+  MapTypeV11 get asMap => MapTypeV11.from(super.askey("Map"));
   bool get isDoubleMap => super.isKey("DoubleMap");
-  DoubleMapTypeV11 get asDoubleMap => super.askey("DoubleMap").cast<DoubleMapTypeV11>();
+  DoubleMapTypeV11 get asDoubleMap => DoubleMapTypeV11.from(super.askey("DoubleMap"));
 
   StorageEntryTypeV11(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
@@ -719,8 +1163,13 @@ class StorageEntryTypeV11 extends Enum implements ItemType {
 class StorageEntryTypeV12 extends StorageEntryTypeV11 {
   StorageEntryTypeV12(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
-  factory StorageEntryTypeV12.from(StorageEntryTypeV11 origin) =>
+  factory StorageEntryTypeV12.from(Enum origin) =>
       StorageEntryTypeV12(origin.registry, origin.def, origin.originValue, origin.originIndex);
+  CodecType get asPlain => super.askey("Plain").cast<CodecType>();
+  bool get isMap => super.isKey("Map");
+  MapTypeV12 get asMap => MapTypeV12.from(super.askey("Map"));
+  bool get isDoubleMap => super.isKey("DoubleMap");
+  DoubleMapTypeV12 get asDoubleMap => DoubleMapTypeV12.from(super.askey("DoubleMap"));
 }
 
 /// @name StorageEntryTypeV9 */
@@ -728,9 +1177,9 @@ class StorageEntryTypeV9 extends Enum implements ItemType {
   bool get isPlain => super.isKey("Plain");
   CodecType get asPlain => super.askey("Plain").cast<CodecType>();
   bool get isMap => super.isKey("Map");
-  MapTypeV9 get asMap => super.askey("Map").cast<MapTypeV9>();
+  MapTypeV9 get asMap => MapTypeV9.from(super.askey("Map"));
   bool get isDoubleMap => super.isKey("DoubleMap");
-  DoubleMapTypeV9 get asDoubleMap => super.askey("DoubleMap").cast<DoubleMapTypeV9>();
+  DoubleMapTypeV9 get asDoubleMap => DoubleMapTypeV9.from(super.askey("DoubleMap"));
 
   StorageEntryTypeV9(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
@@ -742,7 +1191,7 @@ class StorageEntryTypeV9 extends Enum implements ItemType {
 class StorageHasher extends StorageHasherV12 {
   StorageHasher(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
-  factory StorageHasher.from(StorageHasherV12 origin) =>
+  factory StorageHasher.from(Enum origin) =>
       StorageHasher(origin.registry, origin.def, origin.originValue, origin.originIndex);
 }
 
@@ -781,7 +1230,7 @@ class StorageHasherV11 extends Enum {
 class StorageHasherV12 extends StorageHasherV11 {
   StorageHasherV12(Registry registry, def, [dynamic thisValue, int index])
       : super(registry, def, thisValue, index);
-  factory StorageHasherV12.from(StorageHasherV11 origin) =>
+  factory StorageHasherV12.from(Enum origin) =>
       StorageHasherV12(origin.registry, origin.def, origin.originValue, origin.originIndex);
 }
 
@@ -801,10 +1250,20 @@ class StorageHasherV9 extends Enum {
 
 // /** @name StorageMetadataLatest */
 class StorageMetadataLatest extends StorageMetadataV12 {
+  Vec<Item> get functions => null;
+  CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
+  Vec<StorageEntryMetadataLatest> get items {
+    var data = (super.getCodec("items") as Vec);
+    var newList = data.value.map((element) {
+      return StorageEntryMetadataLatest.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'StorageEntryMetadataLatest');
+  }
+
   StorageMetadataLatest(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory StorageMetadataLatest.from(StorageMetadataV12 origin) => StorageMetadataLatest(
+  factory StorageMetadataLatest.from(Struct origin) => StorageMetadataLatest(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -812,8 +1271,13 @@ class StorageMetadataLatest extends StorageMetadataV12 {
 class StorageMetadataV10<S extends Map<String, dynamic>> extends Struct implements Items2 {
   Vec<Item> get functions => null;
   CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
-  Vec<StorageEntryMetadataV10> get items =>
-      super.getCodec("items").cast<Vec<StorageEntryMetadataV10>>();
+  Vec<StorageEntryMetadataV10> get items {
+    var data = (super.getCodec("items") as Vec);
+    var newList = data.value.map((element) {
+      return StorageEntryMetadataV10.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'StorageEntryMetadataV10');
+  }
 
   StorageMetadataV10(Registry registry, S types,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
@@ -826,8 +1290,13 @@ class StorageMetadataV10<S extends Map<String, dynamic>> extends Struct implemen
 class StorageMetadataV11<S extends Map<String, dynamic>> extends Struct implements Items2 {
   Vec<Item> get functions => null;
   CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
-  Vec<StorageEntryMetadataV11> get items =>
-      super.getCodec("items").cast<Vec<StorageEntryMetadataV11>>();
+  Vec<StorageEntryMetadataV11> get items {
+    var data = (super.getCodec("items") as Vec);
+    var newList = data.value.map((element) {
+      return StorageEntryMetadataV11.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'StorageEntryMetadataV11');
+  }
 
   StorageMetadataV11(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
@@ -838,10 +1307,20 @@ class StorageMetadataV11<S extends Map<String, dynamic>> extends Struct implemen
 
 /// @name StorageMetadataV12 */
 class StorageMetadataV12 extends StorageMetadataV11 {
+  Vec<Item> get functions => null;
+  CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
+  Vec<StorageEntryMetadataV12> get items {
+    var data = (super.getCodec("items") as Vec);
+    var newList = data.value.map((element) {
+      return StorageEntryMetadataV12.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'StorageEntryMetadataV12');
+  }
+
   StorageMetadataV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
-  factory StorageMetadataV12.from(StorageMetadataV11 origin) => StorageMetadataV12(
+  factory StorageMetadataV12.from(Struct origin) => StorageMetadataV12(
       origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
@@ -849,8 +1328,13 @@ class StorageMetadataV12 extends StorageMetadataV11 {
 class StorageMetadataV9<S extends Map<String, dynamic>> extends Struct implements Items2 {
   Vec<Item> get functions => null;
   CodecText get prefix => super.getCodec("prefix").cast<CodecText>();
-  Vec<StorageEntryMetadataV9> get items =>
-      super.getCodec("items").cast<Vec<StorageEntryMetadataV9>>();
+  Vec<StorageEntryMetadataV9> get items {
+    var data = (super.getCodec("items") as Vec);
+    var newList = data.value.map((element) {
+      return StorageEntryMetadataV9.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, 'StorageEntryMetadataV9');
+  }
 
   StorageMetadataV9(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])

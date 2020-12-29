@@ -4,9 +4,9 @@ import 'package:polkadot_dart/types/types.dart' hide Call;
 import 'package:polkadot_dart/types/types/extrinsic.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-abstract class RuntimeVersion extends Struct {
-  u32 get speVersion => super.getCodec("speVersion").cast<u32>();
-  u32 get transactionVersion => super.getCodec("transactionVersion").cast<u32>();
+class RuntimeVersion extends Struct {
+  u32 get specVersion => this.getCodec("specVersion")?.cast<u32>();
+  u32 get transactionVersion => this.getCodec("transactionVersion")?.cast<u32>();
   RuntimeVersion(Registry registry,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
       : super(
@@ -22,6 +22,8 @@ abstract class RuntimeVersion extends Struct {
             },
             value,
             jsonMap);
+  factory RuntimeVersion.from(Struct origin) =>
+      RuntimeVersion(origin.registry, origin.originValue, origin.originJsonMap);
 }
 
 abstract class SignerPayloadType extends BaseCodec {
@@ -87,6 +89,20 @@ class GenericPayloadJson implements SignerPayloadJSON {
       this.tip,
       this.transactionVersion,
       this.version});
+  Map<String, dynamic> toMap() => {
+        "address": this.address,
+        "blockHash": this.blockHash,
+        "blockNumber": this.blockNumber,
+        "era": this.era,
+        "genesisHash": this.genesisHash,
+        "method": this.method,
+        "nonce": this.nonce,
+        "signedExtensions": this.signedExtensions,
+        "specVersion": this.specVersion,
+        "tip": this.tip,
+        "transactionVersion": this.transactionVersion,
+        "version": this.version
+      };
 }
 
 class GenericPayloadRaw implements SignerPayloadRaw {
@@ -122,30 +138,41 @@ class GenericSignerPayload extends Struct implements ISignerPayload {
             value,
             jsonMap);
 
-  static GenericSignerPayload constructor(Registry registry,
-          [dynamic value, Map<dynamic, String> jsonMap]) =>
-      GenericSignerPayload(registry, value, jsonMap);
+  static GenericSignerPayload constructor(Registry registry, [dynamic value, dynamic jsonMap]) =>
+      GenericSignerPayload(registry, value, jsonMap as Map<dynamic, String>);
 
   /// @description Creates an representation of the structure as an ISignerPayload JSON
   SignerPayloadJSON toPayload() {
+    // print(super.getCodec("runtimeVersion").runtimeType);
+
     // const { address, blockHash, blockNumber, era, genesisHash, method, nonce, runtimeVersion: { specVersion, transactionVersion }, signedExtensions, tip, version } = this;
-    var runtimeVersion = super.getCodec("runtimeVersion").cast<RuntimeVersion>();
+    var runtimeVersion = RuntimeVersion.from(this.getCodec("runtimeVersion"));
+
+    var data = (this.getCodec("signedExtensions") as Vec);
+    var newList = data.value.map((element) {
+      return CodecText(data.registry, element.toString());
+    }).toList();
+    final signedExtensions = Vec.fromList(newList, data.registry, 'Text')
+        .map((e, [index, list]) => e.toString())
+        .toList();
 
     return GenericPayloadJson(
-        address: super.getCodec("address").cast<Address>().toString(),
-        blockHash: super.getCodec("blockHash").cast<Hash>().toHex(),
-        blockNumber: super.getCodec("blockNumber").cast<BlockNumber>().toHex(),
-        era: super.getCodec("era").cast<ExtrinsicEra>().toHex(),
-        genesisHash: super.getCodec("genesisHash").cast<Hash>().toHex(),
-        method: super.getCodec("method").cast<Call>().toHex(),
-        nonce: super.getCodec("nonce").cast<Compact<Index>>().toHex(),
-        signedExtensions: (super.getCodec("signedExtensions").cast<Vec<CodecText>>())
-            .map((e, [index, list]) => e.toString())
-            .toList(),
-        specVersion: runtimeVersion.speVersion.toHex(),
-        tip: super.getCodec("tip").cast<Compact<Balance>>().toHex(),
+        address: Address.from(this.getCodec("address")).toString(),
+        blockHash: Hash.from(this.getCodec("blockHash")).toHex(),
+        blockNumber: BlockNumber.from(this.getCodec("blockNumber")).toHex(),
+        era: (this.getCodec("era")).toHex(),
+        genesisHash: Hash.from(this.getCodec("genesisHash")).toHex(),
+        method: Call.from(this.getCodec("method")).toHex(),
+        nonce:
+            (Compact.from(Index.from((this.getCodec("nonce") as Compact).value), registry, 'Index'))
+                .toHex(),
+        signedExtensions: signedExtensions,
+        specVersion: runtimeVersion.specVersion.toHex(),
+        tip: (Compact.from(
+                Balance.from((this.getCodec("tip") as Compact).value), registry, 'Balance'))
+            .toHex(),
         transactionVersion: runtimeVersion.transactionVersion.toHex(),
-        version: super.getCodec("version").cast<u8>().toNumber());
+        version: this.getCodec("version").cast<u8>().toNumber());
   }
 
   /// @description Creates a representation of the payload in raw Exrinsic form

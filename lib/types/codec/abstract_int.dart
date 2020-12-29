@@ -50,6 +50,7 @@ BigInt decodeAbstractInt(dynamic value, int bitLength, bool isNegative) {
   } else if (isString(value)) {
     return BigInt.parse(value.toString(), radix: 10);
   }
+
   return bnToBn(value is BaseCodec ? value.value : value);
 }
 
@@ -64,8 +65,8 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
   BigInt get value => _value;
 
   dynamic originValue;
-
-  AbstractInt(Registry registry,
+  AbstractInt();
+  AbstractInt.withReg(Registry registry,
       [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
     originValue = value;
     this._value = (decodeAbstractInt(value, bitLength, isSigned));

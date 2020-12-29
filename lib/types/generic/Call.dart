@@ -17,6 +17,14 @@ class DecodedMethod extends DecodeMethodInput {
   FunctionMetadataLatest meta;
   DecodedMethod({args, callIndex, this.argsDef, this.meta})
       : super(args: args, callIndex: callIndex);
+  Map<String, dynamic> toMap() => {
+        "args": this.args,
+        "callIndex": this.callIndex is GenericCallIndex
+            ? (this.callIndex as GenericCallIndex).value
+            : this.callIndex,
+        "argsDef": this.argsDef,
+        "meta": this.meta
+      };
 }
 
 Map<String, Constructor> getArgsDef(Registry registry, FunctionMetadataLatest meta) {
@@ -35,12 +43,13 @@ DecodedMethod decodeCallViaObject(Registry registry, DecodedMethod value,
   final callIndex = value.callIndex;
   // Get the correct lookupIndex
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  final lookupIndex = callIndex is GenericCallIndex ? callIndex.toU8a() : callIndex;
+  final lookupIndex =
+      callIndex is GenericCallIndex ? callIndex.toU8a() : Uint8List.fromList(callIndex);
 
   // Find metadata with callIndex
   final meta = _meta ?? registry.findMetaCall(lookupIndex).meta;
-
-  DecodedMethod(args: args, argsDef: getArgsDef(registry, meta), callIndex: callIndex, meta: meta);
+  return DecodedMethod(
+      args: args, argsDef: getArgsDef(registry, meta), callIndex: callIndex, meta: meta);
 }
 
 /** @internal */
@@ -63,13 +72,18 @@ DecodedMethod decodeCall(Registry registry, [dynamic value, FunctionMetadataLate
   if (value == null) {
     value = Uint8List.fromList([]);
   }
-  if (isHex(value) || isU8a(value)) {
-    return decodeCallViaU8a(registry, u8aToU8a(value), _meta);
-  } else if (isObject(value) && value.callIndex && value.args) {
-    return decodeCallViaObject(registry, value as DecodedMethod, _meta);
+  if (value is GenericCall) {
+    value = value.value;
   }
 
-  throw "Call: Cannot decode value '${value as String}' of type ${value.runtimeType}";
+  if (isHex(value) || isU8a(value)) {
+    return decodeCallViaU8a(registry, u8aToU8a(value), _meta);
+  } else if (isObject(value) && value["callIndex"] != null && value["args"] != null) {
+    final method = DecodedMethod(args: value["args"], callIndex: value["callIndex"]);
+    return decodeCallViaObject(registry, method, _meta);
+  }
+
+  throw "Call: Cannot decode value '$value' of type ${value.runtimeType}";
 }
 
 class GenericCallIndex extends U8aFixed {
@@ -82,25 +96,26 @@ class GenericCallIndex extends U8aFixed {
 class GenericCall extends Struct implements IMethod {
   FunctionMetadataLatest _meta;
 
-  GenericCall(Registry registry, [dynamic value, FunctionMetadataLatest meta])
+  GenericCall(Registry registry, [dynamic callValue, FunctionMetadataLatest meta])
       : super(
             registry,
             {
-              "callIndex": GenericCallIndex,
-              // eslint-disable-next-line sort-keys
-              "args": Struct.withParams(decodeCall(registry, value, meta).argsDef)
+              "callIndex": GenericCallIndex.constructor,
+              // // eslint-disable-next-line sort-keys
+              "args": Struct.withParams(decodeCall(registry, callValue, meta).argsDef)
             },
-            decodeCall(registry, value, meta)) {
-    final decoded = decodeCall(registry, value, meta);
+            decodeCall(registry, callValue, meta).toMap()) {
+    final decoded = decodeCall(registry, callValue, meta);
+
     try {
       Struct(
           registry,
           {
-            "callIndex": GenericCallIndex,
+            "callIndex": GenericCallIndex.constructor,
             // eslint-disable-next-line sort-keys
             "args": Struct.withParams(decoded.argsDef)
           },
-          decoded);
+          decoded.toMap());
     } catch (error) {
       var method = 'unknown.unknown';
 
@@ -111,20 +126,24 @@ class GenericCall extends Struct implements IMethod {
       } catch (error) {
         // ignore
       }
-      throw "Call: failed decoding $method:: error}";
+      throw "Call: failed decoding $method:: $error}";
     }
 
     this._meta = decoded.meta;
   }
 
-  static GenericCall constructor(Registry registry, [dynamic value, FunctionMetadataLatest meta]) =>
-      GenericCall(registry, value, meta);
+  static GenericCall constructor(Registry registry, [dynamic value, dynamic meta]) =>
+      GenericCall(registry, value, meta as FunctionMetadataLatest);
 
   // If the extrinsic function has an argument of type "Origin", we ignore it
   static List<FunctionArgumentMetadataLatest> filterOrigin([FunctionMetadataLatest meta]) {
     // FIXME should be "arg.type !== Origin", but doesn't work...
     return meta != null
-        ? meta.args.filter((latest, [i, list]) => latest.type.toString() != 'Origin')
+        ? meta.args
+            .filter((latest, [i, list]) => latest.type.toString() != 'Origin')
+            .map((element) {
+            return FunctionArgumentMetadataLatest.from(element);
+          }).toList()
         : [];
   }
 
@@ -161,7 +180,7 @@ class GenericCall extends Struct implements IMethod {
    * @description "true" if the "Origin" type is on the method(extrinsic method)
    */
   bool get hasOrigin {
-    final firstArg = this.meta.args.value[0];
+    final firstArg = this.meta.args.value.isNotEmpty ? this.meta.args.value[0] : null;
 
     return firstArg != null && firstArg.type.toString() == 'Origin';
   }

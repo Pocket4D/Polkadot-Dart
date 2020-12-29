@@ -28,7 +28,12 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
     if ((value is List)) {
       // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-      (raw as dynamic)[key] = value[index] is T ? value[index] : types[key](registry, value[index]);
+      if (value.isNotEmpty) {
+        (raw as dynamic)[key] =
+            value[index] is T ? value[index] : types[key](registry, value[index]);
+      } else {
+        (raw as dynamic)[key] = types[key](registry);
+      }
     }
     // else if (value is Map) {
     //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -43,6 +48,7 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
       (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
     } else if (value is Map) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       var assign = value[jsonKey];
 
       if ((assign == null)) {
@@ -91,6 +97,9 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
 /// @internal
 T decodeStruct<T extends Map<dynamic, BaseCodec>>(Registry registry, Map<String, Constructor> types,
     dynamic value, Map<dynamic, String> jsonMap) {
+  // if (types["signature"] != null) {
+  //   print(value);
+  // }
   if (isHex(value)) {
     return decodeStruct(registry, types, hexToU8a(value as String), jsonMap);
   } else if (isU8a(value)) {
@@ -215,7 +224,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
 
   /// @description Returns a specific names entry in the structure
   /// @param name The name of the entry to retrieve
-  BaseCodec getCodec(String name) {
+  T getCodec<T extends BaseCodec>(String name) {
     return this._value[name];
   }
 
@@ -267,7 +276,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     return u8aConcat([
       ...entries
           // eslint-disable-next-line @typescript-eslint/unbound-method
-          .takeWhile((entry) => isFunction(entry.value?.toU8a))
+          .where((entry) => isFunction(entry.value?.toU8a))
           .map((entry) =>
               entry.value.toU8a(((isBare is bool) || isBare == null) ? isBare : isBare[entry.key]))
     ]);

@@ -56,6 +56,14 @@ class Option<T extends BaseCodec> extends BaseCodec {
     this._raw = decodeOption(registry, typeName, value) as T;
   }
 
+  Option.from(T val, [Registry registry, dynamic typeName]) {
+    this._raw = val;
+    this.registry = registry;
+    this.originTypeName = typeName;
+    this.originValue = val;
+    // this._type = typeToConstructor(registry, typeName);
+  }
+
   static Constructor<Option<O>> withParams<O extends BaseCodec>(dynamic type) => optionWith(type);
   static Option<T> constructor<T extends BaseCodec>(Registry registry,
           [dynamic typeName, dynamic value]) =>
@@ -79,7 +87,7 @@ class Option<T extends BaseCodec> extends BaseCodec {
 
   /// @description Checks if the Option has no value
   bool get isNone {
-    return this._raw is CodecNull;
+    return this._raw is CodecNull || this._raw == null;
   }
 
   /// @description Checks if the Option has a value

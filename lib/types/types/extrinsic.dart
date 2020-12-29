@@ -19,88 +19,58 @@ abstract class ISubmittableResult {
 }
 
 abstract class SignerPayloadJSON {
-  /**
-   * @description The ss-58 encoded address
-   */
+  /// @description The ss-58 encoded address
   String address;
 
-  /**
-   * @description The checkpoint hash of the block, in hex
-   */
+  /// @description The checkpoint hash of the block, in hex
   String blockHash;
 
-  /**
-   * @description The checkpoint block number, in hex
-   */
+  /// @description The checkpoint block number, in hex
   String blockNumber;
 
-  /**
-   * @description The era for this transaction, in hex
-   */
+  /// @description The era for this transaction, in hex
   String era;
 
-  /**
-   * @description The genesis hash of the chain, in hex
-   */
+  /// @description The genesis hash of the chain, in hex
   String genesisHash;
 
-  /**
-   * @description The encoded method (with arguments) in hex
-   */
+  /// @description The encoded method (with arguments) in hex
   String method;
 
-  /**
-   * @description The nonce for this transaction, in hex
-   */
+  /// @description The nonce for this transaction, in hex
   String nonce;
 
-  /**
-   * @description The current spec version for the runtime
-   */
+  /// @description The current spec version for the runtime
   String specVersion;
 
-  /**
-   * @description The tip for this transaction, in hex
-   */
+  /// @description The tip for this transaction, in hex
   String tip;
 
-  /**
-   * @description The current transaction version for the runtime
-   */
+  /// @description The current transaction version for the runtime
   String transactionVersion;
 
-  /**
-   * @description The applicable signed extensions for this runtime
-   */
+  /// @description The applicable signed extensions for this runtime
   List<String> signedExtensions;
 
-  /**
-   * @description The version of the extrinsic we are dealing with
-   */
+  /// @description The version of the extrinsic we are dealing with
   int version;
+
+  Map<String, dynamic> toMap();
 }
 
 abstract class SignerPayloadRawBase {
-  /**
-   * @description The hex-encoded data for this request
-   */
+  /// @description The hex-encoded data for this request
   String data;
 
-  /**
-   * @description The type of the contained data
-   */
+  /// @description The type of the contained data
   String type;
 }
 
 abstract class SignerPayloadRaw extends SignerPayloadRawBase {
-  /**
-   * @description The ss-58 encoded address
-   */
+  /// @description The ss-58 encoded address
   String address;
 
-  /**
-   * @description The type of the contained data
-   */
+  /// @description The type of the contained data
   String type;
 }
 
@@ -110,31 +80,21 @@ abstract class ISignerPayload {
 }
 
 abstract class SignerResult {
-  /**
-   * @description The id for this request
-   */
+  /// @description The id for this request
   int id;
 
-  /**
-   * @description The resulting signature in hex
-   */
+  /// @description The resulting signature in hex
   String signature;
 }
 
 abstract class Signer {
-  /**
-   * @description signs an extrinsic payload from a serialized form
-   */
+  /// @description signs an extrinsic payload from a serialized form
   Future<SignerResult> signPayload(SignerPayloadJSON payload);
 
-  /**
-   * @description signs a raw payload, only the bytes data as supplied
-   */
+  /// @description signs a raw payload, only the bytes data as supplied
   Future<SignerResult> signRaw(SignerPayloadRaw raw);
 
-  /**
-   * @description Receives an update for the extrinsic signed by a `signer.sign`
-   */
+  /// @description Receives an update for the extrinsic signed by a `signer.sign`
   // H256 | ISubmittableResult
   void update(int id, dynamic status);
 }

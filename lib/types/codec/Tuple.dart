@@ -56,7 +56,7 @@ class Tuple extends AbstractArray<BaseCodec> {
   dynamic _types;
 
   Tuple(Registry registry, dynamic types, dynamic value)
-      : super(
+      : super.withReg(
             registry,
             decodeTuple(
                 registry,

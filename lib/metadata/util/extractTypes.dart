@@ -1,6 +1,6 @@
 import 'package:polkadot_dart/types/types.dart';
 
-dynamic extractTypes(List<String> types) {
+List<dynamic> extractTypes(List<String> types) {
   return types.map((type) {
     final decoded = getTypeDef(type);
 
@@ -20,11 +20,12 @@ dynamic extractTypes(List<String> types) {
       case TypeDefInfo.HashMap:
       case TypeDefInfo.Result:
       case TypeDefInfo.Tuple:
-        return extractTypes(
-            (decoded.sub as List).map((e) => (e is TypeDef ? e : TypeDef.fromMap(e)).type));
+        return extractTypes((decoded.sub as List)
+            .map((e) => (e is TypeDef ? e : TypeDef.fromMap(e)).type)
+            .toList());
 
       default:
         throw "Unhandled: Unable to create and validate type from $type";
     }
-  });
+  }).toList();
 }

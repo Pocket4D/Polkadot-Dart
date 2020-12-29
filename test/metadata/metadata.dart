@@ -6,7 +6,7 @@ import 'package:polkadot_dart/metadata/Metadata.dart';
 
 import 'package:polkadot_dart/types/types.dart' hide Metadata;
 
-import '../fixtures/metadata_v12.dart' as substrateData;
+import './v12/v12.dart' as substrateData;
 
 void main() {
   metadataTest(); // rename this test name

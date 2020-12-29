@@ -9,6 +9,7 @@ import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart' as typesCreator;
 import 'package:polkadot_dart/types/create/getTypeDef.dart';
 import 'package:polkadot_dart/types/create/types.dart';
+import 'package:polkadot_dart/types/extrinsic/signedExtensions/index.dart';
 import 'package:polkadot_dart/types/generic/Event.dart';
 import 'package:polkadot_dart/types/interfaces/definitions.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
@@ -47,13 +48,14 @@ void injectErrors(Registry _, Metadata metadata, Map<String, RegistryError> meta
   });
 }
 
-void injectEvents(Registry registry, Metadata metadata,
+void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
     Map<String, Constructor<GenericEventData>> metadataEvents) {
   final modules = metadata.asLatest.modules;
   final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
 
   // decorate the events
-  final filtered = modules.value.where((module) => module.events.isSome).toList();
+  final filtered =
+      modules.value.where((module) => module.events != null && module.events.isSome).toList();
 
   filtered.forEach((section) {
     final _sectionIndex = filtered.indexOf(section);
@@ -67,10 +69,13 @@ void injectEvents(Registry registry, Metadata metadata,
       final eventIndex = Uint8List.fromList([sectionIndex, methodIndex]);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       final typeDef = meta.args.map((arg, [index, list]) => getTypeDef(arg.toString()));
-      List<Constructor<BaseCodec>> Types = [];
+
+      List<Constructor<T>> Types = [];
+
       try {
-        Types = typeDef.map((typeDef) => getTypeClass(registry, typeDef));
+        Types = typeDef.map((typeDef) => getTypeClass(registry, typeDef)).toList();
       } catch (error) {
+        // throw error;
         print(error);
       }
       metadataEvents[u8aToHex(eventIndex)] = (Registry registry, [dynamic value]) {
@@ -83,7 +88,7 @@ void injectEvents(Registry registry, Metadata metadata,
 
 void injectExtrinsics(
     Registry registry, Metadata metadata, Map<String, CallFunction> metadataCalls) {
-  final extrinsics = decorateExtrinsics(registry, metadata.asLatest);
+  final extrinsics = decorateExtrinsics(registry, metadata.asLatest, metadata.version);
   // decorate the extrinsics
   (extrinsics.values).forEach((methods) => (methods.values).forEach((method) {
         metadataCalls[u8aToHex(method.callIndex)] = method;
@@ -93,11 +98,13 @@ void injectExtrinsics(
 class TypeRegistry implements Registry {
   Map<String, dynamic> _knownDefaults;
   Map<String, dynamic> _knownDefinitions;
-  Map<String, String> _definitions;
-  Map<String, bool> _unknownTypes;
+  Map<String, String> _definitions = new Map<String, String>();
+  Map<String, bool> _unknownTypes = new Map<String, bool>();
   RegisteredTypes _knownTypes;
   RegisteredTypes _registeredTypes;
-  Map<String, Constructor> _classes;
+  List<String> _signedExtensions = defaultExtensions;
+
+  Map<String, Constructor> _classes = new Map<String, Constructor>();
   Map<String, Constructor> get cls => _classes;
   Map<String, String> get defs => _definitions;
 
@@ -121,7 +128,7 @@ class TypeRegistry implements Registry {
   @override
   // TODO: implement chainDecimals
   int get chainDecimals {
-    // return this.#chainProperties?.tokenDecimals.isSome
+    // return this._chainProperties?.tokenDecimals.isSome
     //   ? this.#chainProperties.tokenDecimals.unwrap().toNumber()
     //   : 12;
     return 12;
@@ -147,18 +154,30 @@ class TypeRegistry implements Registry {
 
   @override
   Constructor<T> createClass<T extends BaseCodec>(String type) {
+    // print("\n $type");
     return classCreator.createClass(this, type);
   }
 
   @override
   T createType<T extends BaseCodec>(String type, [dynamic params]) {
-    return typesCreator.createType(this, type, params != null ? [params] : null);
+    return typesCreator.createType(
+        this,
+        type,
+        params != null
+            ? params is List && !isU8a(params)
+                ? params
+                : [params]
+            : null);
   }
 
   @override
   findMetaEvent(Uint8List eventIndex) {
-    // TODO: implement findMetaEvent
-    throw UnimplementedError();
+    final hexIndex = u8aToHex(eventIndex);
+
+    assert(this._metadataEvents[hexIndex] != null,
+        "findMetaEvent: Unable to find Event with index $hexIndex/[${eventIndex.toString()}]");
+
+    return this._metadataEvents[hexIndex];
   }
 
   @override
@@ -170,6 +189,7 @@ class TypeRegistry implements Registry {
   @override
   Constructor<T> getConstructor<T extends BaseCodec>(String name, [bool withUnknown]) {
     var returnType = this._classes[name];
+
     // we have not already created the type, attempt it
     if (returnType == null) {
       final definition = this._definitions[name];
@@ -177,11 +197,12 @@ class TypeRegistry implements Registry {
       Constructor<T> baseType;
       // we have a definition, so create the class now (lazily)
       if (definition != null) {
-        baseType = classCreator.ClassOf(this, definition);
+        baseType = classCreator.ClassOf(this, definition, TypeDefOptions(displayName: name));
       } else if (withUnknown != null && withUnknown) {
         // l.warn(`Unable to resolve type ${name}, it will fail on construction`);
         this._unknownTypes[name] = true;
-        baseType = DoNotConstruct.withParams(name);
+        // baseType = DoNotConstruct.withParams(name);
+        baseType = classCreator.createClass(this, "Null");
       }
 
       if (baseType != null) {
@@ -199,8 +220,7 @@ class TypeRegistry implements Registry {
 
   @override
   String getDefinition(String name) {
-    // TODO: implement getDefinition
-    throw UnimplementedError();
+    return this._definitions[name];
   }
 
   @override
@@ -217,31 +237,31 @@ class TypeRegistry implements Registry {
   @override
   Map<String, dynamic> getSignedExtensionExtra() {
     // TODO: implement getSignedExtensionExtra
-    throw UnimplementedError();
+    return expandExtensionTypes(this._signedExtensions, 'extra');
   }
 
   @override
   Map<String, dynamic> getSignedExtensionTypes() {
     // TODO: implement getSignedExtensionTypes
-    throw UnimplementedError();
+    return expandExtensionTypes(this._signedExtensions, 'types');
   }
 
   @override
   bool hasClass(String name) {
     // TODO: implement hasClass
-    throw UnimplementedError();
+    return this._classes.containsKey(name);
   }
 
   @override
   bool hasDef(String name) {
     // TODO: implement hasDef
-    throw UnimplementedError();
+    return this._definitions.containsKey(name);
   }
 
   @override
   bool hasType(String name) {
     // TODO: implement hasType
-    throw UnimplementedError();
+    return !this._unknownTypes.containsKey(name) && (this.hasClass(name) || this.hasDef(name));
   }
 
   @override
@@ -255,7 +275,7 @@ class TypeRegistry implements Registry {
     this._classes = Map<String, Constructor>();
     this._definitions = new Map<String, String>();
     this._unknownTypes = new Map<String, bool>();
-
+    this._knownTypes = RegisteredTypes.fromMap({});
     // this._knownTypes = {};
 
     this.register(this._knownDefaults);
@@ -263,7 +283,6 @@ class TypeRegistry implements Registry {
       this.register(Map<String, dynamic>.from(defs["types"]));
     });
 
-    this._knownTypes = RegisteredTypes();
     // load balanceFormatter
     BalanceFormatter();
     return this;
@@ -320,36 +339,35 @@ class TypeRegistry implements Registry {
     injectErrors(this, metadata, this._metadataErrors);
     injectEvents(this, metadata, this._metadataEvents);
 
-    // this.setSignedExtensions(
-    //   signedExtensions || (
-    //     metadata.asLatest.extrinsic.version.gt(BN_ZERO)
-    //       ? metadata.asLatest.extrinsic.signedExtensions.map((key) => key.toString())
-    //       : defaultExtensions
-    //   )
-    // );
+    this.setSignedExtensions(signedExtensions ??
+        (metadata.asLatest.extrinsic.version.value > BigInt.zero
+            ? metadata.asLatest.extrinsic.signedExtensions.value
+                .map((key) => key.toString())
+                .toList()
+            : defaultExtensions));
   }
 
   @override
   void setSignedExtensions([List<String> signedExtensions]) {
-    // this.#signedExtensions = signedExtensions;
+    this._signedExtensions = signedExtensions;
 
-    // const unknown = findUnknownExtensions(this.#signedExtensions);
+    final unknown = findUnknownExtensions(this._signedExtensions);
 
-    // if (unknown.length) {
-    //   l.warn(`Unknown signed extensions ${unknown.join(', ')} found, treating them as no-effect`);
-    // }
+    if (unknown.length > 0) {
+      print("Unknown signed extensions ${unknown.join(', ')} found, treating them as no-effect");
+    }
   }
 
   @override
   // TODO: implement signedExtensions
-  List<String> get signedExtensions => throw UnimplementedError();
+  List<String> get signedExtensions => _signedExtensions;
 
   @override
   CallFunction findMetaCall(Uint8List callIndex) {
     final hexIndex = u8aToHex(callIndex);
-    // final call = this._metadataCalls[hexIndex];
-    // assert(call != null,
-    //     "findMetaCall: Unable to find Call with index $hexIndex/[${callIndex.toString()}]");
-    return null;
+    final call = this._metadataCalls[hexIndex];
+    assert(call != null,
+        "findMetaCall: Unable to find Call with index $hexIndex/[${callIndex.toString()}]");
+    return call;
   }
 }

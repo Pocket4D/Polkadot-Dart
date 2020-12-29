@@ -1,12 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:polkadot_dart/types/extrinsic/types.dart';
+import 'package:polkadot_dart/types/extrinsic/v4/ExtrinsicSignature.dart';
+import 'package:polkadot_dart/types/interfaces/extrinsics/types.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart' hide Call;
 import 'package:polkadot_dart/types/types/extrinsic.dart';
-import 'package:polkadot_dart/utils/utils.dart';
+// import 'package:polkadot_dart/utils/utils.dart';
 
 const EXTRINSIC_VERSION = 4;
 
-abstract class ExtrinsicSignatureV4 extends IExtrinsicSignature {}
+// abstract class ExtrinsicSignatureV4 extends IExtrinsicSignature {}
 
 class ExtrinsicValueV4 {
   Call method;
@@ -15,10 +19,22 @@ class ExtrinsicValueV4 {
   toMap() => {"method": this.method, "signature": this.signature};
 }
 
+class GenericExtrinsicV4Options implements ExtrinsicOptions {
+  @override
+  bool isSigned;
+
+  @override
+  int version;
+  GenericExtrinsicV4Options({this.isSigned, this.version});
+  factory GenericExtrinsicV4Options.fromMap(Map<String, dynamic> map) =>
+      GenericExtrinsicV4Options(isSigned: map["isSigned"] ?? null, version: map["version"] ?? null);
+}
+
 class GenericExtrinsicV4 extends Struct implements IExtrinsicImpl {
   // GenericExtrinsicV4(Registry registry, Map<String, > types) : super(registry, types);
-
-  GenericExtrinsicV4(Registry registry, [dynamic value, ExtrinsicOptions options])
+  ExtrinsicOptions originOptions;
+  dynamic originValue;
+  GenericExtrinsicV4(Registry registry, [dynamic thisValue, ExtrinsicOptions options])
       : super(
             registry,
             {
@@ -26,11 +42,15 @@ class GenericExtrinsicV4 extends Struct implements IExtrinsicImpl {
               // eslint-disable-next-line sort-keys
               "method": 'Call'
             },
-            GenericExtrinsicV4.decodeExtrinsic(registry, value, options?.isSigned ?? false));
+            GenericExtrinsicV4.decodeExtrinsic(registry, thisValue, options?.isSigned ?? false)) {
+    originValue = thisValue;
+    originOptions = options;
+  }
 
-  static GenericExtrinsicV4 constructor(Registry registry,
-          [dynamic value, ExtrinsicOptions options]) =>
-      GenericExtrinsicV4(registry, value, options);
+  static GenericExtrinsicV4 constructor(Registry registry, [dynamic value, dynamic options]) {
+    return GenericExtrinsicV4(registry, value,
+        options is ExtrinsicOptions ? options : GenericExtrinsicV4Options.fromMap(options));
+  }
 
   /// @internal */
   // ExtrinsicValueV4
@@ -39,19 +59,18 @@ class GenericExtrinsicV4 extends Struct implements IExtrinsicImpl {
       return value;
       // registry.createClass('Call')
     } else if (value is Call) {
-      return ExtrinsicValueV4(method: value);
-    } else if (isU8a(value)) {
+      return ExtrinsicValueV4(method: value).toMap();
+    } else if (value is Uint8List) {
       // here we decode manually since we need to pull through the version information
-      final signature = registry.createType('ExtrinsicSignatureV4', [
+      final signature = ExtrinsicSignatureV4.from(registry.createType('ExtrinsicSignatureV4', [
         value,
         {"isSigned": isSigned}
-      ]);
-      final method = registry.createType('Call', value.subList(signature.encodedLength));
+      ]));
+      final method = registry.createType('Call', value.sublist(signature.encodedLength));
 
-      return ExtrinsicValueV4(method: method, signature: signature);
+      return ExtrinsicValueV4(method: Call.from(method), signature: signature).toMap();
     }
-
-    return value ?? ExtrinsicValueV4();
+    return value ?? ExtrinsicValueV4().toMap();
   }
 
   /// @description The length of the value when encoded as a Uint8Array
@@ -61,12 +80,7 @@ class GenericExtrinsicV4 extends Struct implements IExtrinsicImpl {
 
   /// @description The [[Call]] this extrinsic wraps
   Call get method {
-    return this.getCodec('method').cast<Call>();
-  }
-
-  /// @description The [[ExtrinsicSignatureV4]]
-  ExtrinsicSignatureV4 get signature {
-    return this.getCodec('signature').cast<ExtrinsicSignatureV4>();
+    return Call.from(this.getCodec('method'));
   }
 
   /// @description The version for the signature
@@ -90,5 +104,11 @@ class GenericExtrinsicV4 extends Struct implements IExtrinsicImpl {
   GenericExtrinsicV4 signFake(dynamic signer, SignatureOptions options) {
     this.signature.signFake(this.method, signer, options);
     return this;
+  }
+
+  @override
+  // TODO: implement signature
+  IExtrinsicSignature get signature {
+    return this.getCodec("signature");
   }
 }

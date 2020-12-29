@@ -8,10 +8,11 @@ DoNotConstruct Function(Registry, [dynamic]) doNotConstructWith([String typeName
 
 class DoNotConstruct extends CodecNull {
   DoNotConstruct(Registry registry, [String typeName = 'DoNotConstruct']) : super(registry) {
-    throw "Cannot construct unknown type $encodedLength";
+    // print("Cannot construct unknown type $encodedLength");
+    throw "Cannot construct unknown type $typeName";
   }
   static DoNotConstruct constructor(Registry registry, [dynamic typeName = 'DoNotConstruct']) =>
       DoNotConstruct(registry, typeName);
-  static Constructor<T> withParams<T extends DoNotConstruct>([String typeName]) =>
+  static Constructor withParams<T extends DoNotConstruct>([String typeName]) =>
       doNotConstructWith(typeName);
 }

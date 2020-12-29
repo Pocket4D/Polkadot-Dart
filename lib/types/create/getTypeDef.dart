@@ -173,6 +173,7 @@ String extractSubType(String type, List wrapper) {
 /// eslint-disable-next-line @typescript-eslint/ban-types
 TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
   // create the type via Type, allowing types to be sanitized
+
   if (options == null) {
     options = TypeDefOptions();
   }
@@ -184,6 +185,7 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
     "name": options.name,
     "type": type
   });
+
   assert(++count != MAX_NESTED, 'getTypeDef: Maximum nested limit reached');
 
   final nested = nestedExtraction.singleWhere((val) {
@@ -201,5 +203,6 @@ TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
     typedefValue.info = wrapped[2] as TypeDefInfo;
     typedefValue.sub = getTypeDef(extractSubType(type, wrapped), TypeDefOptions(), count);
   }
+
   return typedefValue;
 }

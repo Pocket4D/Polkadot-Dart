@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Raw.dart';
@@ -37,10 +38,17 @@ List<dynamic> getStorageType(StorageEntryTypeLatest type) {
   if (type.isPlain) {
     return [false, type.asPlain.toString()];
   } else if (type.isDoubleMap) {
-    return [false, type.asDoubleMap.value.toString()];
+    var map = type.asDoubleMap.toJSON();
+    var rewrap = map.map((key, val) {
+      return MapEntry(key, val is bool ? 'Bool' : val);
+    });
+    return [false, jsonEncode(rewrap)];
   }
-
-  return [false, type.asMap.value.toString()];
+  var map = type.asMap.toJSON();
+  var rewrap = map.map((key, val) {
+    return MapEntry(key, val is bool ? 'Bool' : val);
+  });
+  return [false, jsonEncode(rewrap)];
 }
 
 // we unwrap the type here, turning into an output usable for createType
@@ -51,7 +59,9 @@ String unwrapStorageType(StorageEntryTypeLatest type, [bool isOptional]) {
   final hasWrapper = arr[0] as bool;
   final outputType = arr[1] as String;
 
-  return isOptional && !hasWrapper ? "Option<$outputType>" : outputType;
+  return isOptional != null && isOptional == true && !hasWrapper
+      ? "Option<$outputType>"
+      : outputType;
 }
 
 /// @internal */
@@ -158,7 +168,7 @@ class StorageKey extends Bytes {
         override?.method ?? decodedVal.method);
   }
 
-  static StorageKey constructor(Registry registry, [dynamic value, StorageKeyExtra override]) =>
+  static StorageKey constructor(Registry registry, [dynamic value, dynamic override]) =>
       StorageKey(registry, value, override);
 
   static StorageEntryMetadataLatest getMeta(dynamic value) {

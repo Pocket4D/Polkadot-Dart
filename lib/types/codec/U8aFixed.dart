@@ -10,6 +10,10 @@ Uint8List decodeU8aFixed(dynamic value, int bitLength) {
     return decodeU8aFixed(u8aToU8a(value), bitLength);
   }
 
+  if (value is U8aFixed) {
+    return decodeU8aFixed(value.value, bitLength);
+  }
+
   // ensure that we have an actual u8a with the full length as specified by
   // the bitLength input (padded with zeros as required)
   final byteLength = (bitLength / 8).ceil();
@@ -30,10 +34,10 @@ U8aFixed Function(Registry, [dynamic]) u8aFixedWith(int bitLength, String typeNa
 class U8aFixed extends Raw {
   String typeName;
   dynamic originValue;
-  U8aFixed(Registry registry, [dynamic value, int bitLength = 256, String typeName])
-      : super(registry, decodeU8aFixed(value ?? Uint8List.fromList([]), bitLength)) {
+  U8aFixed(Registry registry, [dynamic thisValue, int bitLength = 256, String typeName])
+      : super(registry, decodeU8aFixed(thisValue ?? Uint8List.fromList([]), bitLength)) {
     this.typeName = typeName;
-    this.originValue = value;
+    this.originValue = thisValue;
   }
   static Constructor<U8aFixed> withParams(int bitLength, [String typeName]) =>
       u8aFixedWith(bitLength, typeName);

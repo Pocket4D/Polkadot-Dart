@@ -97,11 +97,11 @@ abstract class ExtractionMetadata {
 }
 
 List<Call> unwrapCalls(Module mod) {
-  return mod.calls != null
-      ? mod.calls.unwrapOr([])
+  return mod.calls != null && mod.calls.isSome
+      ? mod.calls.unwrap().value
       // V0
       : mod.module != null
-          ? mod.module.call.functions
+          ? mod.module.call.functions.value
           : [];
 }
 
@@ -116,11 +116,13 @@ List<List<List<String>>> getCallNames(ExtractionMetadata extractionMetadata) {
 
 // /** @internal */
 List<List<String>> getConstantNames(ExtractionMetadata extractionMetadata) {
-  return extractionMetadata.modules
+  var result = extractionMetadata.modules
       .map((mod, [index, list]) => mod.constants != null
           ? mod.constants.map((constant, [index, list]) => constant.type.toString()).toList()
-          : [])
+          : List<String>.from([]))
       .toList();
+
+  return result;
 }
 
 // /** @internal */
@@ -129,7 +131,7 @@ List<Event> unwrapEvents(Option<Vec<Event>> events) {
     return [];
   }
 
-  return events.unwrapOr([]);
+  return events.unwrap().value;
 }
 
 // /** @internal */
@@ -146,20 +148,20 @@ List<List<List<String>>> getEventNames(ExtractionMetadata extractionMetadata) {
 
   // V1+
   return extractionMetadata.modules
-      .map((module, [index, list]) => unwrapEvents(module.events).map(mapArg))
+      .map((module, [index, list]) => unwrapEvents(module.events).map(mapArg).toList())
       .toList();
 }
 
 // /** @internal */
 List<Item> unwrapStorage(dynamic storage) {
-  if (storage == null) {
-    return [];
+  if (storage == null || (storage is Option && storage.isEmpty)) {
+    return List<Item>.from([]);
   }
 
   if (storage is Option<Vec<Item>>) {
     return storage.unwrapOr([]);
-  } else if (storage is Items) {
-    return storage.items.value ?? storage.functions.value;
+  } else if (storage is Option<Items2>) {
+    return storage.unwrap().items.value ?? storage.unwrap().functions.value;
   }
   throw "Cannot unwrap Storage with $storage";
 }
@@ -168,7 +170,7 @@ List<Item> unwrapStorage(dynamic storage) {
 List<List<List<String>>> getStorageNames(ExtractionMetadata extractionMetadata) {
   return extractionMetadata.modules
       .map((module, [index, list]) => unwrapStorage(module.storage).map((item) {
-            if (item.type.isDoubleMap != null && item.type.asDoubleMap != null) {
+            if (item.type.isDoubleMap == true && item.type.asDoubleMap != null) {
               return [
                 item.type.asDoubleMap.key1.toString(),
                 item.type.asDoubleMap.key2.toString(),
@@ -179,7 +181,8 @@ List<List<List<String>>> getStorageNames(ExtractionMetadata extractionMetadata) 
             } else {
               return [item.type.asPlain.toString()];
             }
-          }));
+          }).toList())
+      .toList();
 }
 
 /** @internal */

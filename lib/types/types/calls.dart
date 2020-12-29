@@ -14,7 +14,7 @@ abstract class CallBase {
 
 abstract class CallFunction extends CallBase {
   Call call; //(...args: any[]) ;
-  T callFunction<T extends BaseCodec>(List<dynamic> args);
+  Call callFunction(List<dynamic> args);
 }
 
 // export type Calls = Record<string, CallFunction>;

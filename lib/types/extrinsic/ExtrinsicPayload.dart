@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/extrinsic/ExtrinsicEra.dart';
 import 'package:polkadot_dart/types/extrinsic/constant.dart';
+import 'package:polkadot_dart/types/extrinsic/v4/ExtrinsicPayload.dart';
 import 'package:polkadot_dart/types/interfaces/extrinsics/types.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart';
@@ -16,8 +17,11 @@ class ExtrinsicPayloadOptions {
 }
 
 // ignore: non_constant_identifier_names
-abstract class ExtrinsicPayloadVx extends ExtrinsicPayloadV4 {
+class ExtrinsicPayloadVx extends ExtrinsicPayloadV4 {
   ExtrinsicPayloadVx(Registry registry, [dynamic value]) : super(registry, value);
+  factory ExtrinsicPayloadVx.from(GenericExtrinsicPayloadV4 origin) {
+    return ExtrinsicPayloadVx(origin.registry, origin.originValue);
+  }
 }
 
 // all our known types that can be returned
@@ -36,22 +40,27 @@ class GenericExtrinsicPayload extends Base<ExtrinsicPayloadVx> {
       : super(
             registry,
             GenericExtrinsicPayload.decodeExtrinsicPayload(
-                registry, value as ExtrinsicPayloadValue, options.version ?? DEFAULT_VERSION));
+                registry, value, options.version ?? DEFAULT_VERSION));
 
-  static GenericExtrinsicPayload constructor(Registry registry,
-          [dynamic value, ExtrinsicPayloadOptions options]) =>
-      GenericExtrinsicPayload(registry, value, options);
+  static GenericExtrinsicPayload constructor(Registry registry, [dynamic value, dynamic options]) {
+    var op = options is Map
+        ? ExtrinsicPayloadOptions(version: options["version"])
+        : ExtrinsicPayloadOptions();
+    return GenericExtrinsicPayload(registry, value, op);
+  }
+
   /** @internal */
   static ExtrinsicPayloadVx decodeExtrinsicPayload(Registry registry, dynamic value,
       [int version = DEFAULT_VERSION]) {
     if (value is GenericExtrinsicPayload) {
       return value.raw;
     }
+    // print(registry.createType(_VERSIONS[version] ?? _VERSIONS[0]).runtimeType);
 
-    return registry.createType(_VERSIONS[version] ?? _VERSIONS[0], [
+    return ExtrinsicPayloadVx.from(registry.createType(_VERSIONS[version] ?? _VERSIONS[0], [
       value,
-      {"version": version}
-    ]) as ExtrinsicPayloadVx;
+      //   {"version": version}
+    ]));
   }
 
   /**

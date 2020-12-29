@@ -16,7 +16,7 @@ class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
 
   VecFixed(Registry registry, dynamic type, int length, [dynamic value])
-      : super(
+      : super.withReg(
             registry,
             VecFixed.decodeVecFixed(
                 registry, typeToConstructor<T>(registry, type), length, value ?? [])) {
@@ -59,7 +59,6 @@ class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
     // we override, we don't add the length prefix for ourselves, and at the same time we
     // ignore isBare on entries, since they should be properly encoded at all times
     final encoded = this.value.map((entry) => entry.toU8a());
-
     return encoded.length != 0 ? u8aConcat([...encoded]) : Uint8List.fromList([]);
   }
 

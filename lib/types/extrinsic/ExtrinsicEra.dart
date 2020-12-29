@@ -9,16 +9,33 @@ import 'package:polkadot_dart/utils/utils.dart';
 class MortalMethod {
   int current;
   int period;
+  MortalMethod({this.current, this.period});
+  factory MortalMethod.fromMap(Map<String, dynamic> map) {
+    return MortalMethod(current: map["current"], period: map["period"]);
+  }
+  toMap() => {"current": this.current, "period": this.period};
 }
 
 class MortalEnumDef {
   // ignore: non_constant_identifier_names
   String MortalEra;
+  // ignore: non_constant_identifier_names
+  MortalEnumDef({this.MortalEra});
+  factory MortalEnumDef.fromMap(Map<String, dynamic> map) {
+    return MortalEnumDef(MortalEra: map["MortalEra"]);
+  }
+  toMap() => {"MortalEra": this.MortalEra};
 }
 
 class ImmortalEnumDef {
   // ignore: non_constant_identifier_names
   String ImmortalEra;
+  // ignore: non_constant_identifier_names
+  ImmortalEnumDef({this.ImmortalEra});
+  factory ImmortalEnumDef.fromMap(Map<String, dynamic> map) {
+    return ImmortalEnumDef(ImmortalEra: map["ImmortalEra"]);
+  }
+  toMap() => {"ImmortalEra": this.ImmortalEra};
 }
 
 int getTrailingZeros(int period) {
@@ -36,13 +53,17 @@ class ImmortalEra extends Raw {
   ImmortalEra(Registry registry, [dynamic value]) : super(registry, IMMORTAL_ERA);
   static ImmortalEra constructor(Registry registry, [dynamic value]) =>
       ImmortalEra(registry, value);
+  factory ImmortalEra.from(Raw origin) => ImmortalEra(origin.registry, origin.originValue);
 }
 
 class MortalEra extends Tuple {
   MortalEra(Registry registry, [dynamic value])
-      : super(registry, {"period": u64, "phase": u64}, MortalEra._decodeMortalEra(registry, value));
+      : super(registry, {"period": u64.constructor, "phase": u64.constructor},
+            MortalEra._decodeMortalEra(registry, value));
 
   static MortalEra constructor(Registry registry, [dynamic value]) => MortalEra(registry, value);
+
+  factory MortalEra.from(Tuple origin) => MortalEra(origin.registry, origin.value);
 
   /** @internal */
   static List<u64> _decodeMortalEra(Registry registry, [dynamic value]) {
@@ -51,7 +72,7 @@ class MortalEra extends Tuple {
     } else if (isU8a(value) || isHex(value) || (value is List)) {
       return MortalEra._decodeMortalU8a(registry, u8aToU8a(value));
     } else if (isObject(value)) {
-      return MortalEra._decodeMortalObject(registry, value);
+      return MortalEra._decodeMortalObject(registry, MortalMethod.fromMap(value));
     }
 
     throw 'Invalid data passed to Mortal era';
@@ -68,7 +89,7 @@ class MortalEra extends Tuple {
 
     final phase = current % calPeriod;
     final quantizeFactor = Math.max(calPeriod >> 12, 1);
-    final quantizedPhase = phase / quantizeFactor * quantizeFactor;
+    final quantizedPhase = (phase / quantizeFactor * quantizeFactor).ceil();
 
     return [u64(registry, calPeriod), u64(registry, quantizedPhase)];
   }
@@ -116,7 +137,7 @@ class MortalEra extends Tuple {
    * @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
    */
   dynamic toHuman([bool isExpanded]) {
-    return {"period": formatNumber(this.period), "phase": formatNumber(this.phase)};
+    return {"period": formatNumber(this.period.value), "phase": formatNumber(this.phase.value)};
   }
 
   /**
@@ -179,8 +200,10 @@ class MortalEra extends Tuple {
 // implements IExtrinsicEra
 class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
   GenericExtrinsicEra(Registry registry, [dynamic value])
-      : super(registry, {ImmortalEra, MortalEra},
-            GenericExtrinsicEra._decodeExtrinsicEra(value as String));
+      : super(
+            registry,
+            {"ImmortalEra": ImmortalEra.constructor, "MortalEra": MortalEra.constructor},
+            GenericExtrinsicEra._decodeExtrinsicEra(value));
 
   static GenericExtrinsicEra constructor(Registry registry, [dynamic value]) =>
       GenericExtrinsicEra(registry, value);
@@ -203,11 +226,13 @@ class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
           : Uint8List.fromList([1, value[0], value[1]]);
     } else if (isObject(value)) {
       // this is to de-serialize from JSON
-      return (value as MortalEnumDef).MortalEra != null
-          ? {MortalEra: (value as MortalEnumDef).MortalEra}
-          : (value as ImmortalEnumDef).ImmortalEra != null
-              ? {ImmortalEra: (value as ImmortalEnumDef).ImmortalEra}
-              : {MortalEra: value};
+      final result = (MortalEnumDef.fromMap(value)).MortalEra != null
+          ? {"MortalEra": (MortalEnumDef.fromMap(value)).MortalEra}
+          : (ImmortalEnumDef.fromMap(value)).ImmortalEra != null
+              ? {"ImmortalEra": ImmortalEnumDef.fromMap(value).ImmortalEra}
+              : {"MortalEra": value};
+
+      return result;
     }
 
     throw 'Invalid data passed to Era';
@@ -233,7 +258,6 @@ class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
    */
   MortalEra get asMortalEra {
     assert(this.isMortalEra, "Cannot convert '${this.type}' via asMortalEra");
-
     return this.value as MortalEra;
   }
 

@@ -12,7 +12,7 @@ class CodecInt extends AbstractInt {
   Registry registry;
   CodecInt(Registry registry,
       [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, String typeName])
-      : super(registry, value, bitLength, true) {
+      : super.withReg(registry, value, bitLength, true) {
     _typeName = typeName;
     registry = registry;
   }

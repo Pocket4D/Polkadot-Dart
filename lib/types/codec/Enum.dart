@@ -90,6 +90,7 @@ DecodedEnum decodeFromString(Registry registry, Map<String, Constructor> def, St
 
 DecodedEnum decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
   if (value is Uint8List) {
+    if (value.isEmpty) value = Uint8List.fromList([0]);
     return createFromValue(registry, def, value[0], value.sublist(1));
   } else if (isNumber(value)) {
     return createFromValue(registry, def, value);
@@ -145,12 +146,12 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   dynamic originDef;
   dynamic originValue;
   dynamic originIndex;
-  Enum(Registry registry, dynamic def, [dynamic value, int index]) {
+  Enum(Registry registry, dynamic def, [dynamic thisValue, int index]) {
     originDef = def;
-    originValue = value;
+    originValue = thisValue;
     originIndex = index;
     final defInfo = extractDef(registry, def);
-    final decoded = decodeEnum(registry, defInfo.def, value, index);
+    final decoded = decodeEnum(registry, defInfo.def, thisValue, index);
     final defList = defInfo.def.keys.toList();
     this.registry = registry;
     this.def = defInfo.def;
@@ -161,12 +162,12 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     this.genKeys();
   }
 
-  static Enum constructor(Registry registry, [dynamic def, dynamic value, int index]) =>
-      Enum(registry, def, value, index);
+  static Enum constructor(Registry registry, [dynamic def, dynamic thisValue, int index]) =>
+      Enum(registry, def, thisValue, index);
 
   static Constructor<Enum<T>> withParams<T extends BaseCodec>(dynamic types) {
-    return (Registry registry, [dynamic value, int index]) {
-      var result = Enum<T>(registry, types, value, index);
+    return (Registry registry, [dynamic thisValue, int index]) {
+      var result = Enum<T>(registry, types, thisValue, index);
       result.genKeys();
       return result;
     };

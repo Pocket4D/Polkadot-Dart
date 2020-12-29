@@ -1,4 +1,4 @@
-import 'package:polkadot_dart/types-known/modules.dart';
+import 'package:polkadot_dart/types-known/index.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -10,14 +10,15 @@ const KNOWN_ORIGINS = {
 };
 
 void setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
-  final override = (sectionTypes.keys).where((aliased) => type.eq(aliased));
+  final override =
+      (sectionTypes.keys).singleWhere((aliased) => type.eq(aliased), orElse: () => null);
 
   if (override != null) {
     type.setOverride(sectionTypes[override]);
   } else {
     // FIXME: NOT happy with this approach, but gets over the initial hump cased by (Vec<Announcement>,BalanceOf)
     final orig = type.toString();
-    final alias = (sectionTypes.entries).fold(
+    final alias = (sectionTypes.entries).fold<String>(
         orig,
         (result, entry) => [
               ['<', '>'],
@@ -27,9 +28,9 @@ void setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
               ['(', ','],
               [',', ','],
               [',', ')']
-            ].fold(
+            ].fold<String>(
                 result,
-                (subResult, subEntry) => subResult.replace(
+                (subResult, subEntry) => subResult.replaceAll(
                     "${subEntry.first}${entry.key}${subEntry.last}",
                     "${subEntry.first}${entry.value}${subEntry.last}")));
 
@@ -61,7 +62,7 @@ List<EventMetadataLatest> convertEvents(
 
 StorageMetadataLatest convertStorage(
     Registry registry, StorageMetadataV12 v12, Map<String, String> sectionTypes) {
-  return registry.createType('StorageMetadataLatest', {
+  return StorageMetadataLatest.from(registry.createType('StorageMetadataLatest', {
     "items": v12.items.map((v11, [index, list]) {
       CodecType resultType;
 
@@ -84,7 +85,7 @@ StorageMetadataLatest convertStorage(
       }));
     }),
     "prefix": v12.prefix
-  });
+  }));
 }
 
 void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
@@ -111,10 +112,6 @@ void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
   });
 }
 
-Map<String, String> getModuleTypes(Registry registry, String section) {
-  return {...(typesModules[section] ?? {}), ...(registry.knownTypes.typesAlias[section] ?? {})};
-}
-
 // { calls, events, storage }: { calls: FunctionMetadataV12[] | null, events: EventMetadataV12[] | null, storage: StorageMetadataV12 | null }
 
 ModuleMetadataLatest createModule(Registry registry, ModuleMetadataV12 mod,
@@ -132,11 +129,12 @@ ModuleMetadataLatest createModule(Registry registry, ModuleMetadataV12 mod,
 MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
   registerOriginCaller(registry, v12.modules.value);
 
-  return registry.createType('MetadataLatest', {
+  var result = registry.createType('MetadataLatest', {
     "extrinsic": v12.extrinsic,
     "modules": v12.modules.map((mod, [index, list]) => createModule(registry, mod,
-        calls: mod.calls.unwrapOr(null),
-        events: mod.events.unwrapOr(null),
-        storage: mod.storage.unwrapOr(null)))
+        calls: (mod.calls?.unwrapOr(null) as Vec)?.value,
+        events: (mod.events?.unwrapOr(null) as Vec)?.value,
+        storage: mod.storage?.unwrapOr(null)))
   });
+  return MetadataLatest.from(result);
 }

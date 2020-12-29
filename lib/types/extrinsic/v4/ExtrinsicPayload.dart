@@ -31,35 +31,36 @@ class GenericExtrinsicPayloadV4 extends Struct {
    * @description The block [[Hash]] the signature applies to (mortal/immortal)
    */
   Hash get blockHash {
-    return this.getCodec('blockHash').cast<Hash>();
+    return Hash.from(this.getCodec('blockHash'));
   }
 
   /**
    * @description The [[ExtrinsicEra]]
    */
   ExtrinsicEra get era {
-    return this.getCodec('era').cast<ExtrinsicEra>();
+    return ExtrinsicEra.from(this.getCodec('era'));
   }
 
   /**
    * @description The genesis [[Hash]] the signature applies to (mortal/immortal)
    */
   Hash get genesisHash {
-    return this.getCodec('genesisHash').cast<Hash>();
+    return Hash.from(this.getCodec('genesisHash'));
   }
 
   /**
    * @description The [[Bytes]] contained in the payload
    */
   Bytes get method {
-    return this.getCodec('method').cast<Bytes>();
+    return Bytes.from(this.getCodec('method'));
   }
 
   /**
    * @description The [[Index]]
    */
-  Compact<Index> get nonce {
-    return this.getCodec('nonce').cast<Compact<Index>>();
+  // Compact<Index>
+  get nonce {
+    return this.getCodec('nonce');
   }
 
   /**
@@ -72,8 +73,9 @@ class GenericExtrinsicPayloadV4 extends Struct {
   /**
    * @description The tip [[Balance]]
    */
-  Compact<Balance> get tip {
-    return this.getCodec('tip').cast<Compact<Balance>>();
+  // Compact<Balance>
+  get tip {
+    return this.getCodec('tip');
   }
 
   /**
@@ -91,6 +93,6 @@ class GenericExtrinsicPayloadV4 extends Struct {
     // to have the length prefix included. This means that the data-as-signed is un-decodable,
     // but is also doesn't need the extra information, only the pure data (and is not decoded)
     // ... The same applies to V1..V3, if we have a V5, carry move this comment to latest
-    return util.sign(this.registry, signerPair, this.toU8a({method: true}), this._signOptions);
+    return util.sign(this.registry, signerPair, this.toU8a({"method": true}), this._signOptions);
   }
 }

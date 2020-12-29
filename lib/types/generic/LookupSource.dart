@@ -13,31 +13,32 @@ dynamic _decodeString(Registry registry, String value) {
   final decoded = decodeAddress(value);
 
   return decoded.length == 32
-      ? registry.createType('AccountId', decoded).cast<GenericAccountId>()
-      : registry
-          .createType('AccountIndex', u8aToBn(decoded, endian: Endian.little))
-          .cast<GenericAccountIndex>();
+      ? GenericAccountId.from(registry.createType('AccountId', decoded))
+      : GenericAccountIndex.from(
+          registry.createType('AccountIndex', u8aToBn(decoded, endian: Endian.little)));
 }
 
 // GenericAccountId | GenericAccountIndex
 dynamic _decodeU8a(Registry registry, Uint8List value) {
   // This allows us to instantiate an address with a raw publicKey. Do this first before
   // we checking the first byte, otherwise we may split an already-existent valid address
-
+  if (value.isEmpty) {
+    value = Uint8List.fromList([0]);
+  }
   if (value.length == 32) {
-    return registry.createType('AccountId', value).cast<GenericAccountId>();
+    final accountId = registry.createType('AccountId', value);
+
+    return GenericAccountId.from(accountId);
   } else if (value.length > 0 && value[0] == 0xff) {
-    return registry.createType('AccountId', value.sublist(1)).cast<GenericAccountId>();
+    return GenericAccountId.from(registry.createType('AccountId', value.sublist(1)));
   }
 
   final list = GenericAccountIndex.readLength(value);
 
   final offset = list[0];
   final length = list[1];
-  return registry
-      .createType(
-          'AccountIndex', u8aToBn(value.sublist(offset, offset + length), endian: Endian.little))
-      .cast<GenericAccountIndex>();
+  return GenericAccountIndex.from(registry.createType(
+      'AccountIndex', u8aToBn(value.sublist(offset, offset + length), endian: Endian.little)));
 }
 
 /// @name LookupSource
@@ -82,7 +83,7 @@ class GenericLookupSource extends Base {
   /// @description The length of the raw value, either AccountIndex or AccountId
   int get _rawLength {
     return this.raw is GenericAccountIndex
-        ? GenericAccountIndex.calcLength(this.raw)
+        ? GenericAccountIndex.calcLength((this.raw as GenericAccountIndex).value)
         : this.raw.encodedLength;
   }
 

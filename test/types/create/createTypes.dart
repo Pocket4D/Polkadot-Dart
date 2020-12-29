@@ -120,6 +120,9 @@ void createTypeTest() {
     });
 
     test('allows creation of a [u16; 4]', () {
+      // print(createTypeUnsafe(registry, '[u16; 4]', [
+      //   [0x1200, 0x2300, 0x4500, 0x6700]
+      // ]));
       expect(
           createTypeUnsafe(registry, '[u16; 4]', [
             [0x1200, 0x2300, 0x4500, 0x6700]
@@ -213,10 +216,12 @@ void createTypeTest() {
         // print((sk as Enum).iskeys);
         var sk4 = registry.createClass("StorageKind")(registry, {"Local": "123"});
 
-        print(sk4);
-        print(getTypeDef("(Hash, Option<AccountId>)").toMap());
+        // print(sk4);
+        // print(getTypeDef("(Hash, Option<AccountId>)").toMap());
+
         // print(registry.createType('Call').runtimeType);
         // print(registry.createType("ExtrinsicOrHash").runtimeType);
+        print(registry.createType("RuntimeVersion"));
       });
     });
   });

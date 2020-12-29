@@ -19,11 +19,11 @@ Map<String, Map<String, ConstantCodec>> decorateConstants(
         moduleMetadata.constants.value.fold(Map<String, ConstantCodec>.from({}), (newModule, meta) {
       // convert to the natural type as received
       final type = meta.type.toString();
-      final codec = registry.createType(type, hexToU8a(meta.thisValue.toHex())) as ConstantCodec;
 
-      codec.meta = meta;
+      final codec = ConstantCodec.from(registry.createType(type, hexToU8a(meta.thisValue.toHex())));
+
+      codec.meta = ModuleConstantMetadataLatest.from(meta);
       newModule[stringCamelCase(meta.name.toString())] = codec;
-
       return newModule;
     });
 

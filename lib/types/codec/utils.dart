@@ -30,7 +30,14 @@ List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   final constructor = types[0] as Constructor;
   final value = constructor(registry, u8a);
   final newList = [value];
-  newList.addAll(decodeU8a(registry, u8a.sublist(value.encodedLength), types.sublist(1)));
+
+  if (u8a.isEmpty) {
+    u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
+  }
+  newList.addAll(decodeU8a(
+      registry,
+      u8a.sublist(value.encodedLength > u8a.length ? u8a.length : value.encodedLength),
+      types.sublist(1)));
   return newList;
 }
 

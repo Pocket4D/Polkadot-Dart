@@ -19,8 +19,8 @@ Map<K, V> decodeMapFromU8a<K extends BaseCodec, V extends BaseCodec>(
     types.add(keyClass);
     types.add(valClass);
   }
-
-  final values = decodeU8a(registry, u8a.sublist(offset), types);
+  if (u8a.isEmpty) u8a = Uint8List.fromList([0]);
+  final values = decodeU8a(registry, u8a.sublist(offset > u8a.length ? u8a.length : offset), types);
 
   for (var i = 0; i < values.length; i += 2) {
     output[values[i] as K] = (values[i + 1] as V);

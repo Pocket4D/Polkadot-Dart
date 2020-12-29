@@ -11,6 +11,8 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 /// @internal */
 List<dynamic> _decodeDataU8a(Registry registry, Uint8List value) {
+  if (value.isEmpty) value = Uint8List.fromList([0]);
+
   final indicator = value[0];
 
   if (indicator == 0) {

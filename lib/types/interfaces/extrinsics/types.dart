@@ -7,7 +7,8 @@ import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 
 class ExtrinsicEra extends GenericExtrinsicEra {
-  ExtrinsicEra(Registry registry) : super(registry);
+  ExtrinsicEra(Registry registry, [dynamic value]) : super(registry, value);
+  factory ExtrinsicEra.from(Enum origin) => ExtrinsicEra(origin.registry, origin.originValue);
 }
 
 class EcdsaSignature extends U8aFixed {
@@ -16,7 +17,7 @@ class EcdsaSignature extends U8aFixed {
       : super(registry, value, bitLength ?? 520, typeName ?? "EcdsaSignature");
 
   factory EcdsaSignature.from(U8aFixed origin) =>
-      EcdsaSignature(origin.registry, origin.value, origin.bitLength, origin.typeName);
+      EcdsaSignature(origin.registry, origin.originValue, origin.bitLength, origin.typeName);
 }
 
 class Ed25519Signature extends H512 {
@@ -25,7 +26,7 @@ class Ed25519Signature extends H512 {
       : super(registry, value, bitLength ?? 512, typeName ?? "Ed25519Signature");
 
   factory Ed25519Signature.from(U8aFixed origin) =>
-      Ed25519Signature(origin.registry, origin.value, origin.bitLength, origin.typeName);
+      Ed25519Signature(origin.registry, origin.originValue, origin.bitLength, origin.typeName);
 }
 
 class Sr25519Signature extends U8aFixed {
@@ -34,16 +35,16 @@ class Sr25519Signature extends U8aFixed {
       : super(registry, value, bitLength ?? 512, typeName ?? "Sr25519Signature");
 
   factory Sr25519Signature.from(U8aFixed origin) =>
-      Sr25519Signature(origin.registry, origin.value, origin.bitLength, origin.typeName);
+      Sr25519Signature(origin.registry, origin.originValue, origin.bitLength, origin.typeName);
 }
 
 class MultiSignature extends Enum {
   bool get isEd25519 => super.isKey("Ed25519");
-  Ed25519Signature get asEd25519 => super.askey("Ed25519").cast<Ed25519Signature>();
+  Ed25519Signature get asEd25519 => Ed25519Signature.from(super.askey("Ed25519"));
   bool get isSr25519 => super.isKey("Sr25519");
-  Sr25519Signature get asSr25519 => super.askey("Sr25519").cast<Sr25519Signature>();
+  Sr25519Signature get asSr25519 => Sr25519Signature.from(super.askey("Sr25519"));
   bool get isEcdsa => super.isKey("Ecdsa");
-  EcdsaSignature get asEcdsa => super.askey("Ecdsa").cast<EcdsaSignature>();
+  EcdsaSignature get asEcdsa => EcdsaSignature.from(super.askey("Ecdsa"));
 
   MultiSignature(Registry registry, [dynamic value, int index])
       : super(
@@ -71,7 +72,7 @@ class Signature extends H512 {
       : super(registry, value, bitLength ?? 512, typeName ?? "Signature");
 
   factory Signature.from(U8aFixed origin) =>
-      Signature(origin.registry, origin.value, origin.bitLength, origin.typeName);
+      Signature(origin.registry, origin.originValue, origin.bitLength, origin.typeName);
 }
 
 // class SignerPayload extends GenericSignerPayload {}
@@ -87,5 +88,12 @@ class ExtrinsicSignatureV4 extends GenericExtrinsicSignatureV4 {
   ExtrinsicSignatureV4(Registry registry, [dynamic value, ExtrinsicSignatureOptions options])
       : super(registry, value, options);
   factory ExtrinsicSignatureV4.from(GenericExtrinsicSignatureV4 origin) =>
-      ExtrinsicSignatureV4(origin.registry, origin.value, origin.originOptions);
+      ExtrinsicSignatureV4(origin.registry, origin.originValue, origin.originOptions);
+}
+
+class ExtrinsicV4 extends GenericExtrinsicV4 {
+  ExtrinsicV4(Registry registry, [dynamic value, ExtrinsicOptions options])
+      : super(registry, value, options);
+  factory ExtrinsicV4.from(GenericExtrinsicV4 origin) =>
+      ExtrinsicV4(origin.registry, origin.originValue, origin.originOptions);
 }

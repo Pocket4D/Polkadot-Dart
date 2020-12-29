@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/extrinsic/ExtrinsicEra.dart';
 import 'package:polkadot_dart/types/extrinsic/constant.dart';
 import 'package:polkadot_dart/types/extrinsic/types.dart';
 import 'package:polkadot_dart/types/extrinsic/v4/ExtrinsicPayload.dart';
@@ -14,11 +15,20 @@ final FAKE_NONE = Uint8List.fromList([]);
 // ignore: non_constant_identifier_names
 final FAKE_SOME = Uint8List.fromList([1]);
 
+class ExtrinsicSignatureOptionsV4 implements ExtrinsicSignatureOptions {
+  @override
+  bool isSigned;
+  ExtrinsicSignatureOptionsV4({this.isSigned});
+  factory ExtrinsicSignatureOptionsV4.fromMap(Map<String, dynamic> map) =>
+      ExtrinsicSignatureOptionsV4(isSigned: map["isSigned"]);
+}
+
 class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature {
   Uint8List _fakePrefix;
   ExtrinsicSignatureOptions originOptions;
   dynamic originValue;
-  GenericExtrinsicSignatureV4(Registry registry, [dynamic value, ExtrinsicSignatureOptions options])
+  GenericExtrinsicSignatureV4(Registry registry,
+      [dynamic thisValue, ExtrinsicSignatureOptions options])
       : super(
             registry,
             {
@@ -28,27 +38,33 @@ class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature 
               ...registry.getSignedExtensionTypes()
             },
             GenericExtrinsicSignatureV4.decodeExtrinsicSignature(
-                value, options?.isSigned ?? false)) {
+                thisValue, options?.isSigned ?? false)) {
     this._fakePrefix =
         registry.createType('ExtrinsicSignature').runtimeType.toString().startsWith("Enum")
             ? FAKE_SOME
             : FAKE_NONE;
     this.originOptions = options;
-    this.originValue = value;
+    this.originValue = thisValue;
   }
   static GenericExtrinsicSignatureV4 constructor(Registry registry,
-          [dynamic value, ExtrinsicSignatureOptions options]) =>
-      GenericExtrinsicSignatureV4(registry, value, options);
+      [dynamic thisValue, dynamic options]) {
+    return GenericExtrinsicSignatureV4(
+        registry,
+        thisValue,
+        options is ExtrinsicSignatureOptions
+            ? options
+            : ExtrinsicSignatureOptionsV4.fromMap(options ?? {}));
+  }
 
   /** @internal */
-  static decodeExtrinsicSignature(dynamic value, [bool isSigned = false]) {
-    if (!value) {
+  static decodeExtrinsicSignature(dynamic thisValue, [bool isSigned = false]) {
+    if (thisValue == null) {
       return EMPTY_U8A;
-    } else if (value is GenericExtrinsicSignatureV4) {
-      return value;
+    } else if (thisValue is GenericExtrinsicSignatureV4) {
+      return thisValue;
     }
 
-    return isSigned ? value : EMPTY_U8A;
+    return isSigned ? thisValue : EMPTY_U8A;
   }
 
   /**
@@ -68,15 +84,19 @@ class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature 
   /**
    * @description The [[ExtrinsicEra]](mortal or immortal) this signature applies to
    */
-  ExtrinsicEra get era {
-    return this.getCodec('era').cast<ExtrinsicEra>();
+  GenericExtrinsicEra get era {
+    return this.getCodec('era');
   }
 
   /**
    * @description The [[Index]] for the signature
    */
+  // Compact<Index>
   Compact<Index> get nonce {
-    return this.getCodec('nonce').cast<Compact<Index>>();
+    final result =
+        Compact.from(Index.from((this.getCodec("nonce") as Compact).value), registry, 'Index');
+
+    return result;
   }
 
   /**
@@ -84,32 +104,35 @@ class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature 
    */
   get signature {
     // the second case here is when we don't have an enum signature, treat as raw
-    return (this.multiSignature.value ?? this.multiSignature) as Sr25519Signature;
+    return Sr25519Signature.from(this.multiSignature.value ?? this.multiSignature);
   }
 
   /**
    * @description The raw [[ExtrinsicSignature]]
    */
   ExtrinsicSignature get multiSignature {
-    return this.getCodec('signature').cast<ExtrinsicSignature>();
+    return ExtrinsicSignature.from(this.getCodec('signature'));
   }
 
   /**
    * @description The [[Address]] that signed
    */
   Address get signer {
-    return this.getCodec('signer').cast<Address>();
+    return Address.from(this.getCodec('signer'));
   }
 
   /**
    * @description The [[Balance]] tip
    */
+  // Compact<Balance>
   Compact<Balance> get tip {
-    return this.getCodec('tip').cast<Compact<Balance>>();
+    final result =
+        Compact.from(Balance.from((this.getCodec("tip") as Compact).value), registry, 'Balance');
+    return result;
   }
 
   IExtrinsicSignature _injectSignature(
-      Address signer, ExtrinsicSignature signature, GenericExtrinsicPayloadV4 payloadV4) {
+      Base signer, ExtrinsicSignature signature, GenericExtrinsicPayloadV4 payloadV4) {
     this.value['era'] = payloadV4.era;
     this.value['nonce'] = payloadV4.nonce;
     this.value['signer'] = signer;
@@ -151,7 +174,8 @@ class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature 
   IExtrinsicSignature sign(Call method, IKeyringPair account, SignatureOptions options) {
     final signer = this.registry.createType('Address', account.addressRaw);
     final payload = this.createPayload(method, options);
-    final signature = this.registry.createType('ExtrinsicSignature', payload.sign(account));
+    final signature = ExtrinsicSignature.from(
+        this.registry.createType('ExtrinsicSignature', payload.sign(account)));
 
     return this._injectSignature(signer, signature, payload);
   }
@@ -162,8 +186,8 @@ class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature 
   IExtrinsicSignature signFake(Call method, dynamic address, SignatureOptions options) {
     final signer = this.registry.createType('Address', address);
     final payload = this.createPayload(method, options);
-    final signature = this.registry.createType('ExtrinsicSignature',
-        u8aConcat([this._fakePrefix, Uint8List(64)..fillRange(0, 64, (0x42))]));
+    final signature = ExtrinsicSignature.from(this.registry.createType('ExtrinsicSignature',
+        u8aConcat([this._fakePrefix, Uint8List(64)..fillRange(0, 64, (0x42))])));
 
     return this._injectSignature(signer, signature, payload);
   }

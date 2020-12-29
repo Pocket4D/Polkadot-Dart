@@ -20,6 +20,7 @@ CallFunction createUnchecked(
   // };
 
   final extrinsicFn = ExtrinsicCallFunction(
+      registry: registry,
       callIndex: callIndex,
       meta: callMetadata,
       method: funcName,
@@ -57,13 +58,13 @@ class ExtrinsicCallFunction implements CallFunction {
       this.method,
       this.section,
       this.toJSON});
-  T callFunction<T extends BaseCodec>(List<dynamic> args) {
+  Call callFunction(List<dynamic> args) {
     assert(this.meta.args.length == args.length,
         "Extrinsic $section.$method expects ${this.meta.args.length} arguments, got ${args.length}.");
 
-    return registry.createType('Call', [
-      {"args": args, callIndex: callIndex},
+    return Call.from(registry.createType('Call', [
+      {"args": args, "callIndex": callIndex},
       this.meta
-    ]);
+    ]));
   }
 }

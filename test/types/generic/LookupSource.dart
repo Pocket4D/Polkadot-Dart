@@ -49,44 +49,6 @@ void lookupSourceTest() {
           '25GUyv');
       testDecode('AccountIndex (hex)', registry.createType('AccountIndex', '0x0100'), '25GUyv');
       testDecode(
-          'Array',
-          [
-            255,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8
-          ],
-          '5C62W7ELLAAfix9LYrcx5smtcffbhvThkM5x7xfMeYXCtGwF');
-      testDecode(
           'Uint8Array (with prefix 255)',
           Uint8List.fromList([
             255,

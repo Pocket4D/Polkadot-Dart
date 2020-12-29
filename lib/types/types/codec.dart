@@ -3,6 +3,10 @@ import 'package:polkadot_dart/types/interfaces/types.dart';
 
 import 'registry.dart';
 
+abstract class Castable<T extends BaseCodec> {
+  Castable.from(T codec);
+}
+
 abstract class BaseCodec {
   dynamic get value;
 
@@ -48,7 +52,7 @@ abstract class BaseCodec {
   // TODO: implement hashCode
   int get hashCode => super.hashCode;
 
-  T cast<T extends BaseCodec>() {
+  cast<T extends BaseCodec>() {
     return this as T;
   }
 }

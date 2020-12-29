@@ -58,7 +58,7 @@ extension AsMetaVersionExt on AsMetaVersion {
   }
 }
 
-class MetadataVersioned extends Struct {
+class MetadataVersioned extends Struct implements Castable {
   Map<int, MetaMapped> _converted = new Map<int, MetaMapped>();
 
   MetadataVersioned(Registry registry, [dynamic value])
@@ -152,7 +152,7 @@ class MetadataVersioned extends Struct {
    * @description
    */
   MagicNumber get magicNumber {
-    return this.getCodec('magicNumber').cast<MagicNumber>();
+    return MagicNumber.from(this.getCodec('magicNumber'));
   }
 
   /**
