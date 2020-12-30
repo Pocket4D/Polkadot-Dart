@@ -51,6 +51,10 @@ abstract class BaseCodec {
   @override
   // TODO: implement hashCode
   int get hashCode => super.hashCode;
+
+  cast<T extends BaseCodec>() {
+    return this as T;
+  }
 }
 
 // abstract class Constructor<T extends BaseCodec> {
