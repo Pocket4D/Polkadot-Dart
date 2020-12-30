@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Raw.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -9,7 +10,7 @@ const _MAX_LENGTH = 128 * 1024;
 
 String decodeText([dynamic value]) {
   if (isHex(value)) {
-    return u8aToString(hexToU8a(value.toString()));
+    return u8aToString(hexToU8a(value.toString()), useDartEncode: true);
   } else if (value is Uint8List) {
     if (value.length == 0) {
       return '';
@@ -18,7 +19,7 @@ String decodeText([dynamic value]) {
     // for Raw, the internal buffer does not have an internal length
     // (the same applies in e.g. Bytes, where length is added at encoding-time)
     if (value is Raw) {
-      return u8aToString(value);
+      return u8aToString(value, useDartEncode: true);
     }
 
     final compact = compactFromU8a(value);
@@ -30,8 +31,8 @@ String decodeText([dynamic value]) {
         length.toInt() <= (_MAX_LENGTH), "Text length ${length.toString()} exceeds $_MAX_LENGTH");
     assert(total <= value.length,
         "Text: required length less than remainder, expected at least $total, found ${value.length}");
-
-    return u8aToString(value.sublist(offset, total));
+    final result = u8aToString(value.sublist(offset, total), useDartEncode: true);
+    return result;
   }
 
   return value != null ? value.toString() : '';

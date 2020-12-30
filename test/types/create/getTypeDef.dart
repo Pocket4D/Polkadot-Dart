@@ -1,10 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/types/create/getTypeDef.dart';
 import 'package:polkadot_dart/types/create/registry.dart';
 import 'package:polkadot_dart/types/create/types.dart';
-import 'package:polkadot_dart/utils/utils.dart';
 
 void main() {
   getTypeDefTest(); // rename this test name

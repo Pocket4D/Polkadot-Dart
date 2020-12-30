@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Struct.dart';
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/primitives/Null.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -67,6 +68,7 @@ DecodedEnum decodeFromJSON(Registry registry, Map<String, Constructor> def, Stri
   // JSON comes in the form of { "<type (lowercased)>": "<value for type>" }, here we
   // additionally force to lower to ensure forward compat
   final keys = (def.keys.toList()).map((k) => k.toLowerCase());
+
   final keyLower = key.toLowerCase();
   final index = keys.toList().indexOf(keyLower);
 
@@ -88,6 +90,7 @@ DecodedEnum decodeFromString(Registry registry, Map<String, Constructor> def, St
 
 DecodedEnum decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
   if (value is Uint8List) {
+    if (value.isEmpty) value = Uint8List.fromList([0]);
     return createFromValue(registry, def, value[0], value.sublist(1));
   } else if (isNumber(value)) {
     return createFromValue(registry, def, value);
@@ -140,9 +143,15 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   List<String> iskeys = [];
   List<String> askeys = [];
 
-  Enum(Registry registry, dynamic def, [dynamic value, int index]) {
+  dynamic originDef;
+  dynamic originValue;
+  dynamic originIndex;
+  Enum(Registry registry, dynamic def, [dynamic thisValue, int index]) {
+    originDef = def;
+    originValue = thisValue;
+    originIndex = index;
     final defInfo = extractDef(registry, def);
-    final decoded = decodeEnum(registry, defInfo.def, value, index);
+    final decoded = decodeEnum(registry, defInfo.def, thisValue, index);
     final defList = defInfo.def.keys.toList();
     this.registry = registry;
     this.def = defInfo.def;
@@ -150,14 +159,15 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     this._indexes = defList.map((def) => defList.indexOf(def)).toList();
     this._index = this._indexes.indexOf(decoded.index) ?? 0;
     this._raw = decoded.value;
+    this.genKeys();
   }
 
-  static Enum constructor(Registry registry, [dynamic def, dynamic value, int index]) =>
-      Enum(registry, def, value, index);
+  static Enum constructor(Registry registry, [dynamic def, dynamic thisValue, int index]) =>
+      Enum(registry, def, thisValue, index);
 
   static Constructor<Enum<T>> withParams<T extends BaseCodec>(dynamic types) {
-    return (Registry registry, [dynamic value, int index]) {
-      var result = Enum<T>(registry, types, value, index);
+    return (Registry registry, [dynamic thisValue, dynamic index]) {
+      var result = Enum<T>(registry, types, thisValue, index as int);
       result.genKeys();
       return result;
     };
@@ -289,7 +299,7 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   }
 
   bool isKey(String name) {
-    var found = iskeys.singleWhere((element) => element == "is${this.type}");
+    var found = iskeys.singleWhere((element) => element == "is${this.type}", orElse: () => null);
     return found != null && found == "is$name";
   }
 

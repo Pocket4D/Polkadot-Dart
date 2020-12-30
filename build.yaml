@@ -1,0 +1,64 @@
+targets:
+  $default:
+    builders:
+      # Configure the builder `pkg_name|builder_name`
+      # In this case, the member_count builder defined in `../example`
+      type_gen|build_interfaces:
+        # Only run this builder on the specified input.
+        generate_for:
+          #- lib/library_source.dart
+          # - lib/types/interfaces/assets/builder.dart
+          # - lib/types/interfaces/attestations/builder.dart
+          # - lib/types/interfaces/aura/builder.dart
+          # - lib/types/interfaces/author/builder.dart
+          # - lib/types/interfaces/authorship/builder.dart
+          # - lib/types/interfaces/babe/builder.dart
+          # - lib/types/interfaces/balances/builder.dart
+          # - lib/types/interfaces/chain/builder.dart
+          # - lib/types/interfaces/childstate/builder.dart
+          # - lib/types/interfaces/claims/builder.dart
+          # - lib/types/interfaces/collective/builder.dart
+          # - lib/types/interfaces/consensus/builder.dart
+          # - lib/types/interfaces/contracts/builder.dart
+          # - lib/types/interfaces/contractsAbi/builder.dart
+          - lib/types/interfaces/democracy/builder.dart
+          # # - lib/types/interfaces/elections/builder.dart
+          # - lib/types/interfaces/engine/builder.dart
+          # # - lib/types/interfaces/ethereum/builder.dart
+          # - lib/types/interfaces/evm/builder.dart
+          # # - lib/types/interfaces/extrinsics/builder.dart
+          # - lib/types/interfaces/genericAsset/builder.dart
+          # # - lib/types/interfaces/grandpa/builder.dart
+          # # - lib/types/interfaces/identity/builder.dart
+          # - lib/types/interfaces/imOnline/builder.dart
+          # # - lib/types/interfaces/metadata/builder.dart
+          # - lib/types/interfaces/offchain/builder.dart
+          # # - lib/types/interfaces/offences/builder.dart
+          # # - lib/types/interfaces/parachains/builder.dart
+          # - lib/types/interfaces/payment/builder.dart
+          # - lib/types/interfaces/poll/builder.dart
+          # - lib/types/interfaces/proxy/builder.dart
+          # - lib/types/interfaces/purchase/builder.dart
+          # - lib/types/interfaces/recovery/builder.dart
+          # - lib/types/interfaces/rpc/builder.dart
+          # # - lib/types/interfaces/runtime/builder.dart
+          # - lib/types/interfaces/scaleInfo/builder.dart
+          # # - lib/types/interfaces/scheduler/builder.dart
+          # # - lib/types/interfaces/session/builder.dart
+          # # - lib/types/interfaces/society/builder.dart
+          # # - lib/types/interfaces/staking/builder.dart
+          # # - lib/types/interfaces/state/builder.dart
+          # - lib/types/interfaces/support/builder.dart
+          # # - lib/types/interfaces/synstate/builder.dart
+          # - lib/types/interfaces/system/builder.dart
+          # # - lib/types/interfaces/treasury/builder.dart
+          # - lib/types/interfaces/txpayment/builder.dart
+          # - lib/types/interfaces/utility/builder.dart
+          # - lib/types/interfaces/vesting/builder.dart
+      # The end-user of a builder which applies "source_gen|combining_builder"
+      # may configure the builder to ignore specific lints for their project
+      source_gen|combining_builder:
+        options:
+          ignore_for_file:
+            - lint_a
+            - lint_b

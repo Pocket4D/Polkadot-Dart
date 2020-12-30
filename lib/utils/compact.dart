@@ -55,9 +55,15 @@ List<dynamic> compactFromU8a(dynamic _input, {int bitLength = 32}) {
   if (flag == 0) {
     return [1, BigInt.from(input[0]) >> (2)];
   } else if (flag == 1) {
-    return [2, u8aToBn(input.sublist(0, 2), endian: Endian.little) >> (2)];
+    return [
+      2,
+      u8aToBn(input.sublist(0, 2 > input.length ? input.length : 2), endian: Endian.little) >> (2)
+    ];
   } else if (flag == 2) {
-    return [4, u8aToBn(input.sublist(0, 4), endian: Endian.little) >> (2)];
+    return [
+      4,
+      u8aToBn(input.sublist(0, 4 > input.length ? input.length : 4), endian: Endian.little) >> (2)
+    ];
   }
 
   var length = ((BigInt.from(input[0]) >> (2)) // clear flag
@@ -66,7 +72,10 @@ List<dynamic> compactFromU8a(dynamic _input, {int bitLength = 32}) {
       .toInt();
   var offset = 1 + length;
 
-  return [offset, u8aToBn(input.sublist(1, offset), endian: Endian.little)];
+  return [
+    offset,
+    u8aToBn(input.sublist(1, offset > input.length ? input.length : offset), endian: Endian.little)
+  ];
 }
 
 List<dynamic> compactStripLength(Uint8List input, {int bitLength = 32}) {

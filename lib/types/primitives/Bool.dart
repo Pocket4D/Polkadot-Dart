@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -8,7 +9,7 @@ bool _decodeBool(dynamic value) {
   if (value is bool) {
     return value;
   } else if (isU8a(value)) {
-    return value[0] == 1;
+    return value.length > 0 ? value[0] == 1 : false;
   } else if (value is CodecBool) {
     return value.value;
   } else if (value is num) {

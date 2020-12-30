@@ -18,10 +18,15 @@ dependencies:
   tweetnacl: ^0.3.2
   base_x: ^1.0.1
   optional: ^5.0.0+1
+  tuple: ^1.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  source_gen: ^0.9.10+1
+  build_runner: ^1.10.9
+  type_gen:
+    path: './type_gen'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

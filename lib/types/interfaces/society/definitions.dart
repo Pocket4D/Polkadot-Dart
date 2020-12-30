@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "Bid": {"who": "AccountId", "kind": "BidKind", "value": "Balance"},

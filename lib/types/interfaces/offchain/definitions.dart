@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "localStorageSet": {
       "description": "Set offchain local storage under given key and prefix",

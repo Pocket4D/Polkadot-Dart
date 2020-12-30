@@ -4,11 +4,11 @@ import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 
 abstract class StorageEntry {
   Uint8List call([dynamic arg]);
-  dynamic iterKey([dynamic arg]);
-  Uint8List keyPrefix([dynamic arg]);
+  dynamic Function([dynamic arg]) iterKey;
+  Uint8List Function([dynamic arg]) keyPrefix;
   StorageEntryMetadataLatest meta;
   String method;
   String prefix;
   String section;
-  dynamic toJSON();
+  Map<String, dynamic> Function() toJSON;
 }

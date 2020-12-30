@@ -1,7 +1,19 @@
 import 'dart:convert';
 
+import 'package:polkadot_dart/metadata/MagicNumber.dart';
+import 'package:polkadot_dart/metadata/Metadata.dart';
+import 'package:polkadot_dart/types/extrinsic/Extrinsic.dart';
+import 'package:polkadot_dart/types/extrinsic/ExtrinsicUnknown.dart';
+import 'package:polkadot_dart/types/extrinsic/index.dart';
+import 'package:polkadot_dart/types/generic/AccountId.dart';
+import 'package:polkadot_dart/types/generic/AccountIndex.dart';
+import 'package:polkadot_dart/types/generic/ConsensusEngineId.dart';
+import 'package:polkadot_dart/types/generic/Event.dart';
+import 'package:polkadot_dart/types/generic/LookupSource.dart';
+import 'package:polkadot_dart/types/generic/MultiAddress.dart';
+import 'package:polkadot_dart/types/generic/Vote.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
-import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/types/types.dart' hide Metadata;
 
 enum TypeDefInfo {
   BTreeMap,
@@ -184,7 +196,7 @@ Map<String, Constructor> baseTypes = {
   'bool': CodecBool.constructor,
   'Bool': CodecBool.constructor,
   'Bytes': Bytes.constructor,
-  'Data': Bytes.constructor,
+  'Data': Data.constructor,
   'DoNotConstruct': DoNotConstruct.constructor,
   'i8': i8.constructor,
   'I8': i8.constructor,
@@ -216,4 +228,27 @@ Map<String, Constructor> baseTypes = {
   'U256': u256.constructor,
   'usize': usize.constructor,
   'USize': usize.constructor,
+  'Raw': Raw.constructor,
+  'GenericAccountId': GenericAccountId.constructor,
+  'GenericAccountIndex': GenericAccountIndex.constructor,
+  'GenericCall': GenericCall.constructor,
+  'GenericCallIndex': GenericCallIndex.constructor,
+  'GenericEventData': GenericEventData.constructor,
+  'GenericEvent': GenericEvent.constructor,
+  'GenericExtrinsic': GenericExtrinsic.constructor,
+  'GenericExtrinsicEra': GenericExtrinsicEra.constructor,
+  'GenericMortalEra': MortalEra.constructor,
+  'GenericImmortalEra': ImmortalEra.constructor,
+  'GenericExtrinsicPayload': GenericExtrinsicPayload.constructor,
+  'GenericExtrinsicPayloadUnknown': GenericExtrinsicPayloadUnknown.constructor,
+  'GenericExtrinsicUnknown': GenericExtrinsicUnknown.constructor,
+  'GenericSignerPayload': GenericSignerPayload.constructor,
+  'GenericExtrinsicV4': GenericExtrinsicV4.constructor,
+  'GenericExtrinsicPayloadV4': GenericExtrinsicPayloadV4.constructor,
+  'GenericExtrinsicSignatureV4': GenericExtrinsicSignatureV4.constructor,
+  'GenericLookupSource': GenericLookupSource.constructor,
+  'GenericMultiAddress': GenericMultiAddress.constructor,
+  'GenericVote': GenericVote.constructor,
+  'Metadata': Metadata.constructor,
+  'MagicNumber': MagicNumber.constructor
 };

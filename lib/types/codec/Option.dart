@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/primitives/Null.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -44,10 +45,23 @@ class Option<T extends BaseCodec> extends BaseCodec {
 
   T _raw;
 
+  dynamic originTypeName;
+  dynamic originValue;
+
   Option(Registry registry, dynamic typeName, [dynamic value]) {
     this.registry = registry;
+    this.originTypeName = typeName;
+    this.originValue = value;
     this._type = typeToConstructor(registry, typeName);
     this._raw = decodeOption(registry, typeName, value) as T;
+  }
+
+  Option.from(T val, [Registry registry, dynamic typeName]) {
+    this._raw = val;
+    this.registry = registry;
+    this.originTypeName = typeName;
+    this.originValue = val;
+    // this._type = typeToConstructor(registry, typeName);
   }
 
   static Constructor<Option<O>> withParams<O extends BaseCodec>(dynamic type) => optionWith(type);
@@ -73,7 +87,7 @@ class Option<T extends BaseCodec> extends BaseCodec {
 
   /// @description Checks if the Option has no value
   bool get isNone {
-    return this._raw is CodecNull;
+    return this._raw is CodecNull || this._raw == null;
   }
 
   /// @description Checks if the Option has a value

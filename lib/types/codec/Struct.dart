@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -13,60 +14,68 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
     Map<String, Constructor> types, dynamic value, Map<dynamic, String> jsonMap) {
   Map<String, dynamic> jsonObj;
   final keys = types.keys.toList();
+
   return (keys).fold(Map<dynamic, BaseCodec>.from({}) as T, (raw, key) {
     // The key in the JSON can be snake_case (or other cases), but in our
     // Types, result or any other maps, it's camelCase
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     final index = keys.indexOf(key);
 
     final jsonKey = (jsonMap[key] != null && value[key] == null) ? jsonMap[key] : key;
 
-    try {
-      if ((value is List)) {
-        // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+    // try {
+    if ((value is List)) {
+      // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+      if (value.isNotEmpty) {
         (raw as dynamic)[key] =
             value[index] is T ? value[index] : types[key](registry, value[index]);
+      } else {
+        (raw as dynamic)[key] = types[key](registry);
       }
-      // else if (value is Map) {
-      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      //   final mapped = value[jsonKey];
-      //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      //   (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
-      // }
-      else if (value is Struct) {
-        final mapped = value.value[jsonKey];
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
-      } else if (value is Map) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        var assign = value[jsonKey];
+    }
+    // else if (value is Map) {
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    //   final mapped = value[jsonKey];
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    //   (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
+    // }
+    else if (value is Struct) {
+      final mapped = value.value[jsonKey];
 
-        if ((assign == null)) {
-          if ((jsonObj == null)) {
-            jsonObj = value.entries.fold({}, (all, entry) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-              all[stringCamelCase(entry.key)] = entry.value;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
+    } else if (value is Map) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 
-              return all;
-            });
-          }
+      var assign = value[jsonKey];
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          assign = jsonObj[jsonKey];
+      if ((assign == null)) {
+        if ((jsonObj == null)) {
+          jsonObj = value.entries.fold({}, (all, entry) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            all[stringCamelCase(entry.key)] = entry.value;
+
+            return all;
+          });
         }
 
-        (raw)[key] = assign.runtimeType == types[key](registry, assign)
-            ? assign
-            : types[key](registry, assign);
-      } else {
-        throw "Cannot decode value ${jsonEncode(value)}";
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        assign = jsonObj[jsonKey];
       }
-    } catch (error) {
-      var type = types[key](registry).toRawType();
 
-      throw "Struct: failed on $jsonKey: $type:: $error";
+      (raw)[key] = assign.runtimeType == types[key](registry, assign)
+          ? assign
+          : types[key](registry, assign);
+    } else {
+      throw "Cannot decode value ${jsonEncode(value)}";
     }
+    // } catch (error) {
+    //   var type = types[key](registry).toRawType();
+
+    //   throw "Struct: failed on $jsonKey: $type:: $error";
+    // }
 
     return raw;
   });
@@ -88,6 +97,9 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
 /// @internal
 T decodeStruct<T extends Map<dynamic, BaseCodec>>(Registry registry, Map<String, Constructor> types,
     dynamic value, Map<dynamic, String> jsonMap) {
+  // if (types["signature"] != null) {
+  //   print(value);
+  // }
   if (isHex(value)) {
     return decodeStruct(registry, types, hexToU8a(value as String), jsonMap);
   } else if (isU8a(value)) {
@@ -119,10 +131,21 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<dynamic, BaseCodec> get value => _value;
   Map<dynamic, String> _jsonMap;
   Map<String, Constructor<BaseCodec>> _types;
+  S originTypes;
+  dynamic originValue;
+  Map<dynamic, String> originJsonMap;
   // List<String> _keys;
-  Struct(Registry registry, S types, [dynamic value = const {}, Map<dynamic, String> jsonMap]) {
+  Struct(Registry registry, S types,
+      [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap]) {
+    originTypes = types;
+    originValue = value;
+    originJsonMap = jsonMap;
+
     if (jsonMap == null) {
       jsonMap = Map<dynamic, String>();
+    }
+    if (value == "___defaultEmpty") {
+      value = {};
     }
 
     final decoded = decodeStruct(registry, mapToTypeMap(registry, types), value, jsonMap);
@@ -141,22 +164,29 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
 
   static Constructor<Struct> withParams<S extends Map<String, dynamic>>(S types,
       [Map<dynamic, String> jsonMap]) {
-    return (Registry registry, [dynamic value]) {
+    return (Registry registry, [dynamic value = "___defaultEmpty"]) {
+      if (value == "___defaultEmpty") {
+        value = {};
+      }
       return Struct(registry, types, value, jsonMap);
     };
   }
 
   static Struct
       constructor<S extends Map<String, dynamic>, V extends Map, E extends Map<dynamic, String>>(
-              Registry registry,
-              [dynamic types,
-              dynamic value,
-              Map<dynamic, String> jsonMap]) =>
-          Struct(registry, types as S, value, jsonMap);
+          Registry registry,
+          [dynamic types,
+          dynamic value = "___defaultEmpty",
+          Map<dynamic, String> jsonMap]) {
+    if (value == "___defaultEmpty") {
+      value = {};
+    }
+    return Struct(registry, types as S, value, jsonMap);
+  }
 
   /// @description The available keys for this enum
   List<String> get defKeys {
-    return this._types.keys;
+    return this._types.keys.toList();
   }
 
   /// @description Checks if the value is an empty value
@@ -194,7 +224,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
 
   /// @description Returns a specific names entry in the structure
   /// @param name The name of the entry to retrieve
-  BaseCodec getCodec(String name) {
+  T getCodec<T extends BaseCodec>(String name) {
     return this._value[name];
   }
 
@@ -246,7 +276,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     return u8aConcat([
       ...entries
           // eslint-disable-next-line @typescript-eslint/unbound-method
-          .takeWhile((entry) => isFunction(entry.value?.toU8a))
+          .where((entry) => isFunction(entry.value?.toU8a))
           .map((entry) =>
               entry.value.toU8a(((isBare is bool) || isBare == null) ? isBare : isBare[entry.key]))
     ]);

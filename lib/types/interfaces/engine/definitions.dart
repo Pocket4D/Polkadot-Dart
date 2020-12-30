@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "createBlock": {
       "description": "Instructs the manual-seal authorship task to create a new block",

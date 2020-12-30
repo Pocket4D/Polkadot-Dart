@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "getHeader": {
       "alias": ["chain_getHead"],

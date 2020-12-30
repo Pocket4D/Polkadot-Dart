@@ -1,12 +1,13 @@
 import 'dart:typed_data';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 
 import 'registry.dart';
 
-class H256 {}
+abstract class Castable<T extends BaseCodec> {
+  Castable.from(T codec);
+}
 
 abstract class BaseCodec {
-  static BaseCodec constructor;
-
   dynamic get value;
 
   /// @description The length of the value when encoded as a Uint8Array

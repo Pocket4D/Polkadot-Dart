@@ -35,7 +35,7 @@ TypeDef _decodeEnum(TypeDef value, dynamic details, int count) {
 ///   { _set: { A: 0b0001, B: 0b0010, C: 0b0100 } }
 TypeDef _decodeSet(TypeDef value, Map<String, dynamic> details) {
   value.info = TypeDefInfo.Set;
-  value.length = details.length;
+  value.length = details["_bitLength"];
   value.sub = details.entries
       .where((entry) => !entry.key.startsWith('_'))
       .map((entry) =>
@@ -49,7 +49,6 @@ TypeDef _decodeSet(TypeDef value, Map<String, dynamic> details) {
 /// eslint-disable-next-line @typescript-eslint/no-unused-vars
 TypeDef _decodeStruct(TypeDef value, String type, String _, int count) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-
   final parsed = Map<String, dynamic>.from(jsonDecode(type));
   final keys = parsed.keys.toList();
 
@@ -60,7 +59,8 @@ TypeDef _decodeStruct(TypeDef value, String type, String _, int count) {
   }
 
   value.alias = parsed["_alias"] != null && parsed["_alias"] is Map
-      ? new Map.fromEntries((parsed["_alias"] as Map).entries)
+      ? new Map.fromEntries(
+          (parsed["_alias"] as Map).entries.map((e) => MapEntry(e.key, e.value.toString())))
       : null;
 
   value.sub = keys.where((name) => !['_alias'].contains(name)).map((name) =>
@@ -173,16 +173,19 @@ String extractSubType(String type, List wrapper) {
 /// eslint-disable-next-line @typescript-eslint/ban-types
 TypeDef getTypeDef(String _type, [TypeDefOptions options, int count = 0]) {
   // create the type via Type, allowing types to be sanitized
+
   if (options == null) {
     options = TypeDefOptions();
   }
   var type = sanitize(_type);
+
   final typedefValue = TypeDef.fromMap({
     "displayName": options.displayName,
     "info": TypeDefInfo.Plain,
     "name": options.name,
     "type": type
   });
+
   assert(++count != MAX_NESTED, 'getTypeDef: Maximum nested limit reached');
 
   final nested = nestedExtraction.singleWhere((val) {

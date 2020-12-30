@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/types.dart';
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
+import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/interfaces.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -20,10 +22,23 @@ class Compact<T extends CompactEncodable> extends BaseCodec implements ICompact<
 
   T get value => _raw;
 
-  Compact(Registry registry, dynamic type, dynamic value) {
+  dynamic originType;
+  dynamic originValue;
+
+  Compact(Registry registry, dynamic type, dynamic thisValue) {
     this.registry = registry;
+    this.originType = type;
+    this.originValue = thisValue;
     this._type = typeToConstructor(registry, type);
-    this._raw = Compact.decodeCompact<T>(registry, this._type, value) as T;
+    this._raw = Compact.decodeCompact<T>(registry, this._type, thisValue) as T;
+  }
+
+  Compact.from(T child, [Registry registry, String dataType]) {
+    this.registry = registry;
+    this.originType = dataType;
+    this.originValue = child;
+    // this._type = typeToConstructor(registry, dataType);
+    this._raw = originValue as T;
   }
 
   static Compact constructor(Registry registry, [dynamic type, dynamic value]) =>
@@ -84,7 +99,7 @@ class Compact<T extends CompactEncodable> extends BaseCodec implements ICompact<
 
   /// @description Returns a hex string representation of the value. isLe returns a LE(number-only) representation
   String toHex([bool isLe]) {
-    return this._raw.toHex(isLe);
+    return this._raw.toHex(isLe is bool ? isLe : false);
   }
 
   /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information

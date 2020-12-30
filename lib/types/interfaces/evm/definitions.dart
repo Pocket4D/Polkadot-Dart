@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "Account": {"nonce": "u256", "balance": "u256"},

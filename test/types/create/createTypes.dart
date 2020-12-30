@@ -3,10 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/types/codec/Int.dart';
 import 'package:polkadot_dart/types/codec/Set.dart';
-import 'package:polkadot_dart/types/codec/Uint.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/create/createTypes.dart';
 import 'package:polkadot_dart/types/create/registry.dart';
+
+// import 'package:polkadot_dart/types/interfaces/offchain/definitions.info.dart';
+import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
+import 'package:polkadot_dart/types/types.dart';
 
 import '../../testUtils/throws.dart';
 
@@ -19,15 +22,17 @@ void createTypeTest() {
     final registry = new TypeRegistry();
 
     test('allows creation of a H256 (with proper toRawType)', () {
-      expect(registry.createType('H256').toRawType(), 'H256');
+      final h256 = registry.createType('H256');
+      expect(h256.runtimeType.toString(), "U8aFixed");
+      expect(h256.toRawType(), 'H256');
       expect(registry.createType('Hash').toRawType(), 'H256');
     });
 
     test('allows creation of a Fixed64 (with proper toRawType & instance)', () {
-      final f64 = registry.createType('Fixed64');
+      final f64 = registry.createType<CodecInt>('Fixed64');
       expect(f64.toRawType(), 'Fixed64');
-      expect((f64 as CodecInt).bitLength, 64);
-      expect((f64 as CodecInt).isUnsigned, false);
+      expect(f64.bitLength, 64);
+      expect(f64.isUnsigned, false);
       expect(f64 is CodecInt, true);
     });
 
@@ -74,10 +79,10 @@ void createTypeTest() {
 
     test('allows creation of a Set', () {
       expect(
-          createTypeUnsafe<CodecSet>(
+          createTypeUnsafe(
               registry,
               '{"_set": { "A": 1, "B": 2, "C": 4, "D": 8, "E": 16, "G": 32, "H": 64, "I": 128 } }',
-              [1 + 4 + 16 + 64]).strings,
+              [1 + 4 + 16 + 64]).cast<CodecSet>().strings,
           ['A', 'C', 'E', 'H']);
     });
 
@@ -101,6 +106,7 @@ void createTypeTest() {
     });
 
     test('fails on creation of DoNotConstruct', () {
+      // ignore: non_constant_identifier_names
       final Clazz = createClass(registry, 'DoNotConstruct<UnknownSomething>');
       expect(() => Clazz(registry), throwsA(contains('Cannot construct unknown type')));
     });
@@ -114,6 +120,9 @@ void createTypeTest() {
     });
 
     test('allows creation of a [u16; 4]', () {
+      // print(createTypeUnsafe(registry, '[u16; 4]', [
+      //   [0x1200, 0x2300, 0x4500, 0x6700]
+      // ]));
       expect(
           createTypeUnsafe(registry, '[u16; 4]', [
             [0x1200, 0x2300, 0x4500, 0x6700]
@@ -131,46 +140,49 @@ void createTypeTest() {
 
       test('instanceof should work (srml type)', () {
         final value = registry.createType('Gas', 1234);
+        // ignore: non_constant_identifier_names
         final Gas = registry.createClass('Gas')(registry);
 
         expect(value.toRawType() == Gas.toRawType(), true);
       });
 
-      // test('instanceof should work (complex type)', () {
-      //   registry.register({
-      //     "TestComplex": {
-      //       "balance": 'Balance',
-      //       // eslint-disable-next-line sort-keys
-      //       "accountId": 'AccountId',
-      //       "log": '(u64, u32)',
-      //       // eslint-disable-next-line sort-keys
-      //       "fromSrml": 'Gas'
-      //     }
-      //   });
+      test('instanceof should work (complex type)', () {
+        registry.register({
+          "TestComplex": {
+            "balance": 'Balance',
+            // eslint-disable-next-line sort-keys
+            "accountId": 'AccountId',
+            "log": '(u64, u32)',
+            // eslint-disable-next-line sort-keys
+            "fromSrml": 'Gas'
+          }
+        });
 
-      //   final value = createTypeUnsafe(registry, 'TestComplex', [
-      //     {
-      //       "accountId": '0x1234567812345678123456781234567812345678123456781234567812345678',
-      //       "balance": 123,
-      //       "fromSrml": 0,
-      //       "log": [456, 789]
-      //     }
-      //   ]);
+        final value = createTypeUnsafe(registry, 'TestComplex', [
+          {
+            "accountId": '0x1234567812345678123456781234567812345678123456781234567812345678',
+            "balance": 123,
+            "fromSrml": 0,
+            "log": [456, 789]
+          }
+        ]);
 
-      //   // expect(
-      //   //     value.toRawType() == createClass(registry, 'TestComplex')(registry).toRawType(), true);
-      // });
+        expect(
+            value.toRawType() == createClass(registry, 'TestComplex')(registry).toRawType(), true);
+      });
 
       test('allows for re-registration of a type', () {
         final balDef = registry.createType('Balance');
-        expect(balDef.toRawType() == 'Balance', true);
-        expect((balDef as UInt).bitLength, 128);
+        final bb = Balance.from(balDef);
+        expect(bb.toRawType(), 'Balance');
+        expect(bb.bitLength, 128);
 
         registry.register({"Balance": 'u32'});
 
         final balu32 = registry.createType('Balance');
-        expect(balu32.toRawType(), "u32");
-        expect((balu32 as UInt).bitLength, 32);
+        final bb32 = Balance.from(balu32);
+        expect(bb32.toRawType(), "u32");
+        expect(bb32.bitLength, 32);
       });
 
       test('allows for re-registration of a type (affecting derives)', () {
@@ -187,18 +199,29 @@ void createTypeTest() {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        final cmpDef = createTypeUnsafe(registry, 'TestComplex');
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-        //  expect(cmpDef.balance.bitLength(),128);
+        final cmpDef = createTypeUnsafe(registry, 'TestComplex').cast<Struct>();
+        expect(cmpDef.getCodec("balance").cast<u128>().bitLength, 128);
 
         registry.register({"Balance": 'u32'});
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        final cmpu32 = createTypeUnsafe(registry, 'TestComplex');
+        // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        final cmpu32 = createTypeUnsafe(registry, 'TestComplex').cast<Struct>();
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-        // expect(cmpu32.balance.bitLength(),32);
+        expect(cmpu32.getCodec("balance").cast<u32>().bitLength, 32);
+
+        var sk = registry.createType("StorageKind");
+        print((sk as Enum).originDef);
+        // print((sk as Enum).type);
+        // print((sk as Enum).iskeys);
+        var sk4 = registry.createClass("StorageKind")(registry, {"Local": "123"});
+
+        // print(sk4);
+        // print(getTypeDef("(Hash, Option<AccountId>)").toMap());
+
+        // print(registry.createType('Call').runtimeType);
+        // print(registry.createType("ExtrinsicOrHash").runtimeType);
+        print(registry.createType("RuntimeVersion"));
       });
     });
   });

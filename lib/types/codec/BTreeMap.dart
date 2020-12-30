@@ -11,10 +11,11 @@ class BTreeMap<K extends BaseCodec, V extends BaseCodec> extends CodecMap<K, V> 
   BTreeMap(Registry registry, keyType, valType, rawValue)
       : super(registry, keyType, valType, rawValue, "BTreeMap");
 
-  static Constructor<BTreeMap<K, V>> withParams<K extends BaseCodec, V extends BaseCodec>(
-          dynamic keyType,
-          [dynamic valType]) =>
-      _bTreeMapWith(keyType, valType);
+  static Constructor<T>
+      withParams<K extends BaseCodec, V extends BaseCodec, T extends BTreeMap<K, V>>(
+              dynamic keyType,
+              [dynamic valType]) =>
+          _bTreeMapWith(keyType, valType);
 
   static BTreeMap constructor(Registry registry,
           [dynamic keyType, dynamic valType, dynamic rawValue]) =>

@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:polkadot_dart/types/codec/Enum.dart';
 import 'package:polkadot_dart/types/codec/Raw.dart';
+// import 'package:polkadot_dart/types/interfaces/runtime/typesbak.dart';
 import 'package:polkadot_dart/types/primitives/Bytes.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
@@ -10,6 +11,8 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 /// @internal */
 List<dynamic> _decodeDataU8a(Registry registry, Uint8List value) {
+  if (value.isEmpty) value = Uint8List.fromList([0]);
+
   final indicator = value[0];
 
   if (indicator == 0) {
@@ -62,9 +65,9 @@ class Data extends Enum {
     return this.value as Bytes;
   }
 
-  H256 get asSha256 {
-    return this.value as H256;
-  }
+  // H256 get asSha256 {
+  //   return this.value as H256;
+  // }
 
   bool get isRaw {
     return this.index == 1;

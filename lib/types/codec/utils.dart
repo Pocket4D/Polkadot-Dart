@@ -7,32 +7,37 @@ import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 bool hasEq(dynamic o) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-
   return o is BaseCodec ? isFunction((o as dynamic).eq) : false;
 }
 
 Constructor<T> typeToConstructor<T extends BaseCodec>(Registry registry, dynamic type) {
-  return (isString(type) ? registry.createClass(type) : type) as Constructor<T>;
+  return isString(type) ? registry.createClass(type) : type as Constructor<T>;
 }
 
 Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> input) {
   return input.entries.fold({}, (Map<String, Constructor> output, MapEntry entry) {
-    output[entry.key] = typeToConstructor(registry, entry.value);
+    output[entry.key] =
+        typeToConstructor(registry, entry.value is Function ? entry.value : entry.value.toString());
     return output;
   });
 }
 
 List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   final types = _types is List ? _types : (_types as Map<String, Constructor>).entries.toList();
-
   if (types.length == 0) {
     return [];
   }
   final constructor = types[0] as Constructor;
   final value = constructor(registry, u8a);
   final newList = [value];
-  newList.addAll(decodeU8a(registry, u8a.sublist(value.encodedLength), types.sublist(1)));
+
+  if (u8a.isEmpty) {
+    u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
+  }
+  newList.addAll(decodeU8a(
+      registry,
+      u8a.sublist(value.encodedLength > u8a.length ? u8a.length : value.encodedLength),
+      types.sublist(1)));
   return newList;
 }
 

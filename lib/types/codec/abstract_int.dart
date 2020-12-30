@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/types.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -49,6 +50,7 @@ BigInt decodeAbstractInt(dynamic value, int bitLength, bool isNegative) {
   } else if (isString(value)) {
     return BigInt.parse(value.toString(), radix: 10);
   }
+
   return bnToBn(value is BaseCodec ? value.value : value);
 }
 
@@ -62,8 +64,11 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
 
   BigInt get value => _value;
 
-  AbstractInt(Registry registry,
+  dynamic originValue;
+  AbstractInt();
+  AbstractInt.withReg(Registry registry,
       [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
+    originValue = value;
     this._value = (decodeAbstractInt(value, bitLength, isSigned));
     this.registry = registry;
     this._bitLength = bitLength;
@@ -174,6 +179,7 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
     // NOTE In the case of balances, which have a special meaning on the UI
     // and can be interpreted differently, return a specific value for it so
     // underlying it always matches(no matter which length it actually is)
+    // this is Balance ? "Balance" :
     return "${this.isUnsigned ? 'u' : 'i'}${this.bitLength}";
   }
 

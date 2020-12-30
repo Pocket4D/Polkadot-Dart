@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -10,9 +11,17 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   List<T> _values;
   List<T> get value => _values;
 
-  AbstractArray(Registry registry, List<T> values) {
+  AbstractArray.withReg(Registry registry, List<T> values) {
     _values = List.from(values);
     this.registry = registry;
+  }
+  AbstractArray.fromList(List<T> values) {
+    _values = List.from(values);
+  }
+  AbstractArray();
+
+  void setValues(List<T> values) {
+    this._values = values;
   }
 
   /// @description The length of the value when encoded as a Uint8Array

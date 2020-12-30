@@ -9,7 +9,7 @@ const AllHashers = {
   "Identity": null
 };
 
-final defs = {
+const defs = {
   "rpc": {},
   "types": {
     "DoubleMapTypeV9": {

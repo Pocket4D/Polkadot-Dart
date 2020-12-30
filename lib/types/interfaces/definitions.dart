@@ -1,6 +1,7 @@
 import 'assets/definitions.dart' as assetsDefs;
 import 'attestations/definitions.dart' as attestationsDefs;
 import 'aura/definitions.dart' as auraDefs;
+import 'author/definitions.dart' as authorDefs;
 import 'authorship/definitions.dart' as authorshipDefs;
 import 'babe/definitions.dart' as babeDefs;
 import 'balances/definitions.dart' as balancesDefs;
@@ -49,11 +50,12 @@ import 'vesting/definitions.dart' as vestingDefs;
 final assests = assetsDefs.defs;
 final attestations = attestationsDefs.defs;
 final aura = auraDefs.defs;
+final author = authorDefs.defs;
 final authorship = authorshipDefs.defs;
 final babe = babeDefs.defs;
 final balances = balancesDefs.defs;
 final chain = chainDefs.defs;
-final chilestate = childstateDefs.defs;
+final childstate = childstateDefs.defs;
 final claims = claimsDefs.defs;
 final collective = collectiveDefs.defs;
 final consensus = consensusDefs.defs;
@@ -98,11 +100,12 @@ final definitions = {
   "assests": assests,
   "attestations": attestations,
   "aura": aura,
+  "author": author,
   "authorship": authorship,
   "babe": babe,
   "balances": balances,
   "chain": chain,
-  "chilestate": chilestate,
+  "childstate": childstate,
   "claims": claims,
   "collective": collective,
   "consensus": consensus,

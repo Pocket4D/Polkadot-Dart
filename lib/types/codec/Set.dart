@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -54,10 +55,10 @@ List<String> decodeSet(Map<String, dynamic> setValues, dynamic value, int bitLen
 
   if (isString(value)) {
     return decodeSet(setValues, u8aToU8a(value), byteLength);
-  } else if (isU8a(value)) {
+  } else if (value is Uint8List) {
     return value.length == 0
         ? []
-        : decodeSetNumber(setValues, u8aToBn(value.subList(0, byteLength), endian: Endian.little));
+        : decodeSetNumber(setValues, u8aToBn(value.sublist(0, byteLength), endian: Endian.little));
   } else if (value is Set || (value is List)) {
     final input = (value is List) ? List<String>.from(value) : [...value.values()];
 
@@ -67,8 +68,10 @@ List<String> decodeSet(Map<String, dynamic> setValues, dynamic value, int bitLen
   return decodeSetNumber(setValues, value);
 }
 
-CodecSet Function(Registry, dynamic) codecSetWith(Map<String, dynamic> setValues, [int bitLength]) {
-  return (Registry registry, [dynamic value]) => CodecSet(registry, setValues, value, bitLength);
+CodecSet Function(Registry, dynamic) codecSetWith(Map<String, dynamic> setValues,
+    [int bitLength = 8]) {
+  return (Registry registry, [dynamic value]) =>
+      CodecSet(registry, setValues, value, bitLength ?? 8);
 }
 
 class CodecSet extends BaseCodec {
@@ -83,8 +86,14 @@ class CodecSet extends BaseCodec {
   Set<String> get value => _value;
   List<String> iskeys = [];
   List<String> askeys = [];
+  Map<String, dynamic> originSetValues;
+  dynamic originValue;
+  int originBitLength;
 
   CodecSet(Registry registry, Map<String, dynamic> setValues, [dynamic value, int bitLength = 8]) {
+    originSetValues = setValues;
+    originValue = value;
+    originBitLength = bitLength;
     this._value = (decodeSet(setValues, value, bitLength)).toSet();
     this.registry = registry;
     this._allowed = setValues;

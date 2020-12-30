@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/metadata/Metadata.dart';
+import 'package:polkadot_dart/types/interfaces/types.dart';
+import 'package:polkadot_dart/types/types.dart' hide Metadata;
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/definitions.dart';
 
@@ -22,6 +24,8 @@ abstract class ChainUpgrades {
 // RegistryTypes= Map<String,dynamic>;
 // export type RegistryTypes = Record<string, Constructor | string | Record<string, string> | { _enum: string[] | Record<string, string | null> } | { _set: Record<string, number> }>;
 
+// class RegisteredTypes{}
+
 abstract class RegistryMetadataText extends BaseCodec {
   void setOverride(String override);
 }
@@ -42,11 +46,19 @@ abstract class RegistryMetadataCalls {
   List<RegistryMetadataCall> unwrap();
 }
 
-abstract class RegistryError {
+class RegistryError {
   List<String> documentation;
   int index;
   String name;
   String section;
+  RegistryError({this.documentation, this.index, this.name, this.section});
+  factory RegistryError.fromMap(Map<String, dynamic> map) {
+    return RegistryError(
+        documentation: map["documentation"],
+        index: map["index"],
+        name: map["name"],
+        section: map["section"]);
+  }
 }
 
 abstract class RegistryMetadataError {
@@ -58,8 +70,8 @@ abstract class RegistryMetadataError {
 // export type RegistryMetadataErrors = RegistryMetadataError[];
 
 abstract class RegistryMetadataEvent {
-  List<dynamic> args;
-  RegistryMetadataText name;
+  List<dynamic> get args;
+  RegistryMetadataText get name;
 }
 
 abstract class RegistryMetadataEvents {
@@ -67,49 +79,117 @@ abstract class RegistryMetadataEvents {
   List<RegistryMetadataEvent> unwrap();
 }
 
-abstract class RegistryMetadataExtrinsic {
+class RegistryMetadataExtrinsic {
   BigInt version;
   List<RegistryMetadataEvent> signedExtensions;
+  RegistryMetadataExtrinsic({this.version, this.signedExtensions});
+  factory RegistryMetadataExtrinsic.fromMap(Map<String, dynamic> map) {
+    return RegistryMetadataExtrinsic(
+        version: BigInt.from(map["version"] as int),
+        signedExtensions: map["signedExtendsion"] as List<RegistryMetadataEvent>);
+  }
 }
 
 abstract class RegistryMetadataModule {
-  RegistryMetadataCalls calls;
-  List<RegistryMetadataError> errors;
-  RegistryMetadataEvents events;
-  u8 index;
-  RegistryMetadataText name;
+  RegistryMetadataCalls get calls;
+  List<RegistryMetadataError> get errors;
+  RegistryMetadataEvents get events;
+  u8 get index;
+  RegistryMetadataText get name;
+
+  // RegistryMetadataModule({this.calls, this.errors, this.events, this.index, this.name});
+  // factory RegistryMetadataModule.fromMap(Map<String, dynamic> map) {
+  //   return RegistryMetadataModule(
+  //       calls: map["calls"] as RegistryMetadataCalls,
+  //       errors: map["errors"] as List<RegistryMetadataError>,
+  //       events: map["events"] as RegistryMetadataEvents,
+  //       index: map["index"] as u8,
+  //       name: map["name"] as RegistryMetadataText);
+  // }
 }
 
 abstract class RegistryMetadataLatest {
-  List<RegistryMetadataModule> modules;
-  RegistryMetadataExtrinsic extrinsic;
+  List<RegistryMetadataModule> get modules;
+  RegistryMetadataExtrinsic get extrinsic;
+  // RegistryMetadataLatest({this.modules, this.extrinsic});
+  // // factory RegistryMetadataLatest.fromMap(Map<String, dynamic> map) {
+  //   return RegistryMetadataLatest(
+  //       modules: map["modules"] as List<RegistryMetadataModule>,
+  //       extrinsic: map["extrinsic"] as RegistryMetadataExtrinsic);
+  // }
 }
 
 abstract class RegistryMetadata {
-  RegistryMetadataLatest asLatest;
-  int version;
+  RegistryMetadataLatest get asLatest;
+  int get version;
+  // RegistryMetadata({this.asLatest, this.version});
+  // factory RegistryMetadata.fromMap(Map<String, dynamic> map) {
+  //   return RegistryMetadata(
+  //       asLatest: map["asLatest"] as RegistryMetadataLatest, version: map["version"] as int);
+  // }
 }
 
-abstract class OverrideVersionedType {
+class OverrideVersionedType {
   List<dynamic> minmax; // min(v >= min) and max(v <= max)
   Map<String, dynamic> types;
+  OverrideVersionedType({this.minmax, this.types});
+  factory OverrideVersionedType.fromMap(Map<String, dynamic> map) {
+    return OverrideVersionedType(
+        minmax: map["minmax"] as List<dynamic>, types: map["types"] as Map<String, dynamic>);
+  }
 }
 
 // OverrideModuleType=Map<String,String>;
 // export type OverrideModuleType = Record<string, string>;
 
-abstract class OverrideBundleDefinition {
+class OverrideBundleDefinition {
   Map<String, Map<String, dynamic>> alias;
   Map<String, Map<String, DefinitionRpc>> rpc;
   List<OverrideVersionedType> types;
+  OverrideBundleDefinition({this.alias, this.rpc, this.types});
+  factory OverrideBundleDefinition.fromMap(Map<String, dynamic> map) {
+    var _alias = map["alias"] as Map<String, Map<String, dynamic>>;
+    var _rpc = map["rpc"] as Map<String, Map<String, DefinitionRpc>>;
+    var _types = map["types"] as List<OverrideVersionedType>;
+    return OverrideBundleDefinition(alias: _alias, rpc: _rpc, types: _types);
+  }
 }
 
-abstract class OverrideBundleType {
+class OverrideBundleType {
   Map<String, OverrideBundleDefinition> chain;
   Map<String, OverrideBundleDefinition> spec;
+  OverrideBundleType({this.chain, this.spec});
+  factory OverrideBundleType.fromMap(Map<String, dynamic> map) {
+    var _chain = map["chain"] as Map<String, OverrideBundleDefinition>;
+    var _spec = map["spec"] as Map<String, OverrideBundleDefinition>;
+    return OverrideBundleType(chain: _chain, spec: _spec);
+  }
 }
 
-abstract class RegisteredTypes {
+class OverrideVersionedTypeImpl implements OverrideVersionedType {
+  @override
+  List minmax;
+
+  @override
+  Map<String, Object> types;
+  OverrideVersionedTypeImpl({this.minmax, this.types});
+  factory OverrideVersionedTypeImpl.fromMap(Map<String, Object> map) => OverrideVersionedTypeImpl(
+      minmax: map["minmax"] as List, types: map["types"] as Map<String, Object>);
+}
+
+class ChainUpgradeVersionImpl implements ChainUpgradeVersion {
+  @override
+  BigInt blockNumber;
+
+  @override
+  BigInt specVersion;
+  ChainUpgradeVersionImpl({this.blockNumber, this.specVersion});
+  factory ChainUpgradeVersionImpl.fromMap(Map<String, dynamic> map) => ChainUpgradeVersionImpl(
+      blockNumber: BigInt.from(map["blockNumber"] as int),
+      specVersion: BigInt.from(map["specVersion"] as int));
+}
+
+class RegisteredTypes {
   /// @description Additional types used by runtime modules. This is necessary if the runtime modules
   /// uses types not available in the base Substrate runtime.
   Map<String, dynamic> types;
@@ -125,6 +205,24 @@ abstract class RegisteredTypes {
 
   /// @description Additional types that are injected based on the type of node we are connecting to, as set via specName in the runtime version. There are keyed by the node, i.e. `{ 'edgeware': { ... } }`
   Map<String, Map<String, dynamic>> typesSpec;
+
+  RegisteredTypes({this.types, this.typesAlias, this.typesBundle, this.typesChain, this.typesSpec});
+  factory RegisteredTypes.fromMap(Map<String, dynamic> map) {
+    var _types = map["types"] as Map<String, dynamic> ?? Map<String, dynamic>();
+    var _typesAlias =
+        map["typesAlias"] as Map<String, Map<String, String>> ?? Map<String, Map<String, String>>();
+    var _typesBundle = map["typesBundle"] as OverrideBundleType;
+    var _typesChain = map["typesChain"] as Map<String, Map<String, dynamic>> ??
+        Map<String, Map<String, dynamic>>();
+    var _typesSepc = map["typesSpec"] as Map<String, Map<String, dynamic>> ??
+        Map<String, Map<String, dynamic>>();
+    return RegisteredTypes(
+        types: _types,
+        typesAlias: _typesAlias,
+        typesBundle: _typesBundle,
+        typesChain: _typesChain,
+        typesSpec: _typesSepc);
+  }
 }
 
 abstract class Registry {
@@ -134,7 +232,7 @@ abstract class Registry {
   RegisteredTypes get knownTypes;
   List<String> get signedExtensions;
 
-  // findMetaCall(callIndex: Uint8Array): CallFunction;
+  CallFunction findMetaCall(Uint8List callIndex);
   // findMetaError(errorIndex: Uint8Array | { error: BN, index: BN }): RegistryError;
 
   // due to same circular imports where types don't really want to import from EventData,
@@ -178,7 +276,7 @@ abstract class Registry {
   // setHasher(hasher?:(data: Uint8Array) => Uint8Array): void;
   void setHasher(Uint8List Function(Uint8List) hasher);
   // setMetadata(metadata: RegistryMetadata, signedExtensions?: string[]): void;
-  void setMetadata(RegistryMetadata metadata, [List<String> signedExtensions]);
+  void setMetadata(Metadata metadata, [List<String> signedExtensions]);
   // setSignedExtensions(signedExtensions?: string[]): void;
   void setSignedExtensions([List<String> signedExtensions]);
 }

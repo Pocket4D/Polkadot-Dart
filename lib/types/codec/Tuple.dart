@@ -29,12 +29,12 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
       : (_types as Map<String, Constructor>).values.toList();
 
   List<BaseCodec> resultList = List<BaseCodec>(types.length);
+
   if (types.length >= 1) {
     for (var i = 0; i < types.length; i += 1) {
       var type = types[i];
       try {
-        var entry = value != null ? value[i] : null;
-
+        var entry = (value == null || (value is List && value.isEmpty)) ? null : value[i];
         if (entry is BaseCodec) {
           resultList[i] = entry;
         }
@@ -56,7 +56,7 @@ class Tuple extends AbstractArray<BaseCodec> {
   dynamic _types;
 
   Tuple(Registry registry, dynamic types, dynamic value)
-      : super(
+      : super.withReg(
             registry,
             decodeTuple(
                 registry,
@@ -113,5 +113,11 @@ class Tuple extends AbstractArray<BaseCodec> {
   /// @param isBare true when the value has none of the type-specific prefixesinternal)
   Uint8List toU8a([dynamic isBare]) {
     return u8aConcat([...this.value.map((entry) => entry.toU8a(isBare))]);
+  }
+
+  @override
+  F cast<F extends BaseCodec>() {
+    // TODO: implement cast
+    return this as F;
   }
 }

@@ -21,16 +21,21 @@ import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
-Constructor<T> createClass<T extends BaseCodec>(Registry registry, String type) {
+Constructor<T> createClass<T extends BaseCodec>(Registry registry, String type,
+    [TypeDefOptions options]) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  final typeDefResult = getTypeDef(type);
+
+  final typeDefResult = getTypeDef(type, options);
+
   final result = getTypeClass<T>(registry, typeDefResult);
+
   return result;
 }
 
 // ignore: non_constant_identifier_names
-Constructor<T> ClassOf<T extends BaseCodec>(Registry registry, String type) {
-  return createClass(registry, type);
+Constructor<T> ClassOf<T extends BaseCodec>(Registry registry, String type,
+    [TypeDefOptions options]) {
+  return createClass(registry, type, options);
 }
 
 List<TypeDef> getSubDefArray(TypeDef value) {
@@ -73,7 +78,7 @@ List<String> getTypeClassArray(TypeDef value) {
   return getSubDefArray(value).map((def) => def.type).toList();
 }
 
-Constructor createInt(TypeDef def, dynamic clazz) {
+Constructor createInt<T>(TypeDef def, dynamic clazz) {
   assert(isNumber(def.length), "Expected bitLength information for ${def.displayName}<bitLength>");
   if (clazz.toString().startsWith("UInt")) {
     return UInt.withParams(def.length, def.displayName);
@@ -84,7 +89,7 @@ Constructor createInt(TypeDef def, dynamic clazz) {
   }
 }
 
-Constructor createHashMap(TypeDef value, dynamic clazz) {
+Constructor createHashMap<T>(TypeDef value, dynamic clazz) {
   final arr = getTypeClassArray(value);
   var keyType = arr[0];
   var valueType = arr[1];
@@ -145,10 +150,9 @@ final Map<TypeDefInfo, Constructor Function(Registry registry, TypeDef value)> i
   },
 
   TypeDefInfo.Set: (Registry registry, TypeDef value) {
-    Map<String, int> result = {};
-
+    Map<String, int> initResult = {};
     return CodecSet.withParams(
-        getSubDefArray(value).fold(result, (result, def) {
+        getSubDefArray(value).fold(initResult, (result, def) {
           result[def.name] = def.index;
 
           return result;

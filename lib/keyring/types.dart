@@ -52,6 +52,7 @@ class KeyringPair$Json {
 
 class SignOptions {
   bool withType;
+  SignOptions({this.withType});
 }
 
 typedef KDecodePkcs8 = Future Function(String passphrase, [Uint8List encoded]);

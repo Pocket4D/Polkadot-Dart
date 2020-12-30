@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "call": {
       "description": "Executes a call to a contract",

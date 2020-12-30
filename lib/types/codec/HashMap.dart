@@ -10,7 +10,7 @@ class HashMap<K extends BaseCodec, V extends BaseCodec> extends CodecMap<K, V> {
   HashMap(Registry registry, dynamic keyType, dynamic valType, [dynamic value])
       : super(registry, keyType, valType, value);
 
-  static Constructor<CodecMap<K, V>> withParams<K extends BaseCodec, V extends BaseCodec>(
+  static Constructor<T> withParams<K extends BaseCodec, V extends BaseCodec, T extends CodecMap<K, V>>(
           keyType, valType) =>
       hashMapWithParams(keyType, valType);
 

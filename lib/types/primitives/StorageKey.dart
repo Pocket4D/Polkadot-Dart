@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/metadata/decorate/storage/createFunction.dart';
 import 'package:polkadot_dart/types/codec/Raw.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/primitives/Bytes.dart';
@@ -37,10 +39,17 @@ List<dynamic> getStorageType(StorageEntryTypeLatest type) {
   if (type.isPlain) {
     return [false, type.asPlain.toString()];
   } else if (type.isDoubleMap) {
-    return [false, type.asDoubleMap.value.toString()];
+    var map = type.asDoubleMap.toJSON();
+    var rewrap = map.map((key, val) {
+      return MapEntry(key, val is bool ? 'Bool' : val);
+    });
+    return [false, jsonEncode(rewrap)];
   }
-
-  return [false, type.asMap.value.toString()];
+  var map = type.asMap.toJSON();
+  var rewrap = map.map((key, val) {
+    return MapEntry(key, val is bool ? 'Bool' : val);
+  });
+  return [false, jsonEncode(rewrap)];
 }
 
 // we unwrap the type here, turning into an output usable for createType
@@ -51,7 +60,9 @@ String unwrapStorageType(StorageEntryTypeLatest type, [bool isOptional]) {
   final hasWrapper = arr[0] as bool;
   final outputType = arr[1] as String;
 
-  return isOptional && !hasWrapper ? "Option<$outputType>" : outputType;
+  return isOptional != null && isOptional == true && !hasWrapper
+      ? "Option<$outputType>"
+      : outputType;
 }
 
 /// @internal */
@@ -63,7 +74,9 @@ DecodedStorageKey decodeStorageKey([dynamic value]) {
     // let Bytes handle these inputs
     return DecodedStorageKey(key: value);
   } else if (isFunction(value)) {
-    return DecodedStorageKey(key: value(), method: value.method, section: value.section);
+    return DecodedStorageKey(key: value(), method: null, section: null);
+  } else if (value is IterFnImpl) {
+    return DecodedStorageKey(key: value, method: value.method, section: value.section);
   } else if ((value is List)) {
     final fn = value[0] as StorageEntry;
     final args = value.sublist(1);
@@ -80,40 +93,40 @@ DecodedStorageKey decodeStorageKey([dynamic value]) {
 List<BaseCodec> decodeHashers(Registry registry, Uint8List value, List<dynamic> hashers) {
   // the storage entry is xxhashAsU8a(prefix, 128) + xxhashAsU8a(method, 128), 256 bits total
   var offset = 32;
-
-  return hashers.fold([], (result, hArray) {
+  final decodedList = hashers.fold<List<BaseCodec>>(List<BaseCodec>.from([]), (result, hArray) {
+    final hasher = StorageHasher.from(hArray[0]);
     final type = hArray[1] as String;
-    final hashMap = HASHER_MAP['Identity'];
+    final hashMap = HASHER_MAP[hasher.type ?? 'Identity'];
     final hashLen = hashMap[0] as int;
     final canDecode = hashMap[1] as bool;
-
     final decoded = canDecode
-        ? registry.createType<Raw>(type, value.sublist(offset + hashLen))
-        : registry.createType<Raw>('Raw', value.sublist(offset, offset + hashLen));
+        ? registry.createType(type ?? 'Raw', value.sublist(offset + hashLen))
+        : registry.createType('Raw', value.sublist(offset, offset + hashLen));
 
     offset += hashLen + (canDecode ? decoded.encodedLength : 0);
     result.add(decoded);
 
     return result;
   });
+  return decodedList;
 }
 
 /// @internal */
 List<BaseCodec> decodeArgsFromMeta(Registry registry, Uint8List value,
-    [StorageEntryMetadataLatest meta]) {
-  if (meta == null || !(meta.type.isDoubleMap || meta.type.isMap)) {
+    [StorageEntryMetadataLatest thisMeta]) {
+  if (thisMeta == null || !(thisMeta.type.isDoubleMap || thisMeta.type.isMap)) {
     return [];
   }
 
-  if (meta.type.isMap) {
-    final mapInfo = meta.type.asMap;
+  if (thisMeta.type.isMap) {
+    final mapInfo = thisMeta.type.asMap;
 
     return decodeHashers(registry, value, [
       [mapInfo.hasher, mapInfo.key.toString()]
     ]);
   }
 
-  final mapInfo = meta.type.asDoubleMap;
+  final mapInfo = thisMeta.type.asDoubleMap;
 
   return decodeHashers(registry, value, [
     [mapInfo.hasher, mapInfo.key1.toString()],
@@ -136,8 +149,14 @@ class StorageKey extends Bytes {
 
   String _section;
 
+  dynamic originValue;
+
+  StorageKeyExtra originOverride;
+
   StorageKey(Registry registry, [dynamic value, StorageKeyExtra override])
       : super(registry, decodeStorageKey(value).key) {
+    originValue = value;
+    originOverride = override;
     if (override == null) {
       override = StorageKeyExtra();
     }
@@ -145,14 +164,14 @@ class StorageKey extends Bytes {
 
     // super(registry, key);
 
-    this._outputType = StorageKey.getType(value as StorageKey);
+    this._outputType = StorageKey.getType(value);
 
     // decode the args(as applicable based on the key and the hashers, after all init)
-    this.setMeta(StorageKey.getMeta(value as StorageKey), override?.section ?? decodedVal.section,
+    this.setMeta(StorageKey.getMeta(value), override?.section ?? decodedVal.section,
         override?.method ?? decodedVal.method);
   }
 
-  static StorageKey constructor(Registry registry, [dynamic value, StorageKeyExtra override]) =>
+  static StorageKey constructor(Registry registry, [dynamic value, dynamic override]) =>
       StorageKey(registry, value, override);
 
   static StorageEntryMetadataLatest getMeta(dynamic value) {
@@ -172,7 +191,7 @@ class StorageKey extends Bytes {
     if (value is StorageKey) {
       return value.outputType;
     } else if (isFunction(value)) {
-      return unwrapStorageType((value as StorageEntry).meta.type);
+      return unwrapStorageType((value).meta.type);
     } else if ((value is List)) {
       final fn = value[0] as StorageEntry;
       if (fn.meta != null) {
@@ -205,27 +224,25 @@ class StorageKey extends Bytes {
   }
 
   /// @description Sets the meta for this key
-  StorageKey setMeta([StorageEntryMetadataLatest metaData, String sectionData, String methodData]) {
-    this._meta = metaData;
+  void setMeta([StorageEntryMetadataLatest metaData, String sectionData, String methodData]) {
+    try {
+      this._meta = metaData;
+      this._args = decodeArgsFromMeta(this.registry, this.toU8a(true), this.meta);
+    } catch (e) {}
+
     this._method = sectionData ?? this._method;
     this._section = methodData ?? this._section;
 
     if (metaData != null) {
       this._outputType = unwrapStorageType(metaData.type);
     }
-
-    try {
-      this._args = decodeArgsFromMeta(this.registry, this.toU8a(true), this.meta);
-    } catch (error) {
-      // ignore...
-    }
-
-    return this;
   }
 
   /// @description Returns the Human representation for this type
   dynamic toHuman([bool isExtended]) {
-    return this._args.length != 0 ? this._args.map((arg) => arg.toHuman()) : super.toHuman();
+    return this._args.length != 0
+        ? this._args.map((arg) => arg.toHuman()).toList()
+        : super.toHuman();
   }
 
   /// @description Returns the raw type for this

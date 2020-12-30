@@ -1,4 +1,4 @@
-final defs = {
+const defs = {
   "rpc": {
     "queryInfo": {
       "description": "Retrieves the fee information for an encoded extrinsic",
