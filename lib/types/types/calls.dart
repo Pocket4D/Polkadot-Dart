@@ -10,10 +10,11 @@ abstract class CallBase {
   String method;
   String section;
   dynamic Function() toJSON;
+  Call call; //(...args: any[]) ;
+  bool isCall(Call tx);
 }
 
 abstract class CallFunction extends CallBase {
-  Call call; //(...args: any[]) ;
   Call callFunction(List<dynamic> args);
 }
 

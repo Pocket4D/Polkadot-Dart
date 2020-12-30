@@ -6,6 +6,7 @@ import 'package:polkadot_dart/types/interfaces/extrinsics/types.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart' hide Call;
+import 'package:polkadot_dart/types/types/extrinsic.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 import 'constant.dart';
@@ -75,7 +76,7 @@ abstract class ExtrinsicBase extends Base<BaseCodec> {
    * @description `true` id the extrinsic is signed
    */
   bool get isSigned {
-    return (ExtrinsicV4.from(this.raw)).signature.isSigned;
+    return (this.raw as GenericExtrinsicV4).signature.isSigned;
   }
 
   /**
@@ -96,14 +97,14 @@ abstract class ExtrinsicBase extends Base<BaseCodec> {
    * @description The [[Call]] this extrinsic wraps
    */
   Call get method {
-    return ExtrinsicV4.from(this.raw).method;
+    return (this.raw as GenericExtrinsicV4).method;
   }
 
   /**
    * @description The nonce for this extrinsic
    */
   Compact<Index> get nonce {
-    return ExtrinsicV4.from(this.raw).signature.nonce;
+    return (this.raw as GenericExtrinsicV4).signature.nonce;
   }
 
   /**
@@ -111,14 +112,14 @@ abstract class ExtrinsicBase extends Base<BaseCodec> {
    */
   // EcdsaSignature | Ed25519Signature | Sr25519Signature
   get signature {
-    return ExtrinsicV4.from(this.raw).signature.signature;
+    return (this.raw as GenericExtrinsicV4).signature.signature;
   }
 
   /**
    * @description The [[Address]] that signed
    */
   Address get signer {
-    return ExtrinsicV4.from(this.raw).signature.signer;
+    return (this.raw as GenericExtrinsicV4).signature.signer;
   }
 
   /**
@@ -126,14 +127,14 @@ abstract class ExtrinsicBase extends Base<BaseCodec> {
    */
   // Compact<Balance>
   get tip {
-    return ExtrinsicV4.from(this.raw).signature.tip;
+    return (this.raw as GenericExtrinsicV4).signature.tip;
   }
 
   /**
    * @description Returns the raw transaction version(not flagged with signing information)
   */
   int get type {
-    return ExtrinsicV4.from(this.raw).version;
+    return (this.raw as GenericExtrinsicV4).version;
   }
 
   /**
@@ -209,4 +210,64 @@ class GenericExtrinsic extends ExtrinsicBase {
   @override
   // TODO: implement value
   get value => this.raw;
+
+  GenericExtrinsic sign(IKeyringPair account, SignatureOptions options) {
+    (this.raw as GenericExtrinsicV4).sign(account, options);
+    return this;
+  }
+
+  GenericExtrinsic signFake(dynamic signer, SignatureOptions options) {
+    (this.raw as GenericExtrinsicV4).signFake(signer, options);
+    return this;
+  }
+
+  String toHex([dynamic isBare]) {
+    return u8aToHex(this.toU8a(isBare));
+  }
+
+  dynamic toHuman([bool isExpanded]) {
+    return {
+      "isSigned": this.isSigned,
+      "method": this.method.toHuman(isExpanded),
+      ...(this.isSigned
+          ? {
+              "era": this.era.toHuman(isExpanded),
+              "nonce": this.nonce.toHuman(isExpanded),
+              "signature": this.signature.toHex(),
+              "signer": this.signer.toHuman(isExpanded),
+              "tip": this.tip.toHuman(isExpanded)
+            }
+          : {})
+    };
+  }
+
+  /**
+   * @description Converts the Object to JSON, typically used for RPC transfers
+   */
+  String toJSON() {
+    return this.toHex();
+  }
+
+  /**
+   * @description Returns the base runtime type name for this instance
+   */
+  String toRawType() {
+    return 'Extrinsic';
+  }
+
+  /**
+   * @description Encodes the value as a Uint8Array as per the SCALE specifications
+   * @param isBare true when the value is not length-prefixed
+   */
+  Uint8List toU8a([dynamic isBare]) {
+    // we do not apply bare to the internal values, rather this only determines out length addition,
+    // where we strip all lengths this creates an extrinsic that cannot be decoded
+
+    final encoded = u8aConcat([
+      new Uint8List.fromList([this.version]),
+      this.raw.toU8a()
+    ]);
+
+    return isBare != null && isBare == true ? encoded : compactAddLength(encoded);
+  }
 }

@@ -166,8 +166,8 @@ class Enum<T extends BaseCodec> extends BaseCodec {
       Enum(registry, def, thisValue, index);
 
   static Constructor<Enum<T>> withParams<T extends BaseCodec>(dynamic types) {
-    return (Registry registry, [dynamic thisValue, int index]) {
-      var result = Enum<T>(registry, types, thisValue, index);
+    return (Registry registry, [dynamic thisValue, dynamic index]) {
+      var result = Enum<T>(registry, types, thisValue, index as int);
       result.genKeys();
       return result;
     };

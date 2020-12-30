@@ -1,5 +1,5 @@
 import 'package:polkadot_dart/metadata/MagicNumber.dart';
-import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
+// import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/metadata/util/toCallsOnly.dart';
 import 'package:polkadot_dart/metadata/v10/toV11.dart';
 import 'package:polkadot_dart/metadata/v11/toV12.dart';
@@ -69,12 +69,23 @@ class MetadataVersioned extends Struct implements Castable {
     return this.version == version;
   }
 
-  Struct _getVersion<T extends MetaMapped, F extends MetaMapped>(
+  T _getVersion<T extends MetaMapped, F extends MetaMapped>(
       MetaVersions version, T Function(Registry registry, F input) fromPrev) {
     final intVersion = MetaVersionsExt.version(version);
 
     if (this._assertVersion(MetaVersionsExt.version(version))) {
-      return this._metadata.askey("V$intVersion") as Struct;
+      switch (intVersion) {
+        case 9:
+          return this._metadata.asV9 as T;
+        case 10:
+          return this._metadata.asV10 as T;
+        case 11:
+          return this._metadata.asV11 as T;
+        case 12:
+          return this._metadata.asV12 as T;
+        default:
+          break;
+      }
     }
 
     if (!this._converted.containsKey(intVersion)) {
@@ -95,7 +106,7 @@ class MetadataVersioned extends Struct implements Castable {
       // this._converted[intVersion]=fromPrev(this.registry, this[asPrev] as F);
     }
 
-    return this._converted[intVersion] as Struct;
+    return this._converted[intVersion] as T;
   }
 
   /**
@@ -116,28 +127,31 @@ class MetadataVersioned extends Struct implements Castable {
   MetadataV9 get asV9 {
     this._assertVersion(9);
 
-    return MetadataV9.from(this._metadata.asV9);
+    return this._converted[9] as MetadataV9 ?? this._metadata.asV9;
   }
 
   /**
    * @description Returns the wrapped values as a V10 object
    */
   MetadataV10 get asV10 {
-    return MetadataV10.from(this._getVersion(MetaVersions.V10, toV10));
+    return this._converted[10] as MetadataV10 ??
+        this._getVersion<MetadataV10, MetadataV9>(MetaVersions.V10, toV10);
   }
 
   /**
    * @description Returns the wrapped values as a V10 object
    */
   MetadataV11 get asV11 {
-    return MetadataV11.from(this._getVersion(MetaVersions.V11, toV11));
+    return this._converted[11] as MetadataV11 ??
+        this._getVersion<MetadataV11, MetadataV10>(MetaVersions.V11, toV11);
   }
 
   /**
    * @description Returns the wrapped values as a V10 object
    */
   MetadataV12 get asV12 {
-    return MetadataV12.from(this._getVersion(MetaVersions.V12, toV12));
+    return this._converted[12] as MetadataV12 ??
+        this._getVersion<MetadataV12, MetadataV11>(MetaVersions.V12, toV12);
   }
 
   /**
@@ -145,7 +159,8 @@ class MetadataVersioned extends Struct implements Castable {
    */
   MetadataLatest get asLatest {
     // This is non-existent & latest - applied here to do the module-specific type conversions
-    return MetadataLatest.from(this._getVersion(MetaVersions.V13, toLatest));
+    return this._converted[13] as MetadataLatest ??
+        this._getVersion<MetadataLatest, MetadataV12>(MetaVersions.V13, toLatest);
   }
 
   /**

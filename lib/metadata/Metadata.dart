@@ -26,7 +26,8 @@ MetadataVersioned decodeMetadata(Registry registry, dynamic _value) {
   final version = value[VERSION_IDX];
 
   try {
-    return new MetadataVersioned(registry, value);
+    final result = new MetadataVersioned(registry, value);
+    return result;
   } catch (error) {
     // This is an f-ing hack as a follow-up to another ugly hack
     // https://github.com/polkadot-js/api/commit/a9211690be6b68ad6c6dad7852f1665cadcfa5b2

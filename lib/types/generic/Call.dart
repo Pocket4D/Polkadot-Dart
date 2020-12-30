@@ -241,7 +241,7 @@ class GenericCall extends Struct implements IMethod {
       // callIndex: u8aToHex(this.callIndex),
       "method": call?.method,
       "section": call?.section,
-      ...(isExpanded && call != null
+      ...(isExpanded != null && isExpanded == true && call != null
           ? {"documentation": call.meta.documentation.map((d) => d.toString())}
           : {})
     };

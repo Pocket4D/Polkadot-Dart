@@ -146,6 +146,21 @@ class KeyringPairImpl implements IKeyringPair {
         address: map["address"], addressRaw: map["addressRaw"], publicKey: map["publicKey"]);
   }
 
+  factory KeyringPairImpl.fromKeyPair(KeyringPair kp) {
+    return KeyringPairImpl(
+        address: kp.address,
+        addressRaw: kp.addressRaw,
+        publicKey: kp.publicKey,
+        sign: kp.sign,
+        decodePkcs8: kp.decodePkcs8,
+        derive: kp.derive,
+        encodePkcs8: kp.encodePkcs8,
+        lock: kp.lock,
+        setMeta: kp.setMeta,
+        toJson: kp.toJson,
+        verify: kp.verify);
+  }
+
   @override
   var decodePkcs8;
 

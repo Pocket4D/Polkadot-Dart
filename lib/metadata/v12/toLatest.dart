@@ -40,29 +40,34 @@ void setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
   }
 }
 
-List<FunctionMetadataLatest> convertCalls(
-    Registry registry, List<FunctionMetadataV12> calls, Map<String, String> sectionTypes) {
+// List<FunctionMetadataLatest>
+convertCalls(Registry registry, List<FunctionMetadataV12> calls, Map<String, String> sectionTypes) {
   return calls.map((v12) {
     v12.args.value.forEach((meta) => setTypeOverride(sectionTypes, meta.type));
-
-    return FunctionMetadataLatest.from(registry.createType('FunctionMetadataLatest',
-        {"args": v12.args, "documentation": v12.documentation, "name": v12.name}));
+    final result = registry.createType('FunctionMetadataLatest',
+        {"args": v12.args, "documentation": v12.documentation, "name": v12.name});
+    return result;
+    // return FunctionMetadataLatest.from(registry.createType('FunctionMetadataLatest',
+    //     {"args": v12.args, "documentation": v12.documentation, "name": v12.name}));
   }).toList();
 }
 
-List<EventMetadataLatest> convertEvents(
-    Registry registry, List<EventMetadataV12> events, Map<String, String> sectionTypes) {
+// List<EventMetadataLatest>
+convertEvents(Registry registry, List<EventMetadataV12> events, Map<String, String> sectionTypes) {
   return events.map((v12) {
     v12.args.value.forEach((type) => setTypeOverride(sectionTypes, type));
-
-    return EventMetadataLatest.from(registry.createType('EventMetadataLatest',
-        {"args": v12.args, "documentation": v12.documentation, "name": v12.name}));
+    final result = registry.createType('EventMetadataLatest',
+        {"args": v12.args, "documentation": v12.documentation, "name": v12.name});
+    return result;
+    // return EventMetadataLatest.from(registry.createType('EventMetadataLatest',
+    //     {"args": v12.args, "documentation": v12.documentation, "name": v12.name}));
   }).toList();
 }
 
-StorageMetadataLatest convertStorage(
-    Registry registry, StorageMetadataV12 v12, Map<String, String> sectionTypes) {
-  return StorageMetadataLatest.from(registry.createType('StorageMetadataLatest', {
+// StorageMetadataLatest
+convertStorage(Registry registry, StorageMetadataV12 v12, Map<String, String> sectionTypes) {
+  //return StorageMetadataLatest.from(
+  return registry.createType('StorageMetadataLatest', {
     "items": v12.items.map((v11, [index, list]) {
       CodecType resultType;
 
@@ -75,17 +80,25 @@ StorageMetadataLatest convertStorage(
       }
 
       setTypeOverride(sectionTypes, resultType);
-
-      return StorageEntryMetadataLatest.from(registry.createType('StorageEntryMetadataLatest', {
+      final result = registry.createType('StorageEntryMetadataLatest', {
         "documentation": v11.documentation,
         "fallback": v11.fallback,
         "modifier": v11.modifier,
         "name": v11.name,
         "type": v11.type
-      }));
+      });
+      return result;
+      // return StorageEntryMetadataLatest.from(registry.createType('StorageEntryMetadataLatest', {
+      //   "documentation": v11.documentation,
+      //   "fallback": v11.fallback,
+      //   "modifier": v11.modifier,
+      //   "name": v11.name,
+      //   "type": v11.type
+      // }));
     }),
     "prefix": v12.prefix
-  }));
+  });
+  // );
 }
 
 void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
@@ -114,21 +127,24 @@ void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
 
 // { calls, events, storage }: { calls: FunctionMetadataV12[] | null, events: EventMetadataV12[] | null, storage: StorageMetadataV12 | null }
 
-ModuleMetadataLatest createModule(Registry registry, ModuleMetadataV12 mod,
+// ModuleMetadataLatest
+createModule(Registry registry, ModuleMetadataV12 mod,
     {List<FunctionMetadataV12> calls, List<EventMetadataV12> events, StorageMetadataV12 storage}) {
   final sectionTypes = getModuleTypes(registry, stringCamelCase(mod.name.toString()));
 
-  return ModuleMetadataLatest.from(registry.createType('ModuleMetadataLatest', {
+  //return ModuleMetadataLatest.from(
+  return registry.createType('ModuleMetadataLatest', {
     ...mod.value,
     "calls": calls != null ? convertCalls(registry, calls, sectionTypes) : null,
     "events": events != null ? convertEvents(registry, events, sectionTypes) : null,
     "storage": storage != null ? convertStorage(registry, storage, sectionTypes) : null
-  }));
+  });
+  // );
 }
 
 MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
+  print("slowFuck");
   registerOriginCaller(registry, v12.modules.value);
-
   var result = registry.createType('MetadataLatest', {
     "extrinsic": v12.extrinsic,
     "modules": v12.modules.map((mod, [index, list]) => createModule(registry, mod,
@@ -136,5 +152,6 @@ MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
         events: (mod.events?.unwrapOr(null) as Vec)?.value,
         storage: mod.storage?.unwrapOr(null)))
   });
+  print("slowFuck1");
   return MetadataLatest.from(result);
 }

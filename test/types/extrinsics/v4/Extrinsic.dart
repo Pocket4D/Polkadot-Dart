@@ -49,11 +49,7 @@ void extrinsicV4Test() {
     test('creates a signed extrinsic', () {
       final call =
           (tx["balances"]["transfer"]).callFunction([keyring["bob"].publicKey, BigInt.from(6969)]);
-      final kp = KeyringPairImpl(
-          address: keyring["alice"].address,
-          addressRaw: keyring["alice"].addressRaw,
-          publicKey: keyring["alice"].publicKey,
-          sign: keyring["alice"].sign);
+      final kp = KeyringPairImpl.fromKeyPair(keyring["alice"]);
 
       final signOptions = SignatureOptionsImpl.fromMap({
         "blockHash": '0xec7afaf1cca720ce88c1d1b689d81f0583cc15a97d621cf046dd9abf605ef22f',

@@ -9,9 +9,9 @@ Map<String, Map<String, CallFunction>> decorateExtrinsics(
     Registry registry, MetadataLatest latest, int metaVersion) {
   final filtered =
       latest.modules.value.where((module) => module.calls != null && module.calls.isSome).toList();
-  final uniqueList = Set<ModuleMetadataLatest>.from(filtered).toList();
+
   Map<String, Map<String, CallFunction>> returnModules = Map<String, Map<String, CallFunction>>();
-  uniqueList.asMap().entries.forEach((moduleEntry) {
+  filtered.asMap().entries.forEach((moduleEntry) {
     int index = moduleEntry.key;
     ModuleMetadataLatest module = moduleEntry.value;
     final sectionIndex = metaVersion == 12 ? module.index.toNumber() : index;
@@ -22,8 +22,8 @@ Map<String, Map<String, CallFunction>> decorateExtrinsics(
     arr.asMap().entries.forEach((entry) {
       int index = entry.key;
       FunctionMetadataLatest callMetadata = entry.value;
-      newModule[stringCamelCase(callMetadata.name.toString())] = createUnchecked(registry, section,
-          Uint8List.fromList([sectionIndex, index]), FunctionMetadataLatest.from(callMetadata));
+      newModule[stringCamelCase(callMetadata.name.toString())] = createUnchecked(
+          registry, section, Uint8List.fromList([sectionIndex, index]), callMetadata);
     });
     returnModules[section] = newModule;
   });

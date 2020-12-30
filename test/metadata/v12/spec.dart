@@ -10,7 +10,6 @@ import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 
 import 'package:polkadot_dart/types/types.dart' hide Metadata;
 
-import '../testUtils.dart';
 import './v12.dart' as substrateData;
 
 void main() {

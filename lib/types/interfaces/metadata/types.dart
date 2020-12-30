@@ -44,6 +44,11 @@ class DoubleMapTypeV11<S extends Map<String, dynamic>> extends Struct implements
 
 /// @name DoubleMapTypeV12 */
 class DoubleMapTypeV12 extends DoubleMapTypeV11 {
+  StorageHasherV12 get hasher => StorageHasherV12.from(super.getCodec("hasher"));
+  CodecType get key1 => super.getCodec("key1").cast<CodecType>();
+  CodecType get key2 => super.getCodec("key2").cast<CodecType>();
+  CodecType get thisValue => super.getCodec("value").cast<CodecType>();
+  StorageHasherV12 get key2Hasher => StorageHasherV12.from(super.getCodec("key2Hasher"));
   DoubleMapTypeV12(Registry registry, Map<String, dynamic> types,
       [dynamic thisValue, Map<dynamic, String> jsonMap])
       : super(registry, types, thisValue, jsonMap);
@@ -560,7 +565,7 @@ class MetadataV12<S extends Map<String, dynamic>> extends Struct
       MetadataV12(origin.registry, origin.originTypes, origin.originValue, origin.originJsonMap);
 }
 
-abstract class MetaMapped {
+abstract class MetaMapped implements Struct {
   MetaMapped.from(Struct origin);
 }
 

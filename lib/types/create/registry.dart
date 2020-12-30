@@ -89,6 +89,7 @@ void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
 void injectExtrinsics(
     Registry registry, Metadata metadata, Map<String, CallFunction> metadataCalls) {
   final extrinsics = decorateExtrinsics(registry, metadata.asLatest, metadata.version);
+
   // decorate the extrinsics
   (extrinsics.values).forEach((methods) => (methods.values).forEach((method) {
         metadataCalls[u8aToHex(method.callIndex)] = method;

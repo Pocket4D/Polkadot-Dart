@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
@@ -8,16 +9,6 @@ import 'package:polkadot_dart/utils/utils.dart';
 CallFunction createUnchecked(
     Registry registry, String section, Uint8List callIndex, FunctionMetadataLatest callMetadata) {
   final funcName = stringCamelCase(callMetadata.name.toString());
-
-  // final extrinsicFn = (List<dynamic> args) {
-  //   assert(expectedArgs.length == args.length,
-  //       "Extrinsic $section.$funcName expects ${expectedArgs.length} arguments, got ${args.length}.");
-
-  //   return registry.createType('Call', [
-  //     {"args": args, callIndex: callIndex},
-  //     callMetadata
-  //   ]);
-  // };
 
   final extrinsicFn = ExtrinsicCallFunction(
       registry: registry,
@@ -50,6 +41,7 @@ class ExtrinsicCallFunction implements CallFunction {
 
   @override
   Function() toJSON;
+
   ExtrinsicCallFunction(
       {this.registry,
       this.call,
@@ -62,9 +54,17 @@ class ExtrinsicCallFunction implements CallFunction {
     assert(this.meta.args.length == args.length,
         "Extrinsic $section.$method expects ${this.meta.args.length} arguments, got ${args.length}.");
 
-    return Call.from(registry.createType('Call', [
-      {"args": args, "callIndex": callIndex},
+    final result = Call.from(registry.createType('Call', [
+      {"args": args, "callIndex": this.callIndex},
       this.meta
     ]));
+    this.call = result;
+    return result;
+  }
+
+  @override
+  bool isCall(Call tx) {
+    // hack using jsonString, should change
+    return jsonEncode(this.call.toJSON()) == jsonEncode(tx.toJSON());
   }
 }

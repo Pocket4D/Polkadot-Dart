@@ -147,16 +147,14 @@ class MortalEra extends Tuple {
     return this.toHex();
   }
 
-  /**
-   * @description Encodes the value as a Uint8Array as per the parity-codec specifications
-   * @param isBare true when the value has none of the type-specific prefixes(internal)
-   * Period and phase are encoded:
-   *   - The period of validity from the block hash found in the signing material.
-   *   - The phase in the period that this transaction's lifetime begins(and, importantly,
-   *     implies which block hash is included in the signature material). If the `period` is
-   *     greater than 1 << 12, then it will be a factor of the times greater than 1<<12 that
-   *     `period` is.
-   */
+  /// @description Encodes the value as a Uint8Array as per the parity-codec specifications
+  /// @param isBare true when the value has none of the type-specific prefixes(internal)
+  /// Period and phase are encoded:
+  ///   - The period of validity from the block hash found in the signing material.
+  ///   - The phase in the period that this transaction's lifetime begins(and, importantly,
+  ///     implies which block hash is included in the signature material). If the `period` is
+  ///     greater than 1 << 12, then it will be a factor of the times greater than 1<<12 that
+  ///     `period` is.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Uint8List toU8a([dynamic isBare]) {
     final period = this.period.toNumber();
