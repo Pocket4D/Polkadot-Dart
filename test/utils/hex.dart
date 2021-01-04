@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/utils/hex.dart';
 import 'package:polkadot_dart/utils/u8a.dart';
+import 'package:convert/convert.dart';
+import '../metadata/v11/v11.dart' as rpcDataV11;
 
 void main() {
   hexTest();
@@ -72,7 +75,7 @@ void hexTest() {
     // print("\n");
   });
 
-  test('hexToU8a', () {
+  test('hexToU8a', () async {
     expect(u8aEq(hexToU8a('0x80000a'), Uint8List.fromList([128, 0, 10])), true);
     expect(u8aEq(hexToU8a('0x80000a', 32), Uint8List.fromList([0, 128, 0, 10])), true); // hello
     // print("\n");

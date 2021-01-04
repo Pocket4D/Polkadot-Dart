@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:convert/convert.dart';
 import 'package:polkadot_dart/polkadot_dart.dart';
 import 'package:polkadot_dart/utils/u8a.dart';
 
@@ -110,6 +112,20 @@ Uint8List hexToU8a(String value, [int bitLength = -1]) {
   } catch (e) {
     throw "Error: hexToU8a $e";
   }
+}
+
+Uint8List hexToU8aStream(String value) {
+  var _value = hexStripPrefix(value);
+  Uint8List results = Uint8List((_value.length / 2).ceil());
+  var sink;
+  // ignore: close_sinks
+  var controller = StreamController<List<int>>(sync: true);
+  controller.stream.listen((data) {
+    results.setAll(0, data);
+  });
+  sink = hex.decoder.startChunkedConversion(controller.sink);
+  sink.add(_value);
+  return results;
 }
 
 String hexToString(String value) {

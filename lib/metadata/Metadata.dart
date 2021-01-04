@@ -15,13 +15,18 @@ Uint8List sanitizeInput([dynamic _value]) {
     _value = EMPTY_U8A;
   }
   if (isString(_value)) {
-    return sanitizeInput(u8aToU8a(_value));
+    // return sanitizeInput(u8aToU8a(_value));
+    /// faster use stream
+    return sanitizeInput(hexToU8aStream(_value));
   }
 
   return _value.length == 0 ? EMPTY_METADATA : _value;
 }
 
 MetadataVersioned decodeMetadata(Registry registry, dynamic _value) {
+  if (_value is MetadataVersioned) {
+    return _value;
+  }
   final value = sanitizeInput(_value);
   final version = value[VERSION_IDX];
 

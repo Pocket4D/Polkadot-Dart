@@ -14,7 +14,6 @@ import 'package:polkadot_dart/types/generic/Event.dart';
 import 'package:polkadot_dart/types/interfaces/definitions.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 
-import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/calls.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
@@ -277,7 +276,6 @@ class TypeRegistry implements Registry {
     this._definitions = new Map<String, String>();
     this._unknownTypes = new Map<String, bool>();
     this._knownTypes = RegisteredTypes.fromMap({});
-    // this._knownTypes = {};
 
     this.register(this._knownDefaults);
     this._knownDefinitions.values.forEach((defs) {

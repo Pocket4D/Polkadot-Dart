@@ -2,6 +2,12 @@ import 'package:type_gen/formatter.dart';
 import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/utils/string.dart';
 
+/// TODO: refactor goal:
+/// 1. to know if class has property
+/// 2. to seperate property into basetypes and those have child , eg Enum, Vec, Compact
+/// 3. use Clazz.from to get the actual type if property have child
+/// 4. use ` Clazz get prop=> _prop` and define `Clazz _prop` and `_setProp` in class constructor;
+
 String getKeyClassExtendTypes(Registry registry, String classKey, String classExtends) {
   // final type = registry.createType(classExtends);
   // print("type.toRawType():${type.toRawType()}");

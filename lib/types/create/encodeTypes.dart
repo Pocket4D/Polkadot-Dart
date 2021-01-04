@@ -15,7 +15,7 @@ final INFO_WRAP = ['BTreeMap', 'BTreeSet', 'Compact', 'HashMap', 'Option', 'Resu
 
 String paramsNotation<T extends WithToStringClass>(String outer, dynamic inner,
     [String Function(T) transform]) {
-  return "$outer${inner != null ? "<${((inner is List<T>) ? inner : [
+  return "$outer${inner != null ? "<${((inner is List) ? inner : [
       inner
     ]).map<String>(transform ?? stringIdentity).join(', ')}>" : ''}";
 }
@@ -25,19 +25,19 @@ String encodeWithParams(TypeDef typeDef, String outer) {
   final sub = typeDef.sub;
   switch (info) {
     case TypeDefInfo.BTreeMap:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.BTreeSet:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.Compact:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.HashMap:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.Linkage:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.Option:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.Result:
-      break;
+      return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.Vec:
       return paramsNotation(outer, sub, (param) => encodeTypeDef(param));
     case TypeDefInfo.Enum:
@@ -74,12 +74,12 @@ String encodeSubTypes(List<TypeDef> sub, [bool asEnum]) {
   assert(names.every((n) => n != null),
       "Subtypes does not have consistent names, ${names.join(', ')}");
 
-  final inner = sub.fold<Map<String, String>>({} as Map<String, String>,
+  final inner = sub.fold<Map<String, String>>(Map<String, String>.from({}),
       (Map<String, String> result, TypeDef type) {
     return {...result, type.name: encodeTypeDef(type)};
   });
 
-  return jsonEncode(asEnum ? {"_enum": inner} : inner);
+  return jsonEncode(asEnum != null ? {"_enum": inner} : inner);
 }
 
 String encodeEnum(TypeDef typeDef) {
@@ -90,7 +90,7 @@ String encodeEnum(TypeDef typeDef) {
   List<String> mapper(List<dynamic> arr) {
     List<String> enumList = List<String>(arr.length);
     for (var index = 0; index < arr.length; index += 1) {
-      enumList.add("${arr[index].name}" ?? "Empty$index");
+      enumList[index] = ("${arr[index].name}" ?? "Empty$index");
     }
     return enumList;
   }
@@ -103,13 +103,13 @@ String encodeEnum(TypeDef typeDef) {
 }
 
 String encodeStruct(TypeDef typeDef) {
-  assert(typeDef.sub && (typeDef.sub is List), 'Unable to encode Struct type');
+  assert(typeDef.sub != null && (typeDef.sub is List), 'Unable to encode Struct type');
 
   return encodeSubTypes(typeDef.sub);
 }
 
 String encodeTuple(TypeDef typeDef) {
-  assert(typeDef.sub && (typeDef.sub is List), 'Unable to encode Tuple type');
+  assert(typeDef.sub != null && (typeDef.sub is List), 'Unable to encode Tuple type');
 
   return "(${typeDef.sub.map((type) => encodeTypeDef(type)).join(', ')})";
 }

@@ -1,13 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/metadata/decorate/storage/index.dart';
-import 'package:polkadot_dart/types/types.dart' hide Call, Metadata;
-import 'package:polkadot_dart/utils/utils.dart';
+import 'package:polkadot_dart/types/types.dart';
 import '../../metadata/v11/v11.dart' as rpcDataV11;
-
-import '../../testUtils/throws.dart';
 
 void main() {
   storageKeyTest(); // rename this test name
@@ -17,16 +12,12 @@ void storageKeyTest() {
   group('StorageKey', () {
     final registry = new TypeRegistry();
 
-    var metadata;
-
-    var query;
-    setUp(() async {
-      metadata = new Metadata(registry, rpcDataV11.v11);
-      registry.setMetadata(metadata);
-      query = decorateStorage(registry, (await metadata.asLatest), metadata.version);
-    });
-
     group('with MetadataV11', () {
+      final metadata = new Metadata(registry, rpcDataV11.v11);
+      registry.setMetadata(metadata);
+
+      final query = decorateStorage(registry, metadata.asLatest, metadata.version);
+
       test('should allow decoding of a DoubleMap key', () {
         final key = new StorageKey(registry,
             '0x5f3e4907f716ac89b6347d15ececedca8bde0a0ea8864605e3b68ed9cb2da01b66ccada06515787c10000000e535263148daaf49be5ddb1579b72e84524fc29e78609e3caf42e85aa118ebfe0b0ad404b5bdd25f');

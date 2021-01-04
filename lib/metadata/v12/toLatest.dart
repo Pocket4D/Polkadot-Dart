@@ -143,7 +143,6 @@ createModule(Registry registry, ModuleMetadataV12 mod,
 }
 
 MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
-  print("slowFuck");
   registerOriginCaller(registry, v12.modules.value);
   var result = registry.createType('MetadataLatest', {
     "extrinsic": v12.extrinsic,
@@ -152,6 +151,6 @@ MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
         events: (mod.events?.unwrapOr(null) as Vec)?.value,
         storage: mod.storage?.unwrapOr(null)))
   });
-  print("slowFuck1");
+
   return MetadataLatest.from(result);
 }

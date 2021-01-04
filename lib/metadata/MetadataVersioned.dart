@@ -62,7 +62,8 @@ class MetadataVersioned extends Struct implements Castable {
   Map<int, MetaMapped> _converted = new Map<int, MetaMapped>();
 
   MetadataVersioned(Registry registry, [dynamic value])
-      : super(registry, {"magicNumber": MagicNumber.constructor, "metadata": 'MetadataAll'}, value);
+      : super(registry, {"magicNumber": MagicNumber.constructor, "metadata": 'MetadataAll'},
+            value is MetadataVersioned ? value.value : value);
 
   bool _assertVersion(int version) {
     assert(this.version <= version, "Cannot convert metadata from v${this.version} to v$version");

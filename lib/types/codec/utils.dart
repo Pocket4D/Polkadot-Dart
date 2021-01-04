@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
@@ -34,10 +33,8 @@ List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   if (u8a.isEmpty) {
     u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
   }
-  newList.addAll(decodeU8a(
-      registry,
-      u8a.sublist(value.encodedLength > u8a.length ? u8a.length : value.encodedLength),
-      types.sublist(1)));
+  final subLength = value.encodedLength > u8a.length ? u8a.length : value.encodedLength;
+  newList.addAll(decodeU8a(registry, u8a.sublist(subLength), types.sublist(1)));
   return newList;
 }
 

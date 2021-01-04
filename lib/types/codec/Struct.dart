@@ -97,13 +97,11 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
 /// @internal
 T decodeStruct<T extends Map<dynamic, BaseCodec>>(Registry registry, Map<String, Constructor> types,
     dynamic value, Map<dynamic, String> jsonMap) {
-  // if (types["signature"] != null) {
-  //   print(value);
-  // }
   if (isHex(value)) {
     return decodeStruct(registry, types, hexToU8a(value as String), jsonMap);
   } else if (isU8a(value)) {
     final values = decodeU8a(registry, value, types.values.toList());
+
     final keys = types.keys.toList();
     // Transform array of values to {key: value} mapping
     return keys.fold(
@@ -148,12 +146,13 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
       value = {};
     }
 
-    final decoded = decodeStruct(registry, mapToTypeMap(registry, types), value, jsonMap);
+    this._types = mapToTypeMap(registry, types);
 
-    _value = Map<dynamic, BaseCodec>.fromEntries(decoded.entries);
+    final decoded = decodeStruct(registry, this._types, value, jsonMap);
+
+    this._value = Map<dynamic, BaseCodec>.from(decoded);
     this.registry = registry;
     this._jsonMap = jsonMap ?? Map<dynamic, String>();
-    this._types = mapToTypeMap(registry, types);
   }
   static Map<String, String> typesToMap(Registry registry, Map<String, Constructor> types) {
     return (types.entries).fold({}, (result, entry) {
