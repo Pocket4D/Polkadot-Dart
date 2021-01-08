@@ -1,145 +1,79 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polkadot_dart/rpc_provider/coder/index.dart';
+import 'package:polkadot_dart/rpc_provider/http/index.dart';
+import 'package:polkadot_dart/rpc_provider/ws/index.dart';
 
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import '../../testUtils/throws.dart';
+import '../mock/mockWs.dart';
+
+// import 'package:polkadot_dart/utils/utils.dart'; // use extendsion methods for fast data format converting
+Scope mock;
+WsProvider ws;
+
+Future<WsProvider> createWs(List<ErrorExtends> requests, [int autoConnect = 1000]) async {
+  mock = await mockWs(requests);
+  ws = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: autoConnect);
+  return ws;
+}
 
 void main() {
-  var server;
-  tearDown(() async {
-    if (server != null) await server.close();
-  });
+  wsIndexTest(); // rename this test name
+}
 
-  test('communicates using existing WebSockets', () async {
-    server = await HttpServer.bind('localhost', 0);
-    server.transform(WebSocketTransformer()).listen((webSocket) {
-      var channel = IOWebSocketChannel(webSocket);
-      channel.sink.add('hello!');
-      channel.stream.listen((request) {
-        expect(request, equals('ping'));
-        channel.sink.add('pong');
-        channel.sink.close(5678, 'raisin');
-      });
+void wsIndexTest() {
+  tearDownAll(() {
+    if (mock != null) {
+      mock.done();
+    }
+  });
+  group('Ws', () {
+    test('returns the connected state', () async {
+      var ws = await createWs([]);
+      expect(ws.isConnected, false);
     });
 
-    var webSocket = await WebSocket.connect('ws://localhost:${server.port}');
-    var channel = IOWebSocketChannel(webSocket);
-
-    var n = 0;
-    channel.stream.listen((message) {
-      if (n == 0) {
-        expect(message, equals('hello!'));
-        channel.sink.add('ping');
-      } else if (n == 1) {
-        expect(message, equals('pong'));
-      } else {
-        fail('Only expected two messages.');
-      }
-      n++;
-    }, onDone: expectAsync0(() {
-      expect(channel.closeCode, equals(5678));
-      expect(channel.closeReason, equals('raisin'));
-    }));
+    test('allows you to initialize the provider with custom headers', () {
+      expect(
+          () => new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: 1000, headers: {"foo": 'bar'}),
+          returnsNormally);
+    });
   });
-
-  test('.connect communicates immediately', () async {
-    server = await HttpServer.bind('localhost', 0);
-    server.transform(WebSocketTransformer()).listen((webSocket) {
-      var channel = IOWebSocketChannel(webSocket);
-      channel.stream.listen((request) {
-        expect(request, equals('ping'));
-        channel.sink.add('pong');
-      });
+  group('Endpoint Parsing', () {
+    test('Succeeds when WsProvider endpoint is a valid string', () {
+      /* eslint-disable no-new */
+      expect(() => new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: 0), returnsNormally);
     });
 
-    var channel = IOWebSocketChannel.connect('ws://localhost:${server.port}');
-    channel.sink.add('ping');
-
-    channel.stream.listen(
-        expectAsync1((message) {
-          expect(message, equals('pong'));
-          channel.sink.close(5678, 'raisin');
-        }, count: 1),
-        onDone: expectAsync0(() {}));
-  });
-
-  test('.connect communicates immediately using platform independent api', () async {
-    server = await HttpServer.bind('localhost', 0);
-    server.transform(WebSocketTransformer()).listen((webSocket) {
-      var channel = IOWebSocketChannel(webSocket);
-      channel.stream.listen((request) {
-        expect(request, equals('ping'));
-        channel.sink.add('pong');
-      });
+    test('Throws when WsProvider endpoint is an invalid string', () {
+      expect(() {
+        /* eslint-disable no-new */
+        new WsProvider(endpoint: 'http://127.0.0.1:9955', autoConnectMs: 0);
+      }, throwsA(assertionThrowsContains("Endpoint should start with")));
     });
 
-    var channel = WebSocketChannel.connect(Uri.parse('ws://localhost:${server.port}'));
-    channel.sink.add('ping');
+    test('Succeeds when WsProvider endpoint is a valid array', () {
+      final endpoints = ['ws://127.0.0.1:9955', 'wss://testnet.io:9944', 'ws://mychain.com:9933'];
 
-    channel.stream.listen(
-        expectAsync1((message) {
-          expect(message, equals('pong'));
-          channel.sink.close(5678, 'raisin');
-        }, count: 1),
-        onDone: expectAsync0(() {}));
-  });
-
-  test('.connect with an immediate call to close', () async {
-    server = await HttpServer.bind('localhost', 0);
-    server.transform(WebSocketTransformer()).listen((webSocket) {
-      expect(() async {
-        var channel = IOWebSocketChannel(webSocket);
-        await channel.stream.drain();
-        expect(channel.closeCode, equals(5678));
-        expect(channel.closeReason, equals('raisin'));
-      }(), completes);
+      /* eslint-disable no-new */
+      new WsProvider(endpoint: endpoints, autoConnectMs: 0);
     });
 
-    var channel = IOWebSocketChannel.connect('ws://localhost:${server.port}');
-    await channel.sink.close(5678, 'raisin');
-  });
+    test('Throws when WsProvider endpoint is an empty array', () {
+      final endpoints = [];
 
-  test('.connect wraps a connection error in WebSocketChannelException', () async {
-    server = await HttpServer.bind('localhost', 0);
-    server.listen((request) {
-      request.response.statusCode = 404;
-      request.response.close();
+      expect(() {
+        /* eslint-disable no-new */
+        new WsProvider(endpoint: endpoints, autoConnectMs: 0);
+      }, throwsA(assertionThrowsContains('WsProvider requires at least one Endpoint')));
     });
 
-    var channel = IOWebSocketChannel.connect('ws://localhost:${server.port}');
-    // expect(channel.stream.drain(), throwsA(TypeMatcher<WebSocketChannelException>()));
-  });
+    test('Throws when WsProvider endpoint is an invalid array', () {
+      final endpoints = ['ws://127.0.0.1:9955', 'http://bad.co:9944', 'ws://mychain.com:9933'];
 
-  test('.protocols fail', () async {
-    var passedProtocol = 'passed-protocol';
-    var failedProtocol = 'failed-protocol';
-    var selector = (List<String> receivedProtocols) => passedProtocol;
-
-    server = await HttpServer.bind('localhost', 0);
-    server.listen((request) {
-      expect(WebSocketTransformer.upgrade(request, protocolSelector: selector), throwsException);
+      expect(() {
+        /* eslint-disable no-new */
+        new WsProvider(endpoint: endpoints, autoConnectMs: 0);
+      }, throwsA(assertionThrowsContains("Endpoint should start with ")));
     });
-
-    var channel =
-        IOWebSocketChannel.connect('ws://localhost:${server.port}', protocols: [failedProtocol]);
-    // expect(channel.stream.drain(), throwsA(TypeMatcher<WebSocketChannelException>()));
-  });
-
-  test('.protocols pass', () async {
-    var passedProtocol = 'passed-protocol';
-    var selector = (List<String> receivedProtocols) => passedProtocol;
-
-    server = await HttpServer.bind('localhost', 0);
-    server.listen((request) async {
-      var webSocket = await WebSocketTransformer.upgrade(request, protocolSelector: selector);
-      expect(webSocket.protocol, passedProtocol);
-      await webSocket.close();
-    });
-
-    var channel =
-        IOWebSocketChannel.connect('ws://localhost:${server.port}', protocols: [passedProtocol]);
-    await channel.stream.drain();
-    expect(channel.protocol, passedProtocol);
   });
 }

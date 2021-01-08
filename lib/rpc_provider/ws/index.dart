@@ -24,6 +24,7 @@ class SubscriptionHandler {
 }
 
 class WsStateAwaiting {
+  String json;
   ProviderInterfaceCallback callback;
   String method;
   List<dynamic> params;
@@ -70,7 +71,7 @@ class WsProvider implements ProviderInterface {
     if (headers == null) {
       headers = Map<String, String>();
     }
-    final endpoints = (endpoint is List<String>) ? endpoint : [endpoint as String];
+    final endpoints = (endpoint is List) ? endpoint : [endpoint as String];
 
     assert(endpoints.length != 0, 'WsProvider requires at least one Endpoint');
 
@@ -80,14 +81,14 @@ class WsProvider implements ProviderInterface {
     });
 
     this._eventemitter = new EventEmitter();
-    this._autoConnectMs = autoConnectMs ?? 0;
+    this._autoConnectMs = autoConnectMs is bool ? 0 : autoConnectMs ?? 0;
     this._coder = new RpcCoder();
     this._endpointIndex = -1;
     this._endpoints = endpoints;
     this._headers = headers;
     this._websocket = null;
 
-    if (autoConnectMs > 0) {
+    if (autoConnectMs is int && autoConnectMs > 0) {
       this.connectWithRetry();
     }
 
@@ -128,11 +129,11 @@ class WsProvider implements ProviderInterface {
     // TODO: implement connect
     try {
       this._endpointIndex = (this._endpointIndex + 1) % this._endpoints.length;
-      if (this._websocket == null) {
-        this._websocket = await WebSocket.connect(this._endpoints[this._endpointIndex],
-            headers: this._headers,
-            compression: CompressionOptions(clientMaxWindowBits: 256 * 1024, enabled: true));
-      }
+
+      this._websocket = await WebSocket.connect(this._endpoints[this._endpointIndex],
+          headers: this._headers,
+          compression: CompressionOptions(clientMaxWindowBits: 256 * 1024, enabled: true));
+
       if (this._websocket.readyState == WebSocket.open) {
         var opened = this._onSocketOpen();
 
@@ -167,9 +168,7 @@ class WsProvider implements ProviderInterface {
       // this._websocket.onopen = this._onSocketOpen;
     } catch (error) {
       print(error);
-
-      // this._emit('error', error);
-
+      this._emit(ProviderInterfaceEmitted.error, error);
       throw error;
     }
   }
@@ -236,6 +235,7 @@ class WsProvider implements ProviderInterface {
       };
 
       this._handlers[(id.toString())] = WsStateAwaiting()
+        ..json = json
         ..callback = callback
         ..method = method
         ..params = params
