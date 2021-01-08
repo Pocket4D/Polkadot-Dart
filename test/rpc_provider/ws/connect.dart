@@ -1,11 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polkadot_dart/rpc_provider/coder/index.dart';
-import 'package:polkadot_dart/rpc_provider/http/index.dart';
 import 'package:polkadot_dart/rpc_provider/ws/index.dart';
 
-import '../../testUtils/throws.dart';
 import '../mock/mockWs.dart';
 
 // import 'package:polkadot_dart/utils/utils.dart'; // use extendsion methods for fast data format converting
@@ -23,12 +20,10 @@ void wsConnectTest() {
     List<Scope> mocks;
 
     setUp(() async {
-      // jest.setTimeout(30000);
       mocks = [await mockWs([])];
     });
 
     tearDown(() {
-      // jest.setTimeout(5000);
       mocks.forEach((m) {
         if (m != null) {
           m.done();
@@ -36,51 +31,51 @@ void wsConnectTest() {
       });
     });
 
-    // test('Does not connect when autoConnect is false', () {
-    //   final provider = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: 0);
+    test('Does not connect when autoConnect is false', () {
+      final provider = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: 0);
 
-    //   expect(provider.isConnected, false);
-    // });
+      expect(provider.isConnected, false);
+    });
 
-    // test('Does connect when autoConnect is true', () async {
-    //   final provider = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: 1);
+    test('Does connect when autoConnect is true', () async {
+      final provider = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: 1);
 
-    //   await sleepMs(100); // Hack to give the provider time to connect
-    //   expect(provider.isConnected, true);
-    // });
+      await sleepMs(100); // Hack to give the provider time to connect
+      expect(provider.isConnected, true);
+    });
 
-    // test('Creates a new WebSocket instance by calling the connect() method', () async {
-    //   final provider = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: false);
-    //   expect(provider.isConnected, false);
-    //   expect(mocks[0].server.connectionsInfo().active, 0);
-    //   expect(mocks[0].clientCount, 0);
-    //   await provider.connect();
-    //   await sleepMs(100); // Hack to give the provider time to connect
+    test('Creates a new WebSocket instance by calling the connect() method', () async {
+      final provider = new WsProvider(endpoint: TEST_WS_URL, autoConnectMs: false);
+      expect(provider.isConnected, false);
+      expect(mocks[0].server.connectionsInfo().active, 0);
+      expect(mocks[0].clientCount, 0);
+      await provider.connect();
+      await sleepMs(100); // Hack to give the provider time to connect
 
-    //   expect(provider.isConnected, true);
-    //   expect(mocks[0].clientCount, 1);
-    // });
+      expect(provider.isConnected, true);
+      expect(mocks[0].clientCount, 1);
+    });
 
-    // test('Connects to first endpoint when an array is given', () async {
-    //   final provider = new WsProvider(endpoint: [TEST_WS_URL], autoConnectMs: 1);
+    test('Connects to first endpoint when an array is given', () async {
+      final provider = new WsProvider(endpoint: [TEST_WS_URL], autoConnectMs: 1);
 
-    //   await provider.connect();
-    //   await sleepMs(100); // Hack to give the provider time to connect
+      await provider.connect();
+      await sleepMs(100); // Hack to give the provider time to connect
 
-    //   expect(provider.isConnected, true);
-    // });
+      expect(provider.isConnected, true);
+    });
 
-    // test('Connects to the second endpoint when the first is unreachable', () async {
-    //   /* eslint-disable @typescript-eslint/no-empty-function */
-    //   // jest.spyOn(console, 'error').mockImplementation((){});
+    test('Connects to the second endpoint when the first is unreachable', () async {
+      /* eslint-disable @typescript-eslint/no-empty-function */
+      // jest.spyOn(console, 'error').mockImplementation((){});
 
-    //   final endpoints = ['ws://localhost:9956', TEST_WS_URL];
-    //   final provider = new WsProvider(endpoint: endpoints, autoConnectMs: 1);
+      final endpoints = ['ws://localhost:9956', TEST_WS_URL];
+      final provider = new WsProvider(endpoint: endpoints, autoConnectMs: 1);
 
-    //   await sleepMs(100); // Hack to give the provider time to connect
+      await sleepMs(100); // Hack to give the provider time to connect
 
-    //   expect(provider.isConnected, true);
-    // });
+      expect(provider.isConnected, true);
+    });
 
     test('Connects to the second endpoint when the first is dropped', () async {
       final endpoints = [TEST_WS_URL, 'ws://localhost:9957'];

@@ -46,15 +46,16 @@ This library contains a set of crypto libraries and implementations of utils.
 
 | Status | Number | Deliverable  | Specification                                   |
 | ------ | ------ | ------------ | ----------------------------------------------- |
-| 60%    | 1      | types        | Porting `@polkadot/types`                       |
+| 75%    | 1      | types        | Porting `@polkadot/types`                       |
 | 0%     | 2      | rpc_core     | Porting and implements `@polkadot/rpc`          |
-| 0%     | 3      | rpc_provider | Porting and implements `@polkadot/rpc_provider` |
-| 50%    | 4      | metadata     | Porting  `@polkadot/metadata`                   |
+| 75%    | 3      | rpc_provider | Porting and implements `@polkadot/rpc_provider` |
+| 90%    | 4      | metadata     | Porting  `@polkadot/metadata`                   |
 | 0%     | 5      | api_derive   | Porting  `@polkadot/api-derive`                 |
 | 0%     | 6      | api_contract | Porting  `@polkadot/api-contract`               |
 | 0%     | 7      | api          | Porting  `@polkadot/api`                        |
-| 15%    | 8      | tests        | Unit tests for deliverables above               |
-| 0%     | 9      | pub.dev      | Publish to pub.dev for v1.0.0-dev1              |
+| 30%    | 8      | type_gen     | Types generator for  `@polkadot/types`          |
+| 15%    | 9      | tests        | Unit tests for deliverables above               |
+| 0%     | 10     | pub.dev      | Publish to pub.dev for v1.0.0-dev1              |
 
 ### Milestone 3: Awaits
 

@@ -1,6 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polkadot_dart/rpc_provider/coder/index.dart';
-import 'package:polkadot_dart/rpc_provider/http/index.dart';
 import 'package:polkadot_dart/rpc_provider/ws/index.dart';
 
 import '../../testUtils/throws.dart';
