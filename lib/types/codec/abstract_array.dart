@@ -118,7 +118,16 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   //  */
   List<U> map<U>(U Function(T value, [int index, List<T> array]) callbackfn, [dynamic thisArg]) {
     var newArr = this.toArray();
-    return newArr.map((val) => callbackfn(val, newArr.indexOf(val), newArr)).toList();
+
+    // var newMap=Map.fromIterable(newArr);
+
+    return newArr.asMap().entries.map((entry) {
+      int index = entry.key;
+      T val = entry.value;
+      return callbackfn(val, index, newArr);
+    }).toList();
+
+    // return newArr.map((val) => callbackfn(val, newArr.indexOf(val), newArr)).toList();
   }
 
   // /**

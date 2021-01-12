@@ -64,10 +64,7 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         assign = jsonObj[jsonKey];
       }
-
-      (raw)[key] = assign.runtimeType == types[key](registry, assign)
-          ? assign
-          : types[key](registry, assign);
+      (raw)[key] = !(assign is T) ? types[key](registry, assign) : assign;
     } else {
       throw "Cannot decode value ${jsonEncode(value)}";
     }
@@ -134,21 +131,21 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<dynamic, String> originJsonMap;
   // List<String> _keys;
   Struct(Registry registry, S types,
-      [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap]) {
+      [dynamic _thisValue = "___defaultEmpty", Map<dynamic, String> jsonMap]) {
     originTypes = types;
-    originValue = value;
+    originValue = _thisValue;
     originJsonMap = jsonMap;
 
     if (jsonMap == null) {
       jsonMap = Map<dynamic, String>();
     }
-    if (value == "___defaultEmpty") {
-      value = {};
+    if (_thisValue == "___defaultEmpty") {
+      _thisValue = {};
     }
 
     this._types = mapToTypeMap(registry, types);
 
-    final decoded = decodeStruct(registry, this._types, value, jsonMap);
+    final decoded = decodeStruct(registry, this._types, _thisValue, jsonMap);
 
     this._value = Map<dynamic, BaseCodec>.from(decoded);
     this.registry = registry;
@@ -227,6 +224,10 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     return this._value[name];
   }
 
+  void setCodec<T extends BaseCodec>(String name, T codec) {
+    this._value[name] = codec;
+  }
+
   /// @description Returns the values of a member at a specific index (Rather use get(name) for performance)
   BaseCodec getAtIndex(int index) {
     return this.toArray()[index];
@@ -240,18 +241,18 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
   Map<String, dynamic> toHuman([bool isExtended]) {
     return [...this._value.keys].fold({}, (json, key) {
-      final value = this._value[key];
-      json[key] = value != null && value.toHuman(isExtended);
+      final jsonValue = this._value[key];
+      json[key] = jsonValue != null && jsonValue.toHuman(isExtended);
       return json;
     });
   }
 
   /// @description Converts the Object to JSON, typically used for RPC transfers
   Map<String, dynamic> toJSON() {
-    return [...this._value.keys].fold({}, (json, key) {
+    return this._value.keys.fold({}, (json, key) {
       final jsonKey = this._jsonMap[key] ?? key;
-      final value = this._value[key];
-      json[jsonKey] = value?.toJSON();
+      final jsonValue = this._value[key];
+      json[jsonKey] = jsonValue?.toJSON();
       return json;
     });
   }

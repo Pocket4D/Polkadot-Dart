@@ -21,7 +21,7 @@ void metadataV12() {
   Map<String, dynamic> substrateJson;
   final registry = new TypeRegistry();
   Metadata metadata;
-  setUp(() async {
+  setUpAll(() async {
     substrateJson = Map<String, dynamic>.from(jsonDecode(await file.readAsString()));
     metadata = Metadata(registry, substrateData.v12);
     registry.setMetadata(metadata);
@@ -32,25 +32,21 @@ void metadataV12() {
       // new File(filename).writeAsString(jsonEncode(metadata.toJSON())).then((File file) {
       //   // Do something with the file.
       // });
-      // try {
-      //  expect(metadata.version, version);
-      // expect(jsonEncode(metadata.toJSON()), jsonEncode(substrateJson));
 
-      //   // expect((metadata["asV${version}" as keyof Metadata] as unknown as MetadataInterface<Modules>).modules.length).not.toBe(0);
-      expect(metadata.toJSON(), substrateJson);
-      // } catch (error) {
-      //   // print(jsonEncode(metadata.toJSON()));
-      //   throw error;
-      // }
+      try {
+        expect(metadata.version, 12);
+        expect(metadata.toJSON(), substrateJson);
+      } catch (error) {
+        // print(jsonEncode(metadata.toJSON()));
+        throw error;
+      }
     });
     test("converts v12 to latest", () async {
       ExtractionMetadata metadataInit = metadata.asV12;
-
       final metadataLatest = metadata.asLatest;
-
       expect(getUniqTypes(registry, metadataInit, false),
           getUniqTypes(registry, metadataLatest, false));
-    });
+    }, skip: "should always use ```asLatest```");
 
     test('storage with default values', () async {
       metadata.asLatest.modules.value

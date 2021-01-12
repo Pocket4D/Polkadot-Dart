@@ -42,7 +42,7 @@ List<dynamic> createStorageType(Registry registry, StorageEntryTypeV9 entryType)
 // /** @internal */
 // ModuleMetadataV10
 convertModule(Registry registry, ModuleMetadataV9 mod) {
-  final storage = mod.storage.unwrapOr(null);
+  final storage = mod.storage != null ? mod.storage.unwrapOr(null) : null;
 
   // return ModuleMetadataV10.from(
   return registry.createType('ModuleMetadataV10', {
@@ -64,7 +64,7 @@ convertModule(Registry registry, ModuleMetadataV9 mod) {
 }
 
 // /** @internal */
-MetadataV10 toV10(Registry registry, MetadataV9 metadataV9) {
+MetadataV10 toV10(Registry registry, MetadataV9 metadataV9, int versionNumber) {
   return MetadataV10.from(registry.createType('MetadataV10',
       {"modules": metadataV9.modules.map((mod, [index, list]) => convertModule(registry, mod))}));
 }

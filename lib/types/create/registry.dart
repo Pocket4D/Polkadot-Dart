@@ -24,7 +24,7 @@ import 'package:polkadot_dart/utils/u8a.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 // create error mapping from metadata
-void injectErrors(Registry _, Metadata metadata, Map<String, RegistryError> metadataErrors) {
+void injectErrors(Registry registry, Metadata metadata, Map<String, RegistryError> metadataErrors) {
   final modules = metadata.asLatest.modules;
   final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
 
@@ -45,6 +45,7 @@ void injectErrors(Registry _, Metadata metadata, Map<String, RegistryError> meta
           section: sectionName);
     });
   });
+  registry.setMetaToRegistry(metadata);
 }
 
 void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
@@ -83,6 +84,7 @@ void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
       };
     });
   });
+  registry.setMetaToRegistry(metadata);
 }
 
 void injectExtrinsics(
@@ -93,6 +95,7 @@ void injectExtrinsics(
   (extrinsics.values).forEach((methods) => (methods.values).forEach((method) {
         metadataCalls[u8aToHex(method.callIndex)] = method;
       }));
+  registry.setMetaToRegistry(metadata);
 }
 
 class TypeRegistry implements Registry {
@@ -103,6 +106,8 @@ class TypeRegistry implements Registry {
   RegisteredTypes _knownTypes;
   RegisteredTypes _registeredTypes;
   List<String> _signedExtensions = defaultExtensions;
+  Metadata get metadataRegistry => _metadata;
+  Metadata _metadata;
 
   Map<String, Constructor> _classes = new Map<String, Constructor>();
   Map<String, Constructor> get cls => _classes;
@@ -344,6 +349,10 @@ class TypeRegistry implements Registry {
                 .map((key) => key.toString())
                 .toList()
             : defaultExtensions));
+  }
+
+  void setMetaToRegistry(Metadata _meta) {
+    this._metadata = _meta;
   }
 
   @override

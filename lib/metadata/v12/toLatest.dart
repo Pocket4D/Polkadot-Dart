@@ -9,12 +9,13 @@ const KNOWN_ORIGINS = {
   "TechnicalCommittee": 'CollectiveOrigin'
 };
 
-void setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
-  final override =
-      (sectionTypes.keys).singleWhere((aliased) => type.eq(aliased), orElse: () => null);
+bool setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
+  bool isOverride = false;
+  final override = sectionTypes.containsKey(type.toString()) ? type.toString() : null;
 
   if (override != null) {
     type.setOverride(sectionTypes[override]);
+    isOverride = true;
   } else {
     // FIXME: NOT happy with this approach, but gets over the initial hump cased by (Vec<Announcement>,BalanceOf)
     final orig = type.toString();
@@ -36,16 +37,41 @@ void setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
 
     if (orig != alias) {
       type.setOverride(alias);
+      isOverride = true;
     }
   }
+  return isOverride;
 }
 
 // List<FunctionMetadataLatest>
 convertCalls(Registry registry, List<FunctionMetadataV12> calls, Map<String, String> sectionTypes) {
   return calls.map((v12) {
-    v12.args.value.forEach((meta) => setTypeOverride(sectionTypes, meta.type));
+    // v12.args.value.forEach((meta) {
+    //   if (sectionTypes.containsKey("EquivocationProof")) {
+    //     print(meta.type);
+    //   }
+    //   setTypeOverride(sectionTypes, meta.type);
+    //   if (sectionTypes.containsKey("EquivocationProof")) {
+    //     print(meta.type);
+    //   }
+    // });
+    var newList = v12.args.map((value, [index, array]) {
+      // if (sectionTypes.containsKey("Balance")) {
+      //   print("\n");
+      //   print(value.type);
+      // }
+      setTypeOverride(sectionTypes, value.type);
+      // if (sectionTypes.containsKey("Balance")) {
+      //   print(value.type);
+      // }
+      return value;
+    });
+
+    var newVec = Vec.fromList(newList, registry, "FunctionArgumentMetadataV12");
+
     final result = registry.createType('FunctionMetadataLatest',
-        {"args": v12.args, "documentation": v12.documentation, "name": v12.name});
+        {"args": newVec, "documentation": v12.documentation, "name": v12.name});
+
     return result;
     // return FunctionMetadataLatest.from(registry.createType('FunctionMetadataLatest',
     //     {"args": v12.args, "documentation": v12.documentation, "name": v12.name}));
@@ -55,12 +81,30 @@ convertCalls(Registry registry, List<FunctionMetadataV12> calls, Map<String, Str
 // List<EventMetadataLatest>
 convertEvents(Registry registry, List<EventMetadataV12> events, Map<String, String> sectionTypes) {
   return events.map((v12) {
-    v12.args.value.forEach((type) => setTypeOverride(sectionTypes, type));
+    // v12.args.value.forEach((type) {
+    //   setTypeOverride(sectionTypes, type);
+    // });
+
+    var newList = v12.args.map((type, [index, array]) {
+      setTypeOverride(sectionTypes, type);
+      return type;
+    });
+
+    var newVec = Vec.fromList(newList, registry, "CodecType");
+
     final result = registry.createType('EventMetadataLatest',
-        {"args": v12.args, "documentation": v12.documentation, "name": v12.name});
+        {"args": newVec, "documentation": v12.documentation, "name": v12.name});
     return result;
     // return EventMetadataLatest.from(registry.createType('EventMetadataLatest',
     //     {"args": v12.args, "documentation": v12.documentation, "name": v12.name}));
+  }).toList();
+}
+
+convertConstants(Registry registry, List<ModuleConstantMetadataV12> constants,
+    Map<String, String> sectionTypes) {
+  return constants.map((c) {
+    setTypeOverride(sectionTypes, c.type);
+    return registry.createType('ModuleConstantMetadataLatest', c);
   }).toList();
 }
 
@@ -68,46 +112,67 @@ convertEvents(Registry registry, List<EventMetadataV12> events, Map<String, Stri
 convertStorage(Registry registry, StorageMetadataV12 v12, Map<String, String> sectionTypes) {
   //return StorageMetadataLatest.from(
   return registry.createType('StorageMetadataLatest', {
-    "items": v12.items.map((v11, [index, list]) {
+    "items": v12.items.map((item, [index, list]) {
       CodecType resultType;
-
-      if (v11.type.isMap) {
-        resultType = CodecType(registry, v11.type.asMap.value);
-      } else if (v11.type.isDoubleMap) {
-        resultType = CodecType(registry, v11.type.asDoubleMap.value);
+      if (item.type.isMap) {
+        resultType = CodecType(registry, item.type.asMap.thisValue);
+      } else if (item.type.isDoubleMap) {
+        resultType = CodecType(registry, item.type.asDoubleMap.thisValue);
       } else {
-        resultType = v11.type.asPlain;
+        resultType = item.type.asPlain;
       }
 
-      setTypeOverride(sectionTypes, resultType);
+      bool isOverride = setTypeOverride(sectionTypes, resultType);
+      StorageEntryTypeV12 newTypeResult;
+      if (isOverride) {
+        if (item.type.isMap) {
+          var newType = Struct(registry, item.type.asMap.originTypes,
+              {...item.type.asMap.value, "value": resultType});
+          newTypeResult = StorageEntryTypeV12.from(item.type)..setRaw(newType);
+          // item.type.setRaw(newType);
+        } else if (item.type.isDoubleMap) {
+          var newType = Struct(registry, item.type.asDoubleMap.originTypes,
+              {...item.type.asDoubleMap.value, "value": resultType});
+          newTypeResult = StorageEntryTypeV12.from(item.type)..setRaw(newType);
+        } else {
+          newTypeResult = StorageEntryTypeV12.from(item.type)..setRaw(resultType);
+        }
+      }
+      // if (item.type.isMap && sectionTypes.containsKey("Proposal")) {
+      //   print("\n");
+      //   print(sectionTypes);
+      //   print(item.type);
+      //   print(newTypeResult.asMap.value["value"]);
+      //   print(newTypeResult.asMap.thisValue);
+      //   print(resultType);
+      //   print(newTypeResult);
+      // }
+      // if (item.name.toString() == "Proposals") {
+      //   print("\n");
+      //   print(item.type);
+      //   print(item.documentation);
+      //   print(resultType);
+      // }
+
       final result = registry.createType('StorageEntryMetadataLatest', {
-        "documentation": v11.documentation,
-        "fallback": v11.fallback,
-        "modifier": v11.modifier,
-        "name": v11.name,
-        "type": v11.type
+        "documentation": item.documentation,
+        "fallback": item.fallback,
+        "modifier": item.modifier,
+        "name": item.name,
+        "type": newTypeResult ?? item.type
       });
       return result;
-      // return StorageEntryMetadataLatest.from(registry.createType('StorageEntryMetadataLatest', {
-      //   "documentation": v11.documentation,
-      //   "fallback": v11.fallback,
-      //   "modifier": v11.modifier,
-      //   "name": v11.name,
-      //   "type": v11.type
-      // }));
     }),
     "prefix": v12.prefix
   });
   // );
 }
 
-void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
-  final isIndexed = modules.any((v12) => !(v12.index.value.toInt() == (255)));
-
+void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules, int metaNumber) {
   var newModules = List<List<dynamic>>.empty(growable: true);
   for (var index = 0; index < modules.length; index += 1) {
     var mod = modules[index];
-    newModules.add([mod.name.toString(), isIndexed ? mod.index.toNumber() : index]);
+    newModules.add([mod.name.toString(), metaNumber >= 12 ? mod.index.toNumber() : index]);
   }
   newModules.sort((a, b) => a[1] - b[1]);
   newModules.fold({}, (result, arr) {
@@ -129,28 +194,40 @@ void registerOriginCaller(Registry registry, List<ModuleMetadataV12> modules) {
 
 // ModuleMetadataLatest
 createModule(Registry registry, ModuleMetadataV12 mod,
-    {List<FunctionMetadataV12> calls, List<EventMetadataV12> events, StorageMetadataV12 storage}) {
+    {List<FunctionMetadataV12> calls,
+    List<EventMetadataV12> events,
+    StorageMetadataV12 storage,
+    List<ModuleConstantMetadataV12> constants}) {
   final sectionTypes = getModuleTypes(registry, stringCamelCase(mod.name.toString()));
-
   //return ModuleMetadataLatest.from(
-  return registry.createType('ModuleMetadataLatest', {
+  // print(DateTime.now().toString());
+  final result = registry.createType('ModuleMetadataLatest', {
     ...mod.value,
     "calls": calls != null ? convertCalls(registry, calls, sectionTypes) : null,
     "events": events != null ? convertEvents(registry, events, sectionTypes) : null,
-    "storage": storage != null ? convertStorage(registry, storage, sectionTypes) : null
+    "storage": storage != null ? convertStorage(registry, storage, sectionTypes) : null,
+    "constants": constants != null ? convertConstants(registry, constants, sectionTypes) : null
   });
+  // print(DateTime.now().toString());
+  return result;
   // );
 }
 
-MetadataLatest toLatest(Registry registry, MetadataV12 v12) {
-  registerOriginCaller(registry, v12.modules.value);
+MetadataLatest toLatest(Registry registry, MetadataV12 v12, int metaNumber) {
+  registerOriginCaller(registry, v12.modules.value, metaNumber);
+
   var result = registry.createType('MetadataLatest', {
     "extrinsic": v12.extrinsic,
-    "modules": v12.modules.map((mod, [index, list]) => createModule(registry, mod,
-        calls: (mod.calls?.unwrapOr(null) as Vec)?.value,
-        events: (mod.events?.unwrapOr(null) as Vec)?.value,
-        storage: mod.storage?.unwrapOr(null)))
+    "modules": v12.modules.map(
+      (mod, [index, list]) {
+        return createModule(registry, mod,
+            calls: (mod.calls?.unwrapOr(null) as Vec)?.value,
+            events: (mod.events?.unwrapOr(null) as Vec)?.value,
+            storage: mod.storage?.unwrapOr(null),
+            constants: mod.constants.value);
+      },
+    )
   });
-
+  // print(result.value["modules"].value[16].value["storage"].value.value["items"].value[1]);
   return MetadataLatest.from(result);
 }

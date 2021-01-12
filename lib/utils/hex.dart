@@ -56,12 +56,12 @@ BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = fal
       if (hex.length % 2 > 0) {
         hex = '0' + hex;
       }
-
       hex = decodeBigInt(hexToBytes(hexStripPrefix(hex) == '' ? '0' : hexStripPrefix(hex)),
               endian: endian)
           .toRadixString(16);
       var bn = BigInt.parse(hex, radix: 16);
-      if ((0x80 & int.parse(hex.substring(0, 2), radix: 16)) > 0) {
+
+      if ((0x80 & int.parse(hex.substring(0, 2 > hex.length ? hex.length : 2), radix: 16)) > 0) {
         var some = BigInt.parse(
                 bn.toRadixString(2).split('').map((i) {
                   return '0' == i ? 1 : 0;

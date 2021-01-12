@@ -114,6 +114,7 @@ class CodecText extends BaseCodec {
   }
 
   /// @description Returns the string representation of the value
+  @override
   String toString() {
     return this._override ?? this._value.toString();
   }

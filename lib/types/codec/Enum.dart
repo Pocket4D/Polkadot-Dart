@@ -228,6 +228,10 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     return this._raw;
   }
 
+  void setRaw(T val) {
+    this._raw = val;
+  }
+
   /// @description Compares the value of the input to see if there is a match
   bool eq(dynamic other) {
     // cater for the case where we only pass the enum index
@@ -313,8 +317,12 @@ class Enum<T extends BaseCodec> extends BaseCodec {
       final name = stringUpperFirst(stringCamelCase(_key.replaceAll(' ', '_')));
       final iskey = "is$name";
       final askey = "as$name";
-      iskeys.add(iskey);
-      askeys.add(askey);
+      if (!iskeys.contains(iskey)) {
+        iskeys.add(iskey);
+      }
+      if (!askeys.contains(askey)) {
+        askeys.add(askey);
+      }
     });
   }
 }

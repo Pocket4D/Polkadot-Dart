@@ -36,49 +36,6 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   static constructor(Registry registry, [dynamic type, dynamic value]) =>
       Vec(registry, type, value);
 
-  /// @internal */
-  // static List<T> decodeVec<T extends BaseCodec>(
-  //     Registry registry, Constructor<T> type, dynamic value) {
-  //   if (value is Vec<T>) {
-  //     value = (value as Vec<T>).value;
-  //   }
-
-  //   if (!isU8a(value)) {
-  //     if (value is List<T>) {
-  //       return (value as List<T>).map((entry) {
-  //         final index = value.indexOf(entry);
-  //         try {
-  //           return entry is Constructor<T> ? entry : type(registry, entry);
-  //         } catch (error) {
-  //           throw "Unable to decode on index $index $error";
-  //         }
-  //       }).toList();
-  //     } else if (value is List<dynamic>) {
-  //       return (value).map<T>((entry) {
-  //         final index = value.indexOf(entry);
-  //         try {
-  //           return entry is Constructor<T> ? entry : type(registry, entry);
-  //         } catch (error) {
-  //           throw "Unable to decode on index $index $error";
-  //         }
-  //       }).toList();
-  //     }
-  //   }
-
-  //   var u8a = u8aToU8a(value is Uint8List ? List<int>.from(value) : value);
-
-  //   if (u8a.isEmpty) {
-  //     u8a = Uint8List.fromList([0]);
-  //   }
-  //   final compact = compactFromU8a(u8a);
-
-  //   final offset = compact[0] as int;
-  //   final length = compact[1] as BigInt;
-
-  //   assert(length.toInt() <= (MAX_LENGTH), "Vec length ${length.toString()} exceeds $MAX_LENGTH");
-  //   return decodeU8a(registry, u8a.sublist(offset), List.filled(length.toInt(), type));
-  // }
-
   static List<T> decodeVec<T extends BaseCodec>(
       Registry registry, Constructor<T> type, dynamic value) {
     var theValue = value;

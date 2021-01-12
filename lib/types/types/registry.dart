@@ -279,4 +279,6 @@ abstract class Registry {
   void setMetadata(Metadata metadata, [List<String> signedExtensions]);
   // setSignedExtensions(signedExtensions?: string[]): void;
   void setSignedExtensions([List<String> signedExtensions]);
+
+  void setMetaToRegistry(Metadata _meta);
 }

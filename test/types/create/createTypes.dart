@@ -10,6 +10,7 @@ import 'package:polkadot_dart/types/create/registry.dart';
 // import 'package:polkadot_dart/types/interfaces/offchain/definitions.info.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart';
+import 'package:polkadot_dart/utils/utils.dart';
 
 import '../../testUtils/throws.dart';
 
@@ -221,7 +222,7 @@ void createTypeTest() {
 
         // print(registry.createType('Call').runtimeType);
         // print(registry.createType("ExtrinsicOrHash").runtimeType);
-        print(registry.createType("RuntimeVersion"));
+        // print(registry.createType("RuntimeVersion"));
       });
     });
   });
