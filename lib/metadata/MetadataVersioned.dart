@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:polkadot_dart/metadata/MagicNumber.dart';
 // import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/metadata/util/toCallsOnly.dart';
@@ -61,9 +63,24 @@ extension AsMetaVersionExt on AsMetaVersion {
 class MetadataVersioned extends Struct implements Castable {
   Map<int, MetaMapped> _converted = new Map<int, MetaMapped>();
   MetadataAll _metadataAll;
+
   MetadataVersioned(Registry registry, [dynamic thisValue])
       : super(registry, {"magicNumber": MagicNumber.constructor, "metadata": 'MetadataAll'},
             thisValue);
+  MetadataVersioned.empty() : super.empty();
+  static Future<MetadataVersioned> asyncMetadataVersioned(Registry registry,
+      [dynamic thisValue]) async {
+    final struct = await Struct.asyncStruct(
+        registry, {"magicNumber": MagicNumber.constructor, "metadata": 'MetadataAll'}, thisValue);
+    return MetadataVersioned.empty()
+      ..setValue(struct.value)
+      ..setJsonMap(struct.constructorJsonMap ?? Map<dynamic, String>())
+      ..setTypes(struct.constructorTypes)
+      ..originJsonMap = struct.originJsonMap
+      ..originTypes = struct.originTypes
+      ..originValue = struct.originValue
+      ..registry = struct.registry;
+  }
 
   bool _assertVersion(int version) {
     assert(this.version <= version, "Cannot convert metadata from v${this.version} to v$version");
@@ -94,6 +111,10 @@ class MetadataVersioned extends Struct implements Castable {
         case 12:
           final result =
               this._converted.containsKey(12) ? this._converted[12] : this._metadata.asV12 as T;
+          this.updateMeta(result);
+          return result;
+        case 13:
+          final result = this._converted.containsKey(13) ? this._converted[13] : this.asLatest as T;
           this.updateMeta(result);
           return result;
         default:
@@ -186,6 +207,6 @@ class MetadataVersioned extends Struct implements Castable {
 
   void updateMeta(MetaMapped data) {
     this.value["metadata"] = enumWith((this.value["metadata"] as Enum).def)(
-        registry, data, (this.value["metadata"] as Enum).index);
+        this.registry, data, (this.value["metadata"] as Enum).index);
   }
 }

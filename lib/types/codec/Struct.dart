@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/utils.dart';
@@ -24,55 +25,41 @@ T decodeStructFromObject<T extends Map<dynamic, BaseCodec>>(Registry registry,
 
     final jsonKey = (jsonMap[key] != null && value[key] == null) ? jsonMap[key] : key;
 
-    // try {
-    if ((value is List)) {
-      // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-      if (value.isNotEmpty) {
-        (raw as dynamic)[key] =
-            value[index] is T ? value[index] : types[key](registry, value[index]);
-      } else {
-        (raw as dynamic)[key] = types[key](registry);
-      }
-    }
-    // else if (value is Map) {
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    //   final mapped = value[jsonKey];
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    //   (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
-    // }
-    else if (value is Struct) {
-      final mapped = value.value[jsonKey];
+    try {
+      if ((value is List)) {
+        // TS2322: Type 'Codec' is not assignable to type 'T[keyof S]'.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+        if (value.isNotEmpty) {
+          (raw as dynamic)[key] =
+              value[index] is T ? value[index] : types[key](registry, value[index]);
+        } else {
+          (raw as dynamic)[key] = types[key](registry);
+        }
+      } else if (value is Struct) {
+        final mapped = value.value[jsonKey];
+        (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
+      } else if (value is Map) {
+        var assign = value[jsonKey];
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (raw as dynamic)[key] = mapped is T ? mapped : types[key](registry, mapped);
-    } else if (value is Map) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-
-      var assign = value[jsonKey];
-
-      if ((assign == null)) {
-        if ((jsonObj == null)) {
-          jsonObj = value.entries.fold({}, (all, entry) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            all[stringCamelCase(entry.key)] = entry.value;
-
-            return all;
-          });
+        if ((assign == null)) {
+          if ((jsonObj == null)) {
+            jsonObj = value.entries.fold({}, (all, entry) {
+              all[stringCamelCase(entry.key)] = entry.value;
+              return all;
+            });
+          }
+          assign = jsonObj[jsonKey];
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        assign = jsonObj[jsonKey];
+        (raw)[key] = (assign is T) ? assign : types[key](registry, assign);
+      } else {
+        throw "Cannot decode value ${jsonEncode(value)}";
       }
-      (raw)[key] = !(assign is T) ? types[key](registry, assign) : assign;
-    } else {
-      throw "Cannot decode value ${jsonEncode(value)}";
-    }
-    // } catch (error) {
-    //   var type = types[key](registry).toRawType();
+    } catch (error) {
+      var type = types[key](registry).toRawType();
 
-    //   throw "Struct: failed on $jsonKey: $type:: $error";
-    // }
+      throw "Struct: failed on $jsonKey: $type:: $error";
+    }
 
     return raw;
   });
@@ -111,6 +98,43 @@ T decodeStruct<T extends Map<dynamic, BaseCodec>>(Registry registry, Map<String,
         return raw;
       },
     );
+  } else if (value is Struct) {
+    var typeKeys = types.keys.toList()..sort();
+    var valueKeys = value.defKeys..sort();
+    return compareList(typeKeys, valueKeys)
+        ? value.value
+        : decodeStruct(registry, types, value.value, jsonMap);
+  } else if (value == null) {
+    return Map<dynamic, BaseCodec>.from({}) as T;
+  }
+
+  // We assume from here that value is a JS object (Array, Map, Object)
+  return decodeStructFromObject(registry, types, value, jsonMap);
+}
+
+Future<T> asyncDecodeStruct<T extends Map<dynamic, BaseCodec>>(Registry registry,
+    Map<String, Constructor> types, dynamic value, Map<dynamic, String> jsonMap) async {
+  if (isHex(value)) {
+    return await asyncDecodeStruct(registry, types, hexToU8aStream(value as String), jsonMap);
+  } else if (isU8a(value)) {
+    final values = await asyncDecodeU8a(registry, value, types.values.toList());
+
+    final keys = types.keys.toList();
+    // Transform array of values to {key: value} mapping
+    return keys.fold(
+      Map<dynamic, BaseCodec>.from({}) as T,
+      (raw, key) {
+        final index = keys.indexOf(key);
+        (raw as dynamic)[key] = values[index];
+        return raw;
+      },
+    );
+  } else if (value is Struct) {
+    var typeKeys = types.keys.toList()..sort();
+    var valueKeys = value.defKeys..sort();
+    return compareList(typeKeys, valueKeys)
+        ? value.value
+        : await asyncDecodeStruct(registry, types, value.value, jsonMap);
   } else if (value == null) {
     return Map<dynamic, BaseCodec>.from({}) as T;
   }
@@ -126,10 +150,13 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<dynamic, BaseCodec> get value => _value;
   Map<dynamic, String> _jsonMap;
   Map<String, Constructor<BaseCodec>> _types;
+  Map<String, Constructor<BaseCodec>> get constructorTypes => _types;
+  Map<dynamic, String> get constructorJsonMap => _jsonMap;
   S originTypes;
   dynamic originValue;
   Map<dynamic, String> originJsonMap;
   // List<String> _keys;
+  Struct.empty();
   Struct(Registry registry, S types,
       [dynamic _thisValue = "___defaultEmpty", Map<dynamic, String> jsonMap]) {
     originTypes = types;
@@ -151,6 +178,32 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     this.registry = registry;
     this._jsonMap = jsonMap ?? Map<dynamic, String>();
   }
+
+  static Future<Struct> asyncStruct(Registry registry, Map<String, dynamic> types,
+      [dynamic _thisValue = "___defaultEmpty", Map<dynamic, String> jsonMap]) async {
+    Map<String, Constructor<BaseCodec>> _types = mapToTypeMap(registry, types);
+    final decoded = await asyncDecodeStruct(registry, _types, _thisValue, jsonMap);
+    return Struct.empty()
+      ..originTypes = types
+      ..originValue = _thisValue
+      ..originJsonMap = jsonMap
+      ..setValue(decoded)
+      ..setJsonMap(jsonMap)
+      ..setTypes(_types);
+  }
+
+  void setValue(Map<dynamic, BaseCodec> toSet) {
+    this._value = toSet;
+  }
+
+  void setTypes(Map<String, BaseCodec Function(Registry, [dynamic])> toSet) {
+    this._types = toSet;
+  }
+
+  void setJsonMap(Map<dynamic, String> toSet) {
+    this._jsonMap = toSet;
+  }
+
   static Map<String, String> typesToMap(Registry registry, Map<String, Constructor> types) {
     return (types.entries).fold({}, (result, entry) {
       result[entry.key] = registry.getClassName(entry.value) ?? (entry.value)(registry).toRawType();
@@ -242,7 +295,7 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
   Map<String, dynamic> toHuman([bool isExtended]) {
     return [...this._value.keys].fold({}, (json, key) {
       final jsonValue = this._value[key];
-      json[key] = jsonValue != null && jsonValue.toHuman(isExtended);
+      json[key] = jsonValue != null ? jsonValue.toHuman(isExtended) : null;
       return json;
     });
   }

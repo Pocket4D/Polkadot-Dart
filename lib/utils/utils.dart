@@ -1,5 +1,6 @@
 library utils;
 
+export 'array.dart';
 export 'string.dart';
 export 'number.dart';
 export 'u8a.dart';

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:type_gen/annotations.dart';
 
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';

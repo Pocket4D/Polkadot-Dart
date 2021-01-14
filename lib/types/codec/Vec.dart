@@ -10,15 +10,27 @@ import 'package:polkadot_dart/utils/utils.dart';
 const MAX_LENGTH = 64 * 1024;
 
 Vec<T> Function(Registry, [dynamic]) vecWith<T extends BaseCodec>(dynamic type) {
-  return (Registry registry, [dynamic value]) => Vec<T>(registry, type, value);
+  return (Registry registry, [dynamic value]) {
+    if (value is Vec<T>) {
+      return Vec.empty()
+        ..setType(value.constructorType)
+        ..originType = value.originType
+        ..originValue = value.originValue
+        ..registry = value.registry
+        ..setValues(value.value);
+    }
+    return Vec<T>(registry, type, value);
+  };
 }
+
+typedef CodecTransformer<T> = T Function<T extends BaseCodec>(BaseCodec data);
 
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
   Constructor<T> get constructorType => _type;
   dynamic originType;
   dynamic originValue;
-
+  Vec.empty() : super.empty();
   Vec(Registry registry, dynamic type, [dynamic value])
       : super.withReg(
             registry,
@@ -36,22 +48,48 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   static constructor(Registry registry, [dynamic type, dynamic value]) =>
       Vec(registry, type, value);
 
+  static Vec<T> fromVec<T extends BaseCodec>(Vec codec, List<T> list) {
+    return Vec.empty()
+      ..setType(null)
+      ..originType = codec.originType
+      ..originValue = codec.originValue
+      ..registry = codec.registry
+      ..setValues(list);
+  }
+
+  static Vec<T> withTransformer<T extends BaseCodec, F extends BaseCodec>(
+      Vec codec, T Function(F) transformer) {
+    return Vec.empty()
+      ..setType(null)
+      ..originType = codec.originType
+      ..originValue = codec.originValue
+      ..registry = codec.registry
+      ..setValues(codec.value.map((value) => transformer(value)).toList());
+  }
+
+  void setType(Constructor<T> toSet) {
+    this._type = toSet;
+  }
+
   static List<T> decodeVec<T extends BaseCodec>(
       Registry registry, Constructor<T> type, dynamic value) {
     var theValue = value;
-    if (theValue is List && !isU8a(theValue)) {
+    if (theValue is Iterable && !isU8a(theValue)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return (theValue).map<T>((entry) {
-        final index = theValue.indexOf(entry);
+      List<T> result = List<T>.generate(theValue.length, (index) => null);
+      for (int i = 0; i < theValue.length; i += 1) {
         try {
-          return entry is Constructor<T> ? entry : type(registry, entry);
+          result[i] = theValue.elementAt(i) is Constructor<T>
+              ? theValue.elementAt(i)
+              : type(registry, theValue.elementAt(i));
         } catch (error) {
-          throw "Unable to decode on index $index $error";
+          throw "Unable to decode on index $i $error";
         }
-      }).toList();
+      }
+      return result;
     }
 
-    var u8a = u8aToU8a(theValue is Uint8List ? List<int>.from(theValue) : theValue);
+    var u8a = theValue is Uint8List ? theValue : u8aToU8a(theValue);
 
     final compact = compactFromU8a(u8a);
 

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/types/codec/Int.dart';
 import 'package:polkadot_dart/types/codec/Set.dart';
 import 'package:polkadot_dart/types/create/createClass.dart';
@@ -13,6 +14,7 @@ import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 import '../../testUtils/throws.dart';
+import '../../metadata/v12/v12.dart' as rpcMetadata;
 
 void main() {
   createTypeTest(); // rename this test name
@@ -217,12 +219,15 @@ void createTypeTest() {
         // print((sk as Enum).iskeys);
         var sk4 = registry.createClass("StorageKind")(registry, {"Local": "123"});
 
-        // print(sk4);
-        // print(getTypeDef("(Hash, Option<AccountId>)").toMap());
+        print(sk4);
 
-        // print(registry.createType('Call').runtimeType);
-        // print(registry.createType("ExtrinsicOrHash").runtimeType);
-        // print(registry.createType("RuntimeVersion"));
+        var a = [
+          [1, 2],
+          [3, 4],
+          [5]
+        ];
+
+        print(a.expand<int>((element) => element).toList());
       });
     });
   });

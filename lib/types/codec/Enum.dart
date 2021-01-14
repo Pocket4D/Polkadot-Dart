@@ -146,11 +146,12 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   dynamic originDef;
   dynamic originValue;
   dynamic originIndex;
-  Enum(Registry registry, dynamic def, [dynamic thisValue, int index]) {
-    originDef = def;
+  Enum.empty();
+  Enum(Registry registry, dynamic thisDef, [dynamic thisValue, int index]) {
+    originDef = thisDef;
     originValue = thisValue;
     originIndex = index;
-    final defInfo = extractDef(registry, def);
+    final defInfo = extractDef(registry, thisDef);
     final decoded = decodeEnum(registry, defInfo.def, thisValue, index);
     final defList = defInfo.def.keys.toList();
     this.registry = registry;
@@ -160,6 +161,21 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     this._index = this._indexes.indexOf(decoded.index) ?? 0;
     this._raw = decoded.value;
     this.genKeys();
+  }
+  void setBasic(bool toSet) {
+    this._isBasic = toSet;
+  }
+
+  void setIndexes(List<int> toSet) {
+    this._indexes = toSet;
+  }
+
+  void setDef(Map<String, Constructor> toSet) {
+    this.def = toSet;
+  }
+
+  void setIndex(int toSet) {
+    this._index = toSet;
   }
 
   static Enum constructor(Registry registry, [dynamic def, dynamic thisValue, int index]) =>
@@ -186,6 +202,10 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   /// @description The index of the metadata value
   int get index {
     return this._index;
+  }
+
+  List<int> get indexes {
+    return this._indexes;
   }
 
   /// @description true if this is a basic enum (no values)

@@ -22,9 +22,11 @@ Uint8List convertArray(List<int> arr) {
 Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
   if (value is ByteBuffer) {
     return value.asUint8List();
+  } else if (value is Uint8List) {
+    return value;
   } else if (value is String) {
     return convertString(value, useDartEncode: useDartEncode);
-  } else if (value is List && value.isNotEmpty) {
+  } else if (value is List<int> && value.isNotEmpty) {
     return convertArray(value);
   } else {
     return Uint8List.fromList([]);

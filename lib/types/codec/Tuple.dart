@@ -28,6 +28,7 @@ List<BaseCodec> decodeTuple(Registry registry, dynamic _types, [dynamic value]) 
       ? _types.toList()
       : (_types as Map<String, Constructor>).values.toList();
 
+  // ignore: deprecated_member_use
   List<BaseCodec> resultList = List<BaseCodec>(types.length);
 
   if (types.length >= 1) {

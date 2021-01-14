@@ -20,6 +20,8 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   }
   AbstractArray();
 
+  AbstractArray.empty();
+
   void setValues(List<T> values) {
     this._values = values;
   }

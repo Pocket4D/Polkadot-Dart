@@ -196,9 +196,13 @@ String getKeyClassGetters(
 
             var rest = toCastEnd == "CodecBool" ? ".value" : "";
 
-            return '''
-        $toCast get $theKeyFront => super.getCodec("$theKey").cast<$toCastEnd>()$rest;
+            if (isChildClass(toCast) == false) {
+              return '''
+         $toCast get $theKeyFront => super.getCodec("$theKey").cast<$toCastEnd>()$rest;
         ''';
+            } else {
+              return extractChildClassGetter(registry, toCast, theKeyFront, theKey);
+            }
           })
           .toList()
           .join("\n");
@@ -264,6 +268,7 @@ String getKeyClassGetters(
                 stringUpperFirst(stringCamelCase(avoidReservedWords(theKey).replaceAll(' ', '_')));
 
             var rest = toCast == "bool" ? "" : ".cast<$toCast>()";
+
             return '''
         $toCast get $getterType$frontKey => super.$getterTypeString("$theKey")$rest;
         ''';
@@ -319,7 +324,6 @@ String avoidReservedWords(String word) {
 String getClassByType(Registry registry, String value) {
   var def = getTypeDef(value);
   var defInfo = def.info;
-  print(def.toMap());
 
   switch (defInfo) {
     case TypeDefInfo.BTreeMap:
@@ -402,4 +406,73 @@ String getClassByType(Registry registry, String value) {
     case TypeDefInfo.Null:
       return "CodecNull";
   }
+}
+
+bool isChildClass(String toTest) {
+  if (toTest.startsWith("Vec")) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+extractChildClassGetter(Registry registry, String toCast, String theKeyFront, String theKey) {
+  // Vec<StorageEntryMetadataV12> get items {
+  //   var data = (super.getCodec("items") as Vec);
+  //   var newList = data.value.map((element) {
+  //     return StorageEntryMetadataV12.from(element);
+  //   }).toList();
+  //   return Vec.fromList(newList, data.registry, 'StorageEntryMetadataV12');
+  // }
+  var def = getTypeDef(toCast);
+
+  var defInfo = def.info;
+
+  switch (defInfo) {
+    case TypeDefInfo.BTreeMap:
+
+    case TypeDefInfo.BTreeSet:
+
+    case TypeDefInfo.Compact:
+
+    case TypeDefInfo.Enum:
+
+    case TypeDefInfo.Linkage:
+
+    case TypeDefInfo.Option:
+
+    case TypeDefInfo.Plain:
+
+    case TypeDefInfo.Result:
+
+    case TypeDefInfo.Set:
+
+    case TypeDefInfo.Struct:
+
+    case TypeDefInfo.Tuple:
+
+    case TypeDefInfo.Vec:
+      return '''
+    $toCast get $theKeyFront {
+    var data = (super.getCodec("$theKey") as Vec);
+    var newList = data.value.map((element) {
+      return ${(def.sub as TypeDef).type}.from(element);
+    }).toList();
+    return Vec.fromList(newList, data.registry, '${(def.sub as TypeDef).type}');
+  }
+  ''';
+
+    case TypeDefInfo.VecFixed:
+
+    case TypeDefInfo.HashMap:
+
+    case TypeDefInfo.Int:
+
+    case TypeDefInfo.UInt:
+
+    case TypeDefInfo.DoNotConstruct:
+
+    case TypeDefInfo.Null:
+  }
+  return '';
 }

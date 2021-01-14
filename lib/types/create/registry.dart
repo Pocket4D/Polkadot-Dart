@@ -26,20 +26,17 @@ import 'package:polkadot_dart/utils/utils.dart';
 // create error mapping from metadata
 void injectErrors(Registry registry, Metadata metadata, Map<String, RegistryError> metadataErrors) {
   final modules = metadata.asLatest.modules;
-  final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
 
   // decorate the errors
-  modules.value.forEach((section) {
-    final sectionIndex = isIndexed ? section.index.toNumber() : modules.value.indexOf(section);
+  modules.value.asMap().forEach((index, section) {
+    final sectionIndex = metadata.version >= 12 ? section.index.toNumber() : index;
     final sectionName = stringCamelCase(section.name.toString());
 
-    section.errors.value.forEach((errorModule) {
-      final index = section.errors.value.indexOf(errorModule);
+    section.errors.value.asMap().forEach((index, errorModule) {
       final eventIndex = Uint8List.fromList([sectionIndex, index]);
 
       metadataErrors[u8aToHex(eventIndex)] = RegistryError(
-          documentation:
-              errorModule.documentation.map((d, [index, list]) => d.value.toString()).toList(),
+          documentation: errorModule.documentation.map((d, [index, list]) => d.value.toString()),
           index: index,
           name: errorModule.name.toString(),
           section: sectionName);
@@ -51,20 +48,17 @@ void injectErrors(Registry registry, Metadata metadata, Map<String, RegistryErro
 void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
     Map<String, Constructor<GenericEventData>> metadataEvents) {
   final modules = metadata.asLatest.modules;
-  final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
-
   // decorate the events
   final filtered =
       modules.value.where((module) => module.events != null && module.events.isSome).toList();
 
-  filtered.forEach((section) {
-    final _sectionIndex = filtered.indexOf(section);
-    final sectionIndex = isIndexed ? section.index.toNumber() : _sectionIndex;
+  filtered.asMap().forEach((key, section) {
+    final _sectionIndex = key;
+    final sectionIndex = metadata.version >= 12 ? section.index.toNumber() : _sectionIndex;
     final sectionName = stringCamelCase(section.name.toString());
 
     final events = section.events.unwrap().value;
-    events.forEach((meta) {
-      final methodIndex = events.indexOf(meta);
+    events.asMap().forEach((methodIndex, meta) {
       final methodName = meta.name.toString();
       final eventIndex = Uint8List.fromList([sectionIndex, methodIndex]);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -340,7 +334,9 @@ class TypeRegistry implements Registry {
   @override
   void setMetadata(Metadata metadata, [List<String> signedExtensions]) {
     injectExtrinsics(this, metadata, this._metadataCalls);
+
     injectErrors(this, metadata, this._metadataErrors);
+
     injectEvents(this, metadata, this._metadataEvents);
 
     this.setSignedExtensions(signedExtensions ??

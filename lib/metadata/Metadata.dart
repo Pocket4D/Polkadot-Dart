@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:polkadot_dart/metadata/MagicNumber.dart';
 import 'package:polkadot_dart/metadata/MetadataVersioned.dart';
 import 'package:polkadot_dart/types/types.dart';
 import 'package:polkadot_dart/utils/utils.dart';
@@ -42,12 +44,32 @@ MetadataVersioned decodeMetadata(Registry registry, dynamic _value) {
 
       return decodeMetadata(registry, value);
     }
-
     throw error;
   }
 }
 
+Uint8List _decodeMetadata(Registry registry, dynamic _value) {
+  return sanitizeInput(_value);
+}
+
 class Metadata extends MetadataVersioned {
-  Metadata(Registry registry, [dynamic value]) : super(registry, decodeMetadata(registry, value));
-  static Metadata constructor(Registry registry, [dynamic value]) => Metadata(registry, value);
+  Metadata(Registry registry, [dynamic thisValue])
+      : super(registry, _decodeMetadata(registry, thisValue));
+  Metadata.empty() : super.empty();
+  static Future<Metadata> asyncMetadata(Registry registry, [dynamic thisValue]) async {
+    MetadataVersioned versioned =
+        await MetadataVersioned.asyncMetadataVersioned(registry, sanitizeInput(thisValue));
+
+    return Metadata.empty()
+      ..setValue(versioned.value)
+      ..setJsonMap(versioned.constructorJsonMap ?? Map<dynamic, String>())
+      ..setTypes(versioned.constructorTypes)
+      ..originJsonMap = versioned.originJsonMap
+      ..originTypes = versioned.originTypes
+      ..originValue = versioned.originValue
+      ..registry = registry;
+  }
+
+  static Metadata constructor(Registry registry, [dynamic thisValue]) =>
+      Metadata(registry, thisValue);
 }

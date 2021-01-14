@@ -21,7 +21,9 @@ Map<String, Constructor> mapToTypeMap(Registry registry, Map<String, dynamic> in
   });
 }
 
-List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
+// ignore: unused_element
+@deprecated
+List<BaseCodec> _decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   final types = _types is List ? _types : (_types as Map<String, Constructor>).entries.toList();
   if (types.length == 0) {
     return [];
@@ -34,8 +36,63 @@ List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
     u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
   }
   final subLength = value.encodedLength > u8a.length ? u8a.length : value.encodedLength;
-  newList.addAll(decodeU8a(registry, u8a.sublist(subLength), types.sublist(1)));
-  return newList;
+
+  return flatternArray<BaseCodec>(
+      [newList, _decodeU8a(registry, u8a.sublist(subLength), types.sublist(1))]);
+}
+
+List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
+  final types = _types is List ? _types : (_types as Map<String, Constructor>).entries.toList();
+  if (types.length == 0) {
+    return [];
+  }
+
+  List<BaseCodec> result = List<BaseCodec>.from([]);
+  types.forEach((type) {
+    final constructor = type as Constructor;
+    final value = constructor(registry, u8a);
+    if (u8a.isEmpty) {
+      u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
+    }
+    final subLength = value.encodedLength > u8a.length ? u8a.length : value.encodedLength;
+    u8a = u8a.sublist(subLength);
+    result.add(value);
+  });
+  return result;
+}
+
+Future<List<BaseCodec>> asyncDecodeU8a(Registry registry, Uint8List u8a, dynamic _types) async {
+  final types = _types is List ? _types : (_types as Map<String, Constructor>).entries.toList();
+  if (types.length == 0) {
+    return [];
+  }
+  var stream = decodeU8aStream(registry, u8a, types);
+  var result = await sumU8aStream(stream);
+  return result;
+}
+
+Stream<BaseCodec> decodeU8aStream(Registry registry, Uint8List u8a, List<dynamic> types) async* {
+  for (int i = 0; i < types.length; i++) {
+    final constructor = types[i] as Constructor;
+    final value = await generateData(registry, constructor, u8a);
+    if (u8a.isEmpty) {
+      u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
+    }
+    final subLength = value.encodedLength > u8a.length ? u8a.length : value.encodedLength;
+    u8a = u8a.sublist(subLength);
+    yield value;
+  }
+}
+
+Future<BaseCodec> generateData(Registry registry, Constructor constructor, Uint8List u8a) async =>
+    constructor(registry, u8a);
+
+Future<List<BaseCodec>> sumU8aStream(Stream<BaseCodec> stream) async {
+  List<BaseCodec> sum = List<BaseCodec>.from([]);
+  await for (var value in stream) {
+    sum.add(value);
+  }
+  return sum;
 }
 
 bool compareSetArray(Set a, List<dynamic> b) {

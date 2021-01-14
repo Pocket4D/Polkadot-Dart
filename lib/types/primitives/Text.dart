@@ -46,13 +46,32 @@ class CodecText extends BaseCodec {
   Registry registry;
 
   String _override;
+  String get override => _override;
   String get value => _value;
+
   String _value;
+  dynamic originValue;
+  CodecText.empty();
   CodecText(Registry registry, [dynamic value]) {
+    originValue = value;
     _value = (decodeText(value));
 
     this.registry = registry;
   }
+
+  setValue(String toSet) {
+    this._value = toSet;
+  }
+
+  static CodecText transform(CodecText origin) {
+    return CodecText.empty()
+      ..setOverride(origin.override)
+      ..setValue(origin.value)
+      ..originValue = origin.originValue
+      ..registry = origin.registry;
+  }
+
+  factory CodecText.from(CodecText origin) => CodecText(origin.registry, origin.value);
 
   static CodecText constructor(Registry registry, [dynamic value]) => CodecText(registry, value);
 
@@ -114,7 +133,7 @@ class CodecText extends BaseCodec {
   }
 
   /// @description Returns the string representation of the value
-  @override
+
   String toString() {
     return this._override ?? this._value.toString();
   }
@@ -132,7 +151,6 @@ class CodecText extends BaseCodec {
     return eq(other);
   }
 
-  @override
   // TODO: implement hashCode
   int get hashCode => this.value.hashCode;
 }

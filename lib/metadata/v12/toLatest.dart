@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:polkadot_dart/types-known/index.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/types.dart';
@@ -138,21 +139,6 @@ convertStorage(Registry registry, StorageMetadataV12 v12, Map<String, String> se
           newTypeResult = StorageEntryTypeV12.from(item.type)..setRaw(resultType);
         }
       }
-      // if (item.type.isMap && sectionTypes.containsKey("Proposal")) {
-      //   print("\n");
-      //   print(sectionTypes);
-      //   print(item.type);
-      //   print(newTypeResult.asMap.value["value"]);
-      //   print(newTypeResult.asMap.thisValue);
-      //   print(resultType);
-      //   print(newTypeResult);
-      // }
-      // if (item.name.toString() == "Proposals") {
-      //   print("\n");
-      //   print(item.type);
-      //   print(item.documentation);
-      //   print(resultType);
-      // }
 
       final result = registry.createType('StorageEntryMetadataLatest', {
         "documentation": item.documentation,
@@ -216,18 +202,17 @@ createModule(Registry registry, ModuleMetadataV12 mod,
 MetadataLatest toLatest(Registry registry, MetadataV12 v12, int metaNumber) {
   registerOriginCaller(registry, v12.modules.value, metaNumber);
 
-  var result = registry.createType('MetadataLatest', {
-    "extrinsic": v12.extrinsic,
-    "modules": v12.modules.map(
-      (mod, [index, list]) {
-        return createModule(registry, mod,
-            calls: (mod.calls?.unwrapOr(null) as Vec)?.value,
-            events: (mod.events?.unwrapOr(null) as Vec)?.value,
-            storage: mod.storage?.unwrapOr(null),
-            constants: mod.constants.value);
-      },
-    )
-  });
+  var valueMap = v12.modules.value.map(
+    (mod) {
+      return createModule(registry, mod,
+          calls: (mod.calls?.unwrapOr(null) as Vec)?.value,
+          events: (mod.events?.unwrapOr(null) as Vec)?.value,
+          storage: mod.storage?.unwrapOr(null),
+          constants: mod.constants.value);
+    },
+  ).toList();
+  var result =
+      registry.createType('MetadataLatest', {"extrinsic": v12.extrinsic, "modules": valueMap});
   // print(result.value["modules"].value[16].value["storage"].value.value["items"].value[1]);
   return MetadataLatest.from(result);
 }

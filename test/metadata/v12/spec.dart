@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:polkadot_dart/keyring/nobody.dart';
 
 import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
@@ -22,9 +23,13 @@ void metadataV12() {
   final registry = new TypeRegistry();
   Metadata metadata;
   setUpAll(() async {
+    print(DateTime.now().toString());
     substrateJson = Map<String, dynamic>.from(jsonDecode(await file.readAsString()));
-    metadata = Metadata(registry, substrateData.v12);
+    print(DateTime.now().toString());
+    metadata = await Metadata.asyncMetadata(registry, substrateData.v12);
+    print(DateTime.now().toString());
     registry.setMetadata(metadata);
+    print(DateTime.now().toString());
   });
   group('MetadataV12 (substrate)', () {
     test('decodes latest substrate properly', () async {
@@ -42,7 +47,7 @@ void metadataV12() {
       }
     });
     test("converts v12 to latest", () async {
-      ExtractionMetadata metadataInit = metadata.asV12;
+      final metadataInit = metadata.asV12;
       final metadataLatest = metadata.asLatest;
       expect(getUniqTypes(registry, metadataInit, false),
           getUniqTypes(registry, metadataLatest, false));

@@ -57,6 +57,7 @@ class TypeDef {
   factory TypeDef.fromMap(Map<String, dynamic> map) {
     var sub;
     var mapSub = map["sub"];
+
     if (mapSub is Map<String, dynamic>) {
       sub = TypeDef.fromMap(map["sub"]);
     } else if (mapSub is List) {
