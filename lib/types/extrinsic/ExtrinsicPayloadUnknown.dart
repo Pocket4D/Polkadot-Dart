@@ -2,6 +2,7 @@ import 'package:polkadot_dart/types/extrinsic/ExtrinsicPayload.dart';
 import 'package:polkadot_dart/types/types.dart';
 
 class GenericExtrinsicPayloadUnknown extends Struct {
+  GenericExtrinsicPayloadUnknown.empty() : super.empty();
   GenericExtrinsicPayloadUnknown(Registry registry,
       [dynamic value, ExtrinsicPayloadOptions options])
       : super(registry, {}) {

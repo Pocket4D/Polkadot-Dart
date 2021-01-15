@@ -33,6 +33,8 @@ class Compact<T extends CompactEncodable> extends BaseCodec implements ICompact<
     this._raw = Compact.decodeCompact<T>(registry, this._type, thisValue) as T;
   }
 
+  Compact.empty();
+
   Compact.from(T child, [Registry registry, String dataType]) {
     this.registry = registry;
     this.originType = dataType;

@@ -55,7 +55,7 @@ Tuple Function(Registry, [dynamic]) tupleWith(dynamic types) {
 
 class Tuple extends AbstractArray<BaseCodec> {
   dynamic _types;
-
+  Tuple.empty();
   Tuple(Registry registry, dynamic types, dynamic value)
       : super.withReg(
             registry,

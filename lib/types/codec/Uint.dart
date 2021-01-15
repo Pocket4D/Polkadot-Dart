@@ -13,6 +13,7 @@ UInt Function(Registry, [dynamic]) uintWith(int bitLength, [String typeName]) {
 class UInt extends AbstractInt {
   String _typeName;
   String get typeName => _typeName;
+  UInt.empty();
   UInt(Registry registry, [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS])
       : super.withReg(registry, value, bitLength);
   static UInt constructor(Registry registry,

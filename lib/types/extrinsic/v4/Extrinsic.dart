@@ -34,6 +34,7 @@ class GenericExtrinsicV4 extends Struct implements IExtrinsicImpl {
   // GenericExtrinsicV4(Registry registry, Map<String, > types) : super(registry, types);
   ExtrinsicOptions originOptions;
   dynamic originValue;
+  GenericExtrinsicV4.empty() : super.empty();
   GenericExtrinsicV4(Registry registry, [dynamic thisValue, ExtrinsicOptions options])
       : super(
             registry,

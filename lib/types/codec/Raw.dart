@@ -22,6 +22,7 @@ class Raw extends BaseCodec implements IU8a {
   Uint8List get value => _value;
   dynamic originValue;
 
+  Raw.empty();
   Raw(Registry registry, [dynamic value]) {
     originValue = value;
     _value = _decodeU8a(value);

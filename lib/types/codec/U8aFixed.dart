@@ -34,6 +34,7 @@ U8aFixed Function(Registry, [dynamic]) u8aFixedWith(int bitLength, String typeNa
 class U8aFixed extends Raw {
   String typeName;
   dynamic originValue;
+  U8aFixed.empty() : super.empty();
   U8aFixed(Registry registry, [dynamic thisValue, int bitLength = 256, String typeName])
       : super(registry, decodeU8aFixed(thisValue ?? Uint8List.fromList([]), bitLength)) {
     this.typeName = typeName;

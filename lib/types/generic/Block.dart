@@ -3,6 +3,7 @@ import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 
 class GenericBlock extends Struct {
+  GenericBlock.empty() : super.empty();
   GenericBlock(Registry registry, [dynamic value])
       : super(
             registry,

@@ -5,6 +5,7 @@ import 'package:polkadot_dart/types/types/registry.dart';
 class VecAny<T extends BaseCodec> extends AbstractArray<T> {
   VecAny(Registry registry, List<T> values) : super.withReg(registry, values);
 
+  VecAny.empty();
   static VecAny constructor<T extends BaseCodec>(Registry registry, [dynamic values]) =>
       VecAny(registry, values as List<T>);
 

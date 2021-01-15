@@ -8,7 +8,7 @@ import '../util.dart' as util;
 
 class GenericExtrinsicPayloadV4 extends Struct {
   SignOptions _signOptions;
-
+  GenericExtrinsicPayloadV4.empty() : super.empty();
   GenericExtrinsicPayloadV4(Registry registry, [dynamic value])
       : super(
             registry,

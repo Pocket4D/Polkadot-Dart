@@ -48,6 +48,7 @@ class Option<T extends BaseCodec> extends BaseCodec {
   dynamic originTypeName;
   dynamic originValue;
 
+  Option.empty();
   Option(Registry registry, dynamic typeName, [dynamic value]) {
     this.registry = registry;
     this.originTypeName = typeName;

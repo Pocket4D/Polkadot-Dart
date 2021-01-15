@@ -50,6 +50,7 @@ int getTrailingZeros(int period) {
 }
 
 class ImmortalEra extends Raw {
+  ImmortalEra.empty() : super.empty();
   ImmortalEra(Registry registry, [dynamic value]) : super(registry, IMMORTAL_ERA);
   static ImmortalEra constructor(Registry registry, [dynamic value]) =>
       ImmortalEra(registry, value);
@@ -57,6 +58,7 @@ class ImmortalEra extends Raw {
 }
 
 class MortalEra extends Tuple {
+  MortalEra.empty() : super.empty();
   MortalEra(Registry registry, [dynamic value])
       : super(registry, {"period": u64.constructor, "phase": u64.constructor},
             MortalEra._decodeMortalEra(registry, value));
@@ -65,7 +67,7 @@ class MortalEra extends Tuple {
 
   factory MortalEra.from(Tuple origin) => MortalEra(origin.registry, origin.value);
 
-  /** @internal */
+  /// @internal */
   static List<u64> _decodeMortalEra(Registry registry, [dynamic value]) {
     if (value == null) {
       return [new u64(registry), new u64(registry)];
@@ -78,7 +80,7 @@ class MortalEra extends Tuple {
     throw 'Invalid data passed to Mortal era';
   }
 
-  /** @internal */
+  /// @internal */
   static List<u64> _decodeMortalObject(Registry registry, MortalMethod value) {
     final current = value.current;
     final period = value.period;
@@ -94,7 +96,7 @@ class MortalEra extends Tuple {
     return [u64(registry, calPeriod), u64(registry, quantizedPhase)];
   }
 
-  /** @internal */
+  /// @internal */
   static List<u64> _decodeMortalU8a(Registry registry, Uint8List value) {
     if (value.length == 0) {
       return [u64(registry), u64(registry)];
@@ -112,37 +114,27 @@ class MortalEra extends Tuple {
     return [u64(registry, period), u64(registry, phase)];
   }
 
-  /**
-   * @description Encoded length for mortals occupy 2 bytes, different from the actual Tuple since it is encoded. This is a shortcut fro `toU8a().length`
-   */
+  /// @description Encoded length for mortals occupy 2 bytes, different from the actual Tuple since it is encoded. This is a shortcut fro `toU8a().length`
   int get encodedLength {
     return 2;
   }
 
-  /**
-   * @description The period of this Mortal wraps as a [[u64]]
-   */
+  /// @description The period of this Mortal wraps as a [[u64]]
   u64 get period {
     return this.value[0] as u64;
   }
 
-  /**
-   * @description The phase of this Mortal wraps as a [[u64]]
-   */
+  /// @description The phase of this Mortal wraps as a [[u64]]
   u64 get phase {
     return this.value[1] as u64;
   }
 
-  /**
-   * @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
-   */
+  /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
   dynamic toHuman([bool isExpanded]) {
     return {"period": formatNumber(this.period.value), "phase": formatNumber(this.phase.value)};
   }
 
-  /**
-   * @description Returns a JSON representation of the actual value
-   */
+  /// @description Returns a JSON representation of the actual value
   dynamic toJSON() {
     return this.toHex();
   }
@@ -169,9 +161,7 @@ class MortalEra extends Tuple {
     return Uint8List.fromList([second, first]);
   }
 
-  /**
-   * @description Get the block number of the start of the era whose properties this object describes that `current` belongs to.
-   */
+  /// @description Get the block number of the start of the era whose properties this object describes that `current` belongs to.
   int birth(dynamic current) {
     // FIXME No toNumber() here
     return ((Math.max(bnToBn(current).toInt(), this.phase.toNumber()) - this.phase.toNumber()) /
@@ -181,22 +171,19 @@ class MortalEra extends Tuple {
         this.phase.toNumber();
   }
 
-  /**
-   * @description Get the block number of the first block at which the era has ended.
-   */
+  /// @description Get the block number of the first block at which the era has ended.
   int death(dynamic current) {
     // FIXME No toNumber() here
     return this.birth(current) + this.period.toNumber();
   }
 }
 
-/**
- * @name GenericExtrinsicEra
- * @description
- * The era for an extrinsic, indicating either a mortal or immortal extrinsic
- */
+/// @name GenericExtrinsicEra
+/// @description
+/// The era for an extrinsic, indicating either a mortal or immortal extrinsic
 // implements IExtrinsicEra
 class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
+  GenericExtrinsicEra.empty() : super.empty();
   GenericExtrinsicEra(Registry registry, [dynamic value])
       : super(
             registry,
@@ -208,7 +195,7 @@ class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
 
   // ImmortalEra get asImmortalEra => super.askey("ImmortalEra").cast<ImmortalEra>();
   // MortalEra get asMortalEra => super.askey("MortalEra").cast<MortalEra>();
-  /** @internal */
+  /// @internal */
   // eslint-disable-next-line @typescript-eslint/ban-types
   static _decodeExtrinsicEra(dynamic value) {
     if (value == null) {
@@ -236,47 +223,35 @@ class GenericExtrinsicEra extends Enum implements IExtrinsicEra {
     throw 'Invalid data passed to Era';
   }
 
-  /**
-   * @description Override the encoded length method
-   */
+  /// @description Override the encoded length method
   int get encodedLength {
     return this.isImmortalEra ? this.asImmortalEra.encodedLength : this.asMortalEra.encodedLength;
   }
 
-  /**
-   * @description Returns the item as a [[ImmortalEra]]
-   */
+  /// @description Returns the item as a [[ImmortalEra]]
   ImmortalEra get asImmortalEra {
     assert(this.isImmortalEra, "Cannot convert '${this.type}' via asImmortalEra");
     return this.value as ImmortalEra;
   }
 
-  /**
-   * @description Returns the item as a [[MortalEra]]
-   */
+  /// @description Returns the item as a [[MortalEra]]
   MortalEra get asMortalEra {
     assert(this.isMortalEra, "Cannot convert '${this.type}' via asMortalEra");
     return this.value as MortalEra;
   }
 
-  /**
-   * @description `true` if Immortal
-   */
+  /// @description `true` if Immortal
   bool get isImmortalEra {
     return this.index == 0;
   }
 
-  /**
-   * @description `true` if Mortal
-   */
+  /// @description `true` if Mortal
   bool get isMortalEra {
     return this.index > 0;
   }
 
-  /**
-   * @description Encodes the value as a Uint8Array as per the parity-codec specifications
-   * @param isBare true when the value has none of the type-specific prefixes(internal)
-   */
+  /// @description Encodes the value as a Uint8Array as per the parity-codec specifications
+  /// @param isBare true when the value has none of the type-specific prefixes(internal)
   Uint8List toU8a([dynamic isBare]) {
     return this.isMortalEra ? this.asMortalEra.toU8a(isBare) : this.asImmortalEra.toU8a(isBare);
   }

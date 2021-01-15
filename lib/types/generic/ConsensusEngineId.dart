@@ -16,6 +16,7 @@ const CID_GRPA = 0x4b4e5246; // 'FRNK'(don't ask, used to be afg1)
 const CID_POW = 0x5f776f70; // 'pow_'
 
 class GenericConsensusEngineId extends u32 {
+  GenericConsensusEngineId.empty() : super.empty();
   GenericConsensusEngineId(Registry registry, [dynamic value = 0]) : super(registry, value ?? 0);
   factory GenericConsensusEngineId.from(u32 origin) {
     return GenericConsensusEngineId(origin.registry, origin.value);

@@ -23,6 +23,7 @@ class CodecBool extends BaseCodec {
   bool _value;
   bool get value => _value;
   // eslint-disable-next-line @typescript-eslint/ban-types
+  CodecBool.empty();
   CodecBool(Registry registry, [dynamic value = false]) {
     _value = _decodeBool(value);
     this.registry = registry;

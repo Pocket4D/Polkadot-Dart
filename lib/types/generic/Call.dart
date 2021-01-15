@@ -52,7 +52,7 @@ DecodedMethod decodeCallViaObject(Registry registry, DecodedMethod value,
       args: args, argsDef: getArgsDef(registry, meta), callIndex: callIndex, meta: meta);
 }
 
-/** @internal */
+/// @internal */
 DecodedMethod decodeCallViaU8a(Registry registry, Uint8List value, [FunctionMetadataLatest _meta]) {
   // We need 2 bytes for the callIndex
   final callIndex = Uint8List(2);
@@ -87,6 +87,7 @@ DecodedMethod decodeCall(Registry registry, [dynamic value, FunctionMetadataLate
 }
 
 class GenericCallIndex extends U8aFixed {
+  GenericCallIndex.empty() : super.empty();
   GenericCallIndex(Registry registry, [dynamic value]) : super(registry, value, 16);
   static GenericCallIndex constructor(Registry registry, [dynamic value]) =>
       GenericCallIndex(registry, value);
@@ -95,7 +96,7 @@ class GenericCallIndex extends U8aFixed {
 
 class GenericCall extends Struct implements IMethod {
   FunctionMetadataLatest _meta;
-
+  GenericCall.empty() : super.empty();
   GenericCall(Registry registry, [dynamic callValue, FunctionMetadataLatest meta])
       : super(
             registry,
@@ -147,82 +148,60 @@ class GenericCall extends Struct implements IMethod {
         : [];
   }
 
-  /**
-   * @description The arguments for the function call
-   */
+  /// @description The arguments for the function call
   List<BaseCodec> get args {
     // FIXME This should return a Struct instead of an Array
     return [...(this.getCodec('args').cast<Struct>()).value.values];
   }
 
-  /**
-   * @description The argument definitions
-   */
+  /// @description The argument definitions
   Map<String, Constructor> get argsDef {
     return getArgsDef(this.registry, this.meta);
   }
 
-  /**
-   * @description The encoded "[sectionIndex, methodIndex]" identifier
-   */
+  /// @description The encoded "[sectionIndex, methodIndex]" identifier
   Uint8List get callIndex {
     return (this.getCodec('callIndex').cast<GenericCallIndex>()).toU8a();
   }
 
-  /**
-   * @description The encoded data
-   */
+  /// @description The encoded data
   Uint8List get data {
     return (this.getCodec('args').cast<Struct>()).toU8a();
   }
 
-  /**
-   * @description "true" if the "Origin" type is on the method(extrinsic method)
-   */
+  /// @description "true" if the "Origin" type is on the method(extrinsic method)
   bool get hasOrigin {
     final firstArg = this.meta.args.value.isNotEmpty ? this.meta.args.value[0] : null;
 
     return firstArg != null && firstArg.type.toString() == 'Origin';
   }
 
-  /**
-   * @description The [[FunctionMetadata]]
-   */
+  /// @description The [[FunctionMetadata]]
   FunctionMetadataLatest get meta {
     return this._meta;
   }
 
-  /**
-   * @description Returns the name of the method
-   */
+  /// @description Returns the name of the method
   String get methodName {
     return this.registry.findMetaCall(this.callIndex).method;
   }
 
-  /**
-   * @description Returns the name of the method
-   */
+  /// @description Returns the name of the method
   String get method {
     return this.methodName;
   }
 
-  /**
-   * @description Returns the module containing the method
-   */
+  /// @description Returns the module containing the method
   String get sectionName {
     return this.registry.findMetaCall(this.callIndex).section;
   }
 
-  /**
-   * @description Returns the module containing the method
-   */
+  /// @description Returns the module containing the method
   String get section {
     return this.sectionName;
   }
 
-  /**
-   * @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
-   */
+  /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
   Map<String, dynamic> toHuman([bool isExpanded]) {
     // let call: CallFunction | undefined;
     var call;
@@ -247,9 +226,7 @@ class GenericCall extends Struct implements IMethod {
     };
   }
 
-  /**
-   * @description Returns the base runtime type name for this instance
-   */
+  /// @description Returns the base runtime type name for this instance
   String toRawType() {
     return 'Call';
   }

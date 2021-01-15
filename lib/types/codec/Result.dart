@@ -6,6 +6,7 @@ class Result<O extends BaseCodec, E extends BaseCodec> extends Enum {
   Result(Registry registry, dynamic ok, dynamic error, [dynamic value])
       : super(registry, {"Ok": ok, "Error": error}, value);
 
+  Result.empty() : super.empty();
   static withParams(Map<String, dynamic> types) {
     return (Registry registry, [dynamic value]) {
       return Result(registry, types["Ok"], types["Error"], value);

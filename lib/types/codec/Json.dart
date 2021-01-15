@@ -15,6 +15,7 @@ class Json extends BaseCodec {
   Map<String, dynamic> _value;
 
   Map<String, dynamic> get value => _value;
+  Json.empty();
   Json(Registry registry, [Map<String, dynamic> value]) {
     _value = Map.fromEntries(decodeJson(value));
     this.registry = registry;

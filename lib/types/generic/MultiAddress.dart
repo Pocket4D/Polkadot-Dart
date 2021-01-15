@@ -33,6 +33,7 @@ decodeMultiAny(Registry registry, [dynamic value]) {
 }
 
 class GenericMultiAddress extends Enum {
+  GenericMultiAddress.empty() : super.empty();
   GenericMultiAddress(Registry registry, [dynamic value])
       : super(
             registry,

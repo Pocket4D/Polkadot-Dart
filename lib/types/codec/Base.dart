@@ -10,7 +10,7 @@ abstract class Base<T extends BaseCodec> extends BaseCodec {
   T _raw;
 
   T get raw => this._raw;
-
+  Base.empty();
   Base(Registry registry, T value) {
     this.registry = registry;
     this._raw = value;

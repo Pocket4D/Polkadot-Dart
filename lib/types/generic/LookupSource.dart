@@ -48,6 +48,7 @@ dynamic _decodeU8a(Registry registry, Uint8List value) {
 /// we extend from Base with an AccountId/AccountIndex wrapper. Basically the Address
 /// is encoded as `[ <prefix-byte>, ...publicKey/...bytes ]` as per spec
 class GenericLookupSource extends Base {
+  GenericLookupSource.empty() : super.empty();
   GenericLookupSource(Registry registry, [dynamic value])
       : super(registry,
             GenericLookupSource._decodeAddress(registry, value ?? Uint8List.fromList([0])));

@@ -22,124 +22,97 @@ const VERSIONS = [
 // ArgsDef = Map<String,Constructor>
 
 abstract class ExtrinsicBase extends Base<BaseCodec> {
+  ExtrinsicBase.empty() : super.empty();
+
   ExtrinsicBase(Registry registry, BaseCodec value) : super(registry, value);
-  /**
-   * @description The arguments passed to for the call, exposes args so it is compatible with [[Call]]
-   */
+
+  /// @description The arguments passed to for the call, exposes args so it is compatible with [[Call]]
   List<BaseCodec> get args {
     return this.method.args;
   }
 
-  /**
-   * @description The argument definitions, compatible with [[Call]]
-   */
+  /// @description The argument definitions, compatible with [[Call]]
   Map<String, Constructor> get argsDef {
     return this.method.argsDef;
   }
 
-  /**
-   * @description The actual `[sectionIndex, methodIndex]` as used in the Call
-   */
+  /// @description The actual `[sectionIndex, methodIndex]` as used in the Call
   Uint8List get callIndex {
     return this.method.callIndex;
   }
 
-  /**
-   * @description The actual data for the Call
-   */
+  /// @description The actual data for the Call
   Uint8List get data {
     return this.method.data;
   }
 
-  /**
-   * @description The era for this extrinsic
-   */
+  /// @description The era for this extrinsic
   GenericExtrinsicEra get era {
     return (this.raw as GenericExtrinsicV4).signature.era;
   }
 
-  /**
-   * @description The length of the value when encoded as a Uint8Array
-   */
+  /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
     return this.toU8a().length;
   }
 
-  /**
-   * @description `true` is method has `Origin` argument(compatibility with [Call])
-   */
+  /// @description `true` is method has `Origin` argument(compatibility with [Call])
   bool get hasOrigin {
     return this.method.hasOrigin;
   }
 
-  /**
-   * @description `true` id the extrinsic is signed
-   */
+  /// @description `true` id the extrinsic is signed
   bool get isSigned {
     return (this.raw as GenericExtrinsicV4).signature.isSigned;
   }
 
-  /**
-   * @description The length of the actual data, excluding prefix
-   */
+  /// @description The length of the actual data, excluding prefix
   int get length {
     return this.toU8a(true).length;
   }
 
-  /**
-   * @description The [[FunctionMetadataLatest]] that describes the extrinsic
-   */
+  /// @description The [[FunctionMetadataLatest]] that describes the extrinsic
   FunctionMetadataLatest get meta {
     return this.method.meta;
   }
 
-  /**
-   * @description The [[Call]] this extrinsic wraps
-   */
+  /// @description The [[Call]] this extrinsic wraps
   Call get method {
     return (this.raw as GenericExtrinsicV4).method;
   }
 
-  /**
-   * @description The nonce for this extrinsic
-   */
+  /// @description The nonce for this extrinsic
   Compact<Index> get nonce {
     return (this.raw as GenericExtrinsicV4).signature.nonce;
   }
 
-  /**
-   * @description The actual [[EcdsaSignature]], [[Ed25519Signature]] or [[Sr25519Signature]]
-   */
-  // EcdsaSignature | Ed25519Signature | Sr25519Signature
+  /// @description The actual [[EcdsaSignature]], [[Ed25519Signature]] or [[Sr25519Signature]]
+  /// EcdsaSignature | Ed25519Signature | Sr25519Signature
   get signature {
     return (this.raw as GenericExtrinsicV4).signature.signature;
   }
 
-  /**
-   * @description The [[Address]] that signed
-   */
+  /// @description The [[Address]] that signed
   Address get signer {
     return (this.raw as GenericExtrinsicV4).signature.signer;
   }
 
-  /**
-   * @description Forwards compat
-   */
-  // Compact<Balance>
+  /// @description Forwards compat
+  /// Compact<Balance>
   get tip {
     return (this.raw as GenericExtrinsicV4).signature.tip;
   }
 
-  /**
-   * @description Returns the raw transaction version(not flagged with signing information)
-  */
+  ///
+  /// @description Returns the raw transaction version(not flagged with signing information)
+  ///
   int get type {
     return (this.raw as GenericExtrinsicV4).version;
   }
 
-  /**
-   * @description Returns the encoded version flag
-  */
+  ///
+  /// @description Returns the encoded version flag
+  ///
   int get version {
     return this.type | (this.isSigned ? BIT_SIGNED : BIT_UNSIGNED);
   }
@@ -152,6 +125,7 @@ class CreateOptions {
 }
 
 class GenericExtrinsic extends ExtrinsicBase {
+  GenericExtrinsic.empty() : super.empty();
   GenericExtrinsic(Registry registry, dynamic value, [CreateOptions option])
       : super(registry,
             GenericExtrinsic._decodeExtrinsic(registry, value, option?.version ?? DEFAULT_VERSION));
@@ -176,7 +150,7 @@ class GenericExtrinsic extends ExtrinsicBase {
     ]);
   }
 
-  /** @internal */
+  /// @internal */
   // : ExtrinsicVx | ExtrinsicUnknown
   static _decodeExtrinsic(Registry registry, dynamic value, [int version = DEFAULT_VERSION]) {
     if (isU8a(value) || (value is List) || isHex(value)) {
@@ -187,7 +161,7 @@ class GenericExtrinsic extends ExtrinsicBase {
     return GenericExtrinsic._newFromValue(registry, value, version);
   }
 
-  /** @internal */
+  /// @internal */
   //  ExtrinsicVx | ExtrinsicUnknown
   static _decodeU8a(Registry registry, Uint8List value, int version) {
     if (value.length == 0) {
@@ -241,24 +215,18 @@ class GenericExtrinsic extends ExtrinsicBase {
     };
   }
 
-  /**
-   * @description Converts the Object to JSON, typically used for RPC transfers
-   */
+  /// @description Converts the Object to JSON, typically used for RPC transfers
   String toJSON() {
     return this.toHex();
   }
 
-  /**
-   * @description Returns the base runtime type name for this instance
-   */
+  /// @description Returns the base runtime type name for this instance
   String toRawType() {
     return 'Extrinsic';
   }
 
-  /**
-   * @description Encodes the value as a Uint8Array as per the SCALE specifications
-   * @param isBare true when the value is not length-prefixed
-   */
+  /// @description Encodes the value as a Uint8Array as per the SCALE specifications
+  /// @param isBare true when the value is not length-prefixed
   Uint8List toU8a([dynamic isBare]) {
     // we do not apply bare to the internal values, rather this only determines out length addition,
     // where we strip all lengths this creates an extrinsic that cannot be decoded

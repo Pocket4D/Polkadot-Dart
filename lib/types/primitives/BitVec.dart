@@ -31,6 +31,7 @@ Uint8List decodeBitVec([dynamic value]) {
 }
 
 class BitVec extends Raw {
+  BitVec.empty() : super.empty();
   BitVec(Registry registry, [dynamic value]) : super(registry, decodeBitVec(value));
 
   static BitVec constructor(Registry registry, [dynamic value]) => BitVec(registry, value);

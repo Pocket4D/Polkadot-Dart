@@ -17,7 +17,7 @@ class GenericEventData extends Tuple {
 
   List<TypeDef> _typeDef;
   // List<Constructor> _types;
-
+  GenericEventData.empty() : super.empty();
   GenericEventData(Registry registry, Uint8List value,
       [List<Constructor> types,
       List<TypeDef> typeDef,
@@ -62,16 +62,14 @@ class GenericEventData extends Tuple {
   }
 }
 
-/**
- * @name GenericEvent
- * @description
- * A representation of a system event. These are generated via the [[Metadata]] interfaces and
- * specific to a specific Substrate runtime
- */
+/// @name GenericEvent
+/// @description
+/// A representation of a system event. These are generated via the [[Metadata]] interfaces and
+/// specific to a specific Substrate runtime
 class GenericEvent<S extends Map<String, dynamic>> extends Struct {
   // Currently we _only_ decode from Uint8Array, since we expect it to
   // be used via EventRecord
-
+  GenericEvent.empty() : super.empty();
   GenericEvent(Registry registry, [dynamic _value])
       : super(
             registry,

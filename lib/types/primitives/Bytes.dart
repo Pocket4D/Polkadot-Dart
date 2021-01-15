@@ -39,6 +39,7 @@ dynamic _decodeBytes([dynamic value]) {
 
 class Bytes extends Raw {
   dynamic originValue;
+  Bytes.empty() : super.empty();
   Bytes(Registry registry, [dynamic value]) : super(registry, _decodeBytes(value)) {
     originValue = value;
   }

@@ -27,6 +27,7 @@ class GenericExtrinsicSignatureV4 extends Struct implements IExtrinsicSignature 
   Uint8List _fakePrefix;
   ExtrinsicSignatureOptions originOptions;
   dynamic originValue;
+  GenericExtrinsicSignatureV4.empty() : super.empty();
   GenericExtrinsicSignatureV4(Registry registry,
       [dynamic thisValue, ExtrinsicSignatureOptions options])
       : super(

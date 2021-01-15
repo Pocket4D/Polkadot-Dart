@@ -38,6 +38,7 @@ class Linkage<T extends BaseCodec> extends Struct {
     return (Registry registry, [dynamic value]) => Linkage.withParams(registry, type, value);
   }
 
+  Linkage.empty() : super.empty();
   static Linkage constructor(Registry registry, [dynamic type, dynamic value]) =>
       Linkage(registry, type, value);
 

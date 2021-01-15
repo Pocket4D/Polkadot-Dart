@@ -12,6 +12,7 @@ class CodecDate extends BaseCodec implements CompactEncodable {
   Registry registry;
   DateTime _value;
   DateTime get value => _value;
+  CodecDate.empty();
   CodecDate(Registry registry, dynamic value) {
     this._value = CodecDate.decodeDate(value);
     this.registry = registry;

@@ -43,6 +43,7 @@ List<dynamic> _decodeData(Registry registry, [dynamic value]) {
 }
 
 class Data extends Enum {
+  Data.empty() : super.empty();
   Data(Registry registry, [dynamic value])
       : super(
             registry,

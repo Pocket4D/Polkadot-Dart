@@ -7,6 +7,7 @@ import 'package:polkadot_dart/utils/utils.dart';
 class RuntimeVersion extends Struct {
   u32 get specVersion => this.getCodec("specVersion")?.cast<u32>();
   u32 get transactionVersion => this.getCodec("transactionVersion")?.cast<u32>();
+  RuntimeVersion.empty() : super.empty();
   RuntimeVersion(Registry registry,
       [dynamic value = "___defaultEmpty", Map<dynamic, String> jsonMap])
       : super(

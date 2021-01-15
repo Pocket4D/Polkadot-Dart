@@ -9,7 +9,7 @@ class CodecNull extends BaseCodec {
   Registry registry;
 
   Null get value => null;
-
+  CodecNull.empty();
   CodecNull(Registry registry) {
     this.registry = registry;
   }

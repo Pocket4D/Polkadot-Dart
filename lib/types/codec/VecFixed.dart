@@ -14,7 +14,7 @@ VecFixed<T> Function(Registry, [dynamic]) vecFixedWith<T extends BaseCodec>(
 
 class VecFixed<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
-
+  VecFixed.empty();
   VecFixed(Registry registry, dynamic type, int length, [dynamic value])
       : super.withReg(
             registry,

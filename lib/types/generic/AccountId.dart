@@ -21,6 +21,7 @@ Uint8List _decodeAccountId(dynamic value) {
 }
 
 class GenericAccountId extends U8aFixed {
+  GenericAccountId.empty() : super.empty();
   GenericAccountId(Registry registry, [dynamic value])
       : super(registry, _decodeAccountId(value), 256) {
     final decoded = _decodeAccountId(value);

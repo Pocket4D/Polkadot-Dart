@@ -153,6 +153,8 @@ class StorageKey extends Bytes {
 
   StorageKeyExtra originOverride;
 
+  StorageKey.empty() : super.empty();
+
   StorageKey(Registry registry, [dynamic value, StorageKeyExtra override])
       : super(registry, decodeStorageKey(value).key) {
     originValue = value;

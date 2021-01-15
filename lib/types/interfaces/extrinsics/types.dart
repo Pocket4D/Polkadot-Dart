@@ -78,6 +78,7 @@ class Signature extends H512 {
 // class SignerPayload extends GenericSignerPayload {}
 
 class ExtrinsicPayloadV4 extends GenericExtrinsicPayloadV4 {
+  ExtrinsicPayloadV4.empty() : super.empty();
   ExtrinsicPayloadV4(Registry registry, [dynamic value]) : super(registry, value);
   factory ExtrinsicPayloadV4.from(GenericExtrinsicPayloadV4 origin) =>
       ExtrinsicPayloadV4(origin.registry, origin.originValue);

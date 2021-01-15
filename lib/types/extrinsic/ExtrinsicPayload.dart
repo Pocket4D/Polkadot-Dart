@@ -18,6 +18,7 @@ class ExtrinsicPayloadOptions {
 
 // ignore: non_constant_identifier_names
 class ExtrinsicPayloadVx extends ExtrinsicPayloadV4 {
+  ExtrinsicPayloadVx.empty() : super.empty();
   ExtrinsicPayloadVx(Registry registry, [dynamic value]) : super(registry, value);
   factory ExtrinsicPayloadVx.from(GenericExtrinsicPayloadV4 origin) {
     return ExtrinsicPayloadVx(origin.registry, origin.originValue);
@@ -36,6 +37,7 @@ const _VERSIONS = [
 ];
 
 class GenericExtrinsicPayload extends Base<ExtrinsicPayloadVx> {
+  GenericExtrinsicPayload.empty() : super.empty();
   GenericExtrinsicPayload(Registry registry, dynamic value, ExtrinsicPayloadOptions options)
       : super(
             registry,
@@ -49,7 +51,7 @@ class GenericExtrinsicPayload extends Base<ExtrinsicPayloadVx> {
     return GenericExtrinsicPayload(registry, value, op);
   }
 
-  /** @internal */
+  /// @internal */
   static ExtrinsicPayloadVx decodeExtrinsicPayload(Registry registry, dynamic value,
       [int version = DEFAULT_VERSION]) {
     if (value is GenericExtrinsicPayload) {
@@ -63,76 +65,56 @@ class GenericExtrinsicPayload extends Base<ExtrinsicPayloadVx> {
     ]));
   }
 
-  /**
-   * @description The block [[Hash]] the signature applies to(mortal/immortal)
-   */
+  /// @description The block [[Hash]] the signature applies to(mortal/immortal)
   Hash get blockHash {
     return this.raw.blockHash;
   }
 
-  /**
-   * @description The [[ExtrinsicEra]]
-   */
+  /// @description The [[ExtrinsicEra]]
   GenericExtrinsicEra get era {
     return this.raw.era;
   }
 
-  /**
-   * @description The genesis block [[Hash]] the signature applies to
-   */
+  /// @description The genesis block [[Hash]] the signature applies to
   Hash get genesisHash {
     // NOTE only v3+
     return this.raw.genesisHash ?? this.registry.createType('Hash');
   }
 
-  /**
-   * @description The [[Raw]] contained in the payload
-   */
+  /// @description The [[Raw]] contained in the payload
   Raw get method {
     return this.raw.method;
   }
 
-  /**
-   * @description The [[Index]]
-   */
+  /// @description The [[Index]]
   Compact<Index> get nonce {
     return this.raw.nonce;
   }
 
-  /**
-   * @description The specVersion as a [[u32]] for this payload
-   */
+  /// @description The specVersion as a [[u32]] for this payload
   u32 get specVersion {
     // NOTE only v3+
     return this.raw.specVersion ?? this.registry.createType('u32');
   }
 
-  /**
-   * @description The [[Balance]]
-   */
+  /// @description The [[Balance]]
   Compact<Balance> get tip {
     // NOTE from v2+
     return this.raw.tip ?? this.registry.createType('Compact<Balance>');
   }
 
-  /**
-   * @description The transaction version as a [[u32]] for this payload
-   */
+  /// @description The transaction version as a [[u32]] for this payload
   u32 get transactionVersion {
     // NOTE only v4+
     return this.raw.transactionVersion ?? this.registry.createType('u32');
   }
 
-  /**
-   * @description Compares the value of the input to see if there is a match
-   */
+  /// @description Compares the value of the input to see if there is a match
   bool eq([dynamic other]) {
     return this.raw.eq(other);
   }
 
-  /**
-   * @description Sign the payload with the keypair
-   */
+  /// @description Sign the payload with the keypair
   Map<String, String> sign(IKeyringPair signerPair) {
     final signature = this.raw.sign(signerPair);
 
@@ -143,30 +125,22 @@ class GenericExtrinsicPayload extends Base<ExtrinsicPayloadVx> {
     return {"signature": u8aToHex(signature)};
   }
 
-  /**
-   * @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
-   */
+  /// @description Converts the Object to to a human-friendly JSON, with additional fields, expansion and formatting of information
   dynamic toHuman([bool isExtended]) {
     return this.raw.toHuman(isExtended);
   }
 
-  /**
-   * @description Converts the Object to JSON, typically used for RPC transfers
-   */
+  /// @description Converts the Object to JSON, typically used for RPC transfers
   dynamic toJSON() {
     return this.toHex();
   }
 
-  /**
-   * @description Returns the string representation of the value
-   */
+  /// @description Returns the string representation of the value
   String toString() {
     return this.toHex();
   }
 
-  /**
-   * @description Returns a serialized u8a form
-   */
+  /// @description Returns a serialized u8a form
   Uint8List toU8a([dynamic isBare]) {
     // call our parent, with only the method stripped
     return super.toU8a(isBare != null && isBare != false ? {"method": true} : false);

@@ -100,7 +100,7 @@ class CodecSet extends BaseCodec {
     this._byteLength = (bitLength / 8).ceil();
     _genKeys();
   }
-
+  CodecSet.empty();
   static Constructor<CodecSet> withParams(Map<String, dynamic> setValues, [int bitLength]) =>
       codecSetWith(setValues, bitLength);
 
