@@ -69,8 +69,8 @@ Map<K, V> decodeMapFromMap<K extends BaseCodec, V extends BaseCodec>(
 Map<K, V> decodeMap<K extends BaseCodec, V extends BaseCodec>(
     Registry registry, dynamic keyType, dynamic valType,
     [dynamic value]) {
-  final keyClass = typeToConstructor(registry, (keyType));
-  final vClass = typeToConstructor(registry, (valType));
+  final keyClass = keyType is Constructor ? keyType : typeToConstructor(registry, (keyType));
+  final vClass = valType is Constructor ? valType : typeToConstructor(registry, (valType));
   if (value == null) {
     return new Map<K, V>();
   } else if (isHex(value)) {
@@ -92,8 +92,10 @@ class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec {
 
   Constructor<V> _valClass;
 
+  Constructor<K> get keyClass => _keyClass;
+  Constructor<V> get valClass => _valClass;
   String _type;
-
+  String get type => _type;
   // readonly #type: string;
   Map<K, V> get value => _value;
 
@@ -103,11 +105,29 @@ class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec {
 
   CodecMap(Registry registry, dynamic keyType, dynamic valType,
       [dynamic rawValue, String type = 'HashMap']) {
-    _value = decodeMap(registry, keyType, valType, rawValue);
-    this.registry = registry;
-    this._keyClass = typeToConstructor(registry, (keyType));
-    this._valClass = typeToConstructor(registry, (valType));
-    this._type = type;
+    registry = registry;
+    _keyClass = typeToConstructor(registry, (keyType));
+    _valClass = typeToConstructor(registry, (valType));
+    _value = decodeMap(registry, _keyClass, _valClass, rawValue);
+    _type = type;
+  }
+
+  CodecMap.empty();
+
+  void setValue(Map<K, V> toSet) {
+    this._value = toSet;
+  }
+
+  void setKeyClass(Constructor<K> toSet) {
+    this._keyClass = toSet;
+  }
+
+  void setValClass(Constructor<V> toSet) {
+    this._valClass = toSet;
+  }
+
+  void setType(String toSet) {
+    this._type = toSet;
   }
 
   static CodecMap constructor(Registry registry,
@@ -199,7 +219,7 @@ class CodecMap<K extends BaseCodec, V extends BaseCodec> extends BaseCodec {
   //  * @param isBare true when the value has none of the type-specific prefixes (internal)
   //  */
   Uint8List toU8a([dynamic isBare]) {
-    final encoded = List<Uint8List>();
+    final encoded = List<Uint8List>.from([]);
 
     if ((isBare is bool && !isBare) || isBare == null) {
       encoded.add(compactToU8a(this._value.length));

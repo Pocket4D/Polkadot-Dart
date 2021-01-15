@@ -59,8 +59,7 @@ Set<V> _decodeSet<V extends BaseCodec>(Registry registry, dynamic valType, dynam
   if (value == null) {
     return Set<V>();
   }
-
-  final valClass = typeToConstructor(registry, (valType));
+  final valClass = valType is Constructor ? valType : typeToConstructor(registry, (valType));
 
   if (isHex(value)) {
     return _decodeSet(registry, valClass, hexToU8a(value));
@@ -85,12 +84,11 @@ class BTreeSet<V extends BaseCodec> extends BaseCodec {
   Set<V> _value;
 
   Set<V> get value => _value;
-
+  BTreeSet.empty();
   BTreeSet(Registry registry, dynamic valType, [dynamic rawValue]) {
-    _value = (_decodeSet(registry, valType, rawValue));
-
     this.registry = registry;
     this._valClass = typeToConstructor(registry, valType);
+    this._value = (_decodeSet(registry, _valClass, rawValue));
   }
 
   static Constructor<BTreeSet<V>> withParams<V extends BaseCodec>(dynamic valType) =>

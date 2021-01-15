@@ -23,8 +23,6 @@ Vec<T> Function(Registry, [dynamic]) vecWith<T extends BaseCodec>(dynamic type) 
   };
 }
 
-typedef CodecTransformer<T> = T Function<T extends BaseCodec>(BaseCodec data);
-
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
   Constructor<T> get constructorType {
@@ -57,7 +55,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   }
 
   static Vec<T> withTransformer<T extends BaseCodec, F extends BaseCodec>(
-      Vec codec, T Function(F) transformer) {
+      Vec codec, CodecTransformer<T, F> transformer) {
     return Vec.empty()
       ..setType(null)
       ..originType = codec.originType

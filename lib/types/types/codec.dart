@@ -72,3 +72,5 @@ typedef Constructor4<T extends BaseCodec> = T Function(Registry registry,
 // typedef Constructor3<T extends BaseCodec> = T Function(Registry registry, [List<dynamic> value]);
 
 // Type ArgsDef = Map<String, Constructor>;
+
+typedef CodecTransformer<T extends BaseCodec, F extends BaseCodec> = T Function(F data);
