@@ -54,11 +54,11 @@ Uint8List _decodeMetadata(Registry registry, dynamic _value) {
 
 class Metadata extends MetadataVersioned {
   Metadata(Registry registry, [dynamic thisValue])
-      : super(registry, _decodeMetadata(registry, thisValue));
+      : super(registry, thisValue is String ? _decodeMetadata(registry, thisValue) : thisValue);
   Metadata.empty() : super.empty();
   static Future<Metadata> asyncMetadata(Registry registry, [dynamic thisValue]) async {
-    MetadataVersioned versioned =
-        await MetadataVersioned.asyncMetadataVersioned(registry, sanitizeInput(thisValue));
+    MetadataVersioned versioned = await MetadataVersioned.asyncMetadataVersioned(
+        registry, thisValue is String ? _decodeMetadata(registry, thisValue) : thisValue);
 
     return Metadata.empty()
       ..setValue(versioned.value)

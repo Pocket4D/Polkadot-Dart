@@ -50,15 +50,38 @@ List<BaseCodec> decodeU8a(Registry registry, Uint8List u8a, dynamic _types) {
   List<BaseCodec> result = List<BaseCodec>.from([]);
   types.forEach((type) {
     final constructor = type as Constructor;
+    // var st = DateTime.now();
     final value = constructor(registry, u8a);
+    // var ed = DateTime.now();
+    // if (ed.difference(st).inMilliseconds > 50 && value.encodedLength < 100) {
+    //   print(
+    //       "\n\n --------- \n fucking slow: \n\n $value \n\n with $type \n with type:${value.toRawType()}:  \n with length: ${value.encodedLength} \n cost ${ed.difference(st).inMilliseconds} ms \n ------- \n\n");
+    // }
     if (u8a.isEmpty) {
-      u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
+      u8a = Uint8List.fromList(List<int>.filled(value.encodedLength, 0));
     }
     final subLength = value.encodedLength > u8a.length ? u8a.length : value.encodedLength;
     u8a = u8a.sublist(subLength);
     result.add(value);
   });
   return result;
+
+  // Iterable<BaseCodec> loop(int n, dynamic types, Uint8List u8a, Registry registry) sync* {
+  //   if (n < types.length) {
+  //     final constructor = types[n] as Constructor;
+  //     final value = constructor(registry, u8a);
+  //     if (u8a.isEmpty) {
+  //       u8a = Uint8List.fromList(List<int>.filled(value.encodedLength, 0));
+  //     }
+  //     final subLength = value.encodedLength > u8a.length ? u8a.length : value.encodedLength;
+  //     u8a = u8a.sublist(subLength);
+  //     // result.add(value);
+  //     yield value;
+  //     yield* loop(n + 1, types, u8a, registry);
+  //   }
+  // }
+
+  // return loop(0, types, u8a, registry).toList();
 }
 
 Future<List<BaseCodec>> asyncDecodeU8a(Registry registry, Uint8List u8a, dynamic _types) async {
@@ -74,7 +97,9 @@ Future<List<BaseCodec>> asyncDecodeU8a(Registry registry, Uint8List u8a, dynamic
 Stream<BaseCodec> decodeU8aStream(Registry registry, Uint8List u8a, List<dynamic> types) async* {
   for (int i = 0; i < types.length; i++) {
     final constructor = types[i] as Constructor;
+
     final value = await generateData(registry, constructor, u8a);
+
     if (u8a.isEmpty) {
       u8a = Uint8List.fromList(List.filled(value.encodedLength, 0));
     }

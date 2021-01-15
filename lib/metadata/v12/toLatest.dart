@@ -47,28 +47,20 @@ bool setTypeOverride(Map<String, String> sectionTypes, CodecType type) {
 // List<FunctionMetadataLatest>
 convertCalls(Registry registry, List<FunctionMetadataV12> calls, Map<String, String> sectionTypes) {
   return calls.map((v12) {
-    // v12.args.value.forEach((meta) {
-    //   if (sectionTypes.containsKey("EquivocationProof")) {
-    //     print(meta.type);
-    //   }
-    //   setTypeOverride(sectionTypes, meta.type);
-    //   if (sectionTypes.containsKey("EquivocationProof")) {
-    //     print(meta.type);
-    //   }
-    // });
     var newList = v12.args.map((value, [index, array]) {
-      // if (sectionTypes.containsKey("Balance")) {
-      //   print("\n");
-      //   print(value.type);
-      // }
       setTypeOverride(sectionTypes, value.type);
-      // if (sectionTypes.containsKey("Balance")) {
-      //   print(value.type);
-      // }
+
       return value;
     });
 
-    var newVec = Vec.fromList(newList, registry, "FunctionArgumentMetadataV12");
+    //  var newVec = Vec.fromList(newList, registry, "FunctionArgumentMetadataV12");
+
+    var newVec = Vec.empty()
+      ..setType(null)
+      ..originType = v12.args.originType
+      ..originValue = v12.args.originValue
+      ..registry = v12.args.registry
+      ..setValues(newList);
 
     final result = registry.createType('FunctionMetadataLatest',
         {"args": newVec, "documentation": v12.documentation, "name": v12.name});
@@ -91,7 +83,14 @@ convertEvents(Registry registry, List<EventMetadataV12> events, Map<String, Stri
       return type;
     });
 
-    var newVec = Vec.fromList(newList, registry, "CodecType");
+    // var newVec = Vec.fromList(newList, registry, "CodecType");
+
+    var newVec = Vec.empty()
+      ..setType(null)
+      ..originType = v12.args.originType
+      ..originValue = v12.args.originValue
+      ..registry = v12.args.registry
+      ..setValues(newList);
 
     final result = registry.createType('EventMetadataLatest',
         {"args": newVec, "documentation": v12.documentation, "name": v12.name});

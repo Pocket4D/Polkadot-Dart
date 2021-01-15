@@ -63,13 +63,16 @@ abstract class AbstractInt implements BaseCodec, CompactEncodable {
   bool _isSigned;
 
   BigInt get value => _value;
-
+  Uint8List u8aValue;
   dynamic originValue;
   AbstractInt();
   AbstractInt.withReg(Registry registry,
-      [dynamic value = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
-    originValue = value;
-    this._value = (decodeAbstractInt(value, bitLength, isSigned));
+      [dynamic thisValue = 0, int bitLength = DEFAULT_UINT_BITS, bool isSigned = false]) {
+    originValue = thisValue;
+    if (thisValue is Uint8List) {
+      u8aValue = thisValue;
+    }
+    this._value = (decodeAbstractInt(thisValue, bitLength, isSigned));
     this.registry = registry;
     this._bitLength = bitLength;
     this._isSigned = isSigned;

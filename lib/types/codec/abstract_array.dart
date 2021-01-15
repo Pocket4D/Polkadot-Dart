@@ -12,11 +12,11 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   List<T> get value => _values;
 
   AbstractArray.withReg(Registry registry, List<T> values) {
-    _values = List.from(values);
+    _values = values;
     this.registry = registry;
   }
   AbstractArray.fromList(List<T> values) {
-    _values = List.from(values);
+    _values = values;
   }
   AbstractArray();
 

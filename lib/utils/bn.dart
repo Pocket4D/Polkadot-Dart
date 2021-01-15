@@ -72,35 +72,6 @@ String bnToHex(BigInt bn,
     {int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) {
   var u8a = bnToU8a(bn, bitLength: bitLength, endian: endian, isNegative: isNegative);
   return u8aToHex(u8a, include0x: true);
-
-  // var pos = true;
-  // bn = bnToBn(bn);
-
-  // // I've noticed that for some operations BigInts can
-  // // only be compared to other BigInts (even small ones).
-  // // However, <, >, and == allow mix and match
-  // if (bn.compareTo(BigInt.zero) < 0) {
-  //   pos = false;
-  //   bn = bitnot(bn);
-  // }
-
-  // var base = 16;
-  // var hex = bn.toRadixString(base);
-  // if (hex.length % 2 > 0) {
-  //   hex = '0' + hex;
-  // }
-
-  // // Check the high byte _after_ proper hex padding
-  // var highbyte = int.parse(hex.substring(0, 2), radix: 16);
-  // var highbit = (0x80 & highbyte);
-
-  // if (pos && highbit != 0) {
-  //   // A 32-byte positive integer _may_ be
-  //   // represented in memory as 33 bytes if needed
-  //   hex = '00' + hex;
-  // }
-
-  // return hexAddPrefix(hex);
 }
 
 class Options {

@@ -130,7 +130,7 @@ class Option<T extends BaseCodec> extends BaseCodec {
   String toRawType([dynamic isBare]) {
     final wrapped = this.registry.getClassName(this._type) ?? this._type(this.registry).toRawType();
 
-    return isBare ? wrapped : "Option<$wrapped>";
+    return isBare == true ? wrapped : "Option<$wrapped>";
   }
 
   /// @description Returns the string representation of the value

@@ -90,7 +90,9 @@ DecodedEnum decodeFromString(Registry registry, Map<String, Constructor> def, St
 
 DecodedEnum decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
   if (value is Uint8List) {
-    if (value.isEmpty) value = Uint8List.fromList([0]);
+    if (value.isEmpty) {
+      value = Uint8List.fromList([0]);
+    }
     return createFromValue(registry, def, value[0], value.sublist(1));
   } else if (isNumber(value)) {
     return createFromValue(registry, def, value);
@@ -142,7 +144,7 @@ class Enum<T extends BaseCodec> extends BaseCodec {
 
   List<String> iskeys = [];
   List<String> askeys = [];
-
+  Uint8List u8aValue;
   dynamic originDef;
   dynamic originValue;
   dynamic originIndex;
@@ -151,6 +153,9 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     originDef = thisDef;
     originValue = thisValue;
     originIndex = index;
+    if (thisValue is Uint8List) {
+      u8aValue = thisValue;
+    }
     final defInfo = extractDef(registry, thisDef);
     final decoded = decodeEnum(registry, defInfo.def, thisValue, index);
     final defList = defInfo.def.keys.toList();
@@ -316,10 +321,11 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixes (internal)
   Uint8List toU8a([dynamic isBare]) {
-    return u8aConcat([
-      Uint8List.fromList(isBare is bool && isBare ? [] : [this._indexes[this._index]]),
-      this._raw.toU8a(isBare)
-    ]);
+    return u8aValue ??
+        u8aConcat([
+          Uint8List.fromList(isBare is bool && isBare ? [] : [this._indexes[this._index]]),
+          this._raw.toU8a(isBare)
+        ]);
   }
 
   bool isKey(String name) {

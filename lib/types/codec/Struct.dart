@@ -171,9 +171,12 @@ class Struct<S extends Map<String, dynamic>, V extends Map, E extends Map<dynami
     }
 
     this._types = mapToTypeMap(registry, types);
-
+    // var st = DateTime.now();
     final decoded = decodeStruct(registry, this._types, _thisValue, jsonMap);
-
+    // var ed = DateTime.now();
+    // if (ed.difference(st).inMilliseconds > 100) {
+    //   print("\n fucking slow: \n $types \n with length:${decoded.length}");
+    // }
     this._value = Map<dynamic, BaseCodec>.from(decoded);
     this.registry = registry;
     this._jsonMap = jsonMap ?? Map<dynamic, String>();

@@ -27,23 +27,22 @@ typedef CodecTransformer<T> = T Function<T extends BaseCodec>(BaseCodec data);
 
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
-  Constructor<T> get constructorType => _type;
+  Constructor<T> get constructorType {
+    if (_type != null) {
+      return _type;
+    }
+    _type = typeToConstructor(registry, originType);
+    return _type;
+  }
+
   dynamic originType;
   dynamic originValue;
   Vec.empty() : super.empty();
-  Vec(Registry registry, dynamic type, [dynamic value])
-      : super.withReg(
-            registry,
-            Vec.decodeVec(registry, typeToConstructor<T>(registry, type),
-                value is Vec ? value.value : value ?? [])) {
-    originType = type;
-    originValue = value;
-    if (value == null) {
-      value = [];
-    }
-    final clazz = typeToConstructor<T>(registry, type);
-    this._type = clazz;
-  }
+  Vec(Registry registry, dynamic type, [dynamic thisValue])
+      : originType = type,
+        originValue = thisValue,
+        super.withReg(registry,
+            Vec.decodeVec(registry, typeToConstructor<T>(registry, type), thisValue ?? []));
 
   static constructor(Registry registry, [dynamic type, dynamic value]) =>
       Vec(registry, type, value);
@@ -73,15 +72,17 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
 
   static List<T> decodeVec<T extends BaseCodec>(
       Registry registry, Constructor<T> type, dynamic value) {
+    if (value is Vec<T>) {
+      return value.value;
+    }
     var theValue = value;
-    if (theValue is Iterable && !isU8a(theValue)) {
+    if (theValue is Iterable && !isU8a(theValue) && !(theValue is List<int>)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       List<T> result = List<T>.generate(theValue.length, (index) => null);
       for (int i = 0; i < theValue.length; i += 1) {
         try {
-          result[i] = theValue.elementAt(i) is Constructor<T>
-              ? theValue.elementAt(i)
-              : type(registry, theValue.elementAt(i));
+          final index = theValue.elementAt(i);
+          result[i] = index is Constructor<T> ? index : type(registry, index);
         } catch (error) {
           throw "Unable to decode on index $i $error";
         }
@@ -115,7 +116,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   /// @description Finds the index of the value in the array
   int indexOf([dynamic _other]) {
     // convert type first, this removes overhead from the eq
-    final other = _other is BaseCodec ? _other : this._type(this.registry, _other);
+    final other = _other is BaseCodec ? _other : constructorType(this.registry, _other);
 
     for (var i = 0; i < this.length; i++) {
       if (other.eq(this.value[i])) {
@@ -128,7 +129,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
 
   /// @description Returns the base runtime type name for this instance
   String toRawType() {
-    return "Vec<${this.registry.getClassName(this._type) ?? this._type(this.registry).toRawType()}>";
+    return "Vec<${this.registry.getClassName(constructorType) ?? constructorType(this.registry).toRawType()}>";
   }
 
   @override

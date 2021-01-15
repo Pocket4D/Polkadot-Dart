@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/keyring/nobody.dart';
 
 import 'package:polkadot_dart/metadata/Metadata.dart';
+import 'package:polkadot_dart/metadata/MetadataVersioned.dart';
 import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 
@@ -52,6 +53,18 @@ void metadataV12() {
       expect(getUniqTypes(registry, metadataInit, false),
           getUniqTypes(registry, metadataLatest, false));
     }, skip: "should always use ```asLatest```");
+
+    test("converts v12 to latest", () async {
+      final newR = new TypeRegistry();
+      print(DateTime.now().toString());
+
+      var newMeta = Metadata(newR, substrateJson);
+      print(DateTime.now().toString());
+      newR.setMetadata(newMeta);
+      print(DateTime.now().toString());
+      expect(newMeta.toJSON(), substrateJson);
+      print(DateTime.now().toString());
+    });
 
     test('storage with default values', () async {
       metadata.asLatest.modules.value
