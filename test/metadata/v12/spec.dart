@@ -1,16 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:polkadot_dart/keyring/nobody.dart';
 
 import 'package:polkadot_dart/metadata/Metadata.dart';
-import 'package:polkadot_dart/metadata/MetadataVersioned.dart';
 import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
-
-import 'package:polkadot_dart/types/types.dart' hide Metadata;
+import 'package:polkadot_dart/types/types.dart';
 
 import './v12.dart' as substrateData;
 
@@ -24,13 +20,9 @@ void metadataV12() {
   final registry = new TypeRegistry();
   Metadata metadata;
   setUpAll(() async {
-    print(DateTime.now().toString());
     substrateJson = Map<String, dynamic>.from(jsonDecode(await file.readAsString()));
-    print(DateTime.now().toString());
     metadata = await Metadata.asyncMetadata(registry, substrateData.v12);
-    print(DateTime.now().toString());
     registry.setMetadata(metadata);
-    print(DateTime.now().toString());
   });
   group('MetadataV12 (substrate)', () {
     test('decodes latest substrate properly', () async {
@@ -38,7 +30,6 @@ void metadataV12() {
       // new File(filename).writeAsString(jsonEncode(metadata.toJSON())).then((File file) {
       //   // Do something with the file.
       // });
-
       try {
         expect(metadata.version, 12);
         expect(metadata.toJSON(), substrateJson);
@@ -54,16 +45,11 @@ void metadataV12() {
           getUniqTypes(registry, metadataLatest, false));
     }, skip: "should always use ```asLatest```");
 
-    test("converts v12 to latest", () async {
+    test("use json data to initialize instance", () async {
       final newR = new TypeRegistry();
-      print(DateTime.now().toString());
-
       var newMeta = Metadata(newR, substrateJson);
-      print(DateTime.now().toString());
       newR.setMetadata(newMeta);
-      print(DateTime.now().toString());
       expect(newMeta.toJSON(), substrateJson);
-      print(DateTime.now().toString());
     });
 
     test('storage with default values', () async {
