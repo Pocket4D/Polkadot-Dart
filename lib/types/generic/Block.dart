@@ -16,23 +16,17 @@ class GenericBlock extends Struct {
   static GenericBlock constructor(Registry registry, [dynamic value]) =>
       GenericBlock(registry, value);
 
-  /**
-   * @description Encodes a content [[Hash]] for the block
-   */
+  /// @description Encodes a content [[Hash]] for the block
   H256 get contentHash {
     return this.registry.hash(this.toU8a());
   }
 
-  /**
-   * @description The [[Extrinsic]] contained in the block
-   */
+  /// @description The [[Extrinsic]] contained in the block
   Vec<GenericExtrinsic> get extrinsics {
     return this.getCodec('extrinsics').cast<Vec<GenericExtrinsic>>();
   }
 
-  /**
-   * @description Block/header [[Hash]]
-   */
+  /// @description Block/header [[Hash]]
   H256 get hash {
     //return this.header.hash;
     return throw UnimplementedError();

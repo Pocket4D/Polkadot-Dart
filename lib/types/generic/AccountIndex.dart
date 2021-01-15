@@ -34,6 +34,7 @@ dynamic decodeAccountIndex(dynamic value) {
 }
 
 class GenericAccountIndex extends u32 {
+  GenericAccountIndex.empty() : super.empty();
   GenericAccountIndex(Registry registry, [dynamic value])
       : super(registry, decodeAccountIndex(value ?? BigInt.from(0)));
 
