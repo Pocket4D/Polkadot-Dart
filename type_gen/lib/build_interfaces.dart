@@ -6,10 +6,12 @@ import 'package:source_gen/source_gen.dart';
 import 'package:analyzer/dart/element/element.dart';
 
 import 'package:polkadot_dart/types/types.dart' hide ConstantReader;
+import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:type_gen/formatter.dart';
 
 import 'annotations.dart';
 import 'utils.dart';
+import 'v12.dart' as rpcMetadata;
 
 final registry = TypeRegistry();
 
@@ -29,6 +31,8 @@ $result
 }
 
 List<ClassCreation> _extractTypesDefsList(ConstantReader annotation) {
+  final meta = Metadata(registry, rpcMetadata.v12);
+  registry.setMetadata(meta);
   var typesMap = annotation
       .peek("defs")
       .mapValue

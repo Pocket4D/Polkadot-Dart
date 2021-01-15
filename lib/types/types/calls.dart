@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/interfaces/types.dart';
-import 'package:polkadot_dart/types/types.dart' hide Call;
 
 abstract class CallBase {
   Uint8List callIndex;

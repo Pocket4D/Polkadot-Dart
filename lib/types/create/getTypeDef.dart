@@ -23,7 +23,13 @@ TypeDef _decodeEnum(TypeDef value, dynamic details, int count) {
   value.info = TypeDefInfo.Enum;
   // not as pretty, but remain compatible with oo7 for both struct and Array types
   value.sub = details is List
-      ? details.map((name) => ({"info": TypeDefInfo.Plain, "name": name, "type": 'Null'})).toList()
+      ? details
+          .map((name) => ({
+                "info": TypeDefInfo.Plain,
+                "name": name is List ? name[0] as String : name,
+                "type": 'Null'
+              }))
+          .toList()
       : ((Map<String, String>.from(details)).entries).map((entry) =>
           // eslint-disable-next-line @typescript-eslint/no-use-before-define
           getTypeDef(entry.value ?? 'Null', TypeDefOptions(name: entry.key), count)).toList();
@@ -50,6 +56,7 @@ TypeDef _decodeSet(TypeDef value, Map<String, dynamic> details) {
 TypeDef _decodeStruct(TypeDef value, String type, String _, int count) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   final parsed = Map<String, dynamic>.from(jsonDecode(type));
+
   final keys = parsed.keys.toList();
 
   if (keys.length == 1 && keys[0] == '_enum') {

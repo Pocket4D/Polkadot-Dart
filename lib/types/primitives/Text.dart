@@ -46,13 +46,42 @@ class CodecText extends BaseCodec {
   Registry registry;
 
   String _override;
-  String get value => _value;
-  String _value;
-  CodecText(Registry registry, [dynamic value]) {
-    _value = (decodeText(value));
-
-    this.registry = registry;
+  String get override => _override;
+  String get value {
+    if (_value != null) {
+      return _value;
+    }
+    _value = decodeText(u8aValue);
+    return _value;
   }
+
+  String _value;
+  dynamic originValue;
+  Uint8List u8aValue;
+  CodecText.empty();
+  CodecText(Registry registry, [dynamic thisValue])
+      : originValue = thisValue,
+        registry = registry {
+    if (thisValue is Uint8List) {
+      u8aValue = thisValue;
+    } else {
+      _value = decodeText(thisValue);
+    }
+  }
+
+  setValue(String toSet) {
+    this._value = toSet;
+  }
+
+  static CodecText transform(CodecText origin) {
+    return CodecText.empty()
+      ..setOverride(origin.override)
+      ..setValue(origin.value)
+      ..originValue = origin.originValue
+      ..registry = origin.registry;
+  }
+
+  factory CodecText.from(CodecText origin) => CodecText(origin.registry, origin.value);
 
   static CodecText constructor(Registry registry, [dynamic value]) => CodecText(registry, value);
 
@@ -68,13 +97,13 @@ class CodecText extends BaseCodec {
 
   /// @description Checks if the value is an empty value
   bool get isEmpty {
-    return this._value.length == 0;
+    return this.value.length == 0;
   }
 
   /// @description The length of the value
   int get length {
     // only included here since we ignore inherited docs
-    return this._value.length;
+    return this.value.length;
   }
 
   /// @description Compares the value of the input to see if there is a match
@@ -83,7 +112,7 @@ class CodecText extends BaseCodec {
     if (other is CodecText) {
       compare = other.value;
     }
-    return isString(compare) ? this._value.toString() == compare.toString() : false;
+    return isString(compare) ? this.value.toString() == compare.toString() : false;
   }
 
   /// @description Set an override value for this
@@ -114,8 +143,9 @@ class CodecText extends BaseCodec {
   }
 
   /// @description Returns the string representation of the value
+
   String toString() {
-    return this._override ?? this._value.toString();
+    return this._override ?? this.value.toString();
   }
 
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
@@ -123,7 +153,7 @@ class CodecText extends BaseCodec {
   Uint8List toU8a([dynamic isBare]) {
     // NOTE Here we use the super toString (we are not taking overrides into account,
     // rather encoding the original value the string was constructed with)
-    final encoded = stringToU8a(this._value.toString());
+    final encoded = stringToU8a(this.value.toString());
     return isBare is bool && isBare ? encoded : compactAddLength(encoded);
   }
 
@@ -131,7 +161,6 @@ class CodecText extends BaseCodec {
     return eq(other);
   }
 
-  @override
   // TODO: implement hashCode
   int get hashCode => this.value.hashCode;
 }

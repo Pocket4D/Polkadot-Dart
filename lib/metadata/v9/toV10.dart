@@ -4,14 +4,16 @@ import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/types.dart';
 
 /** @internal */
-StorageHasherV10 createStorageHasher(Registry registry, StorageHasherV9 hasher) {
+// StorageHasherV10
+createStorageHasher(Registry registry, StorageHasherV9 hasher) {
   // Blake2_128_Concat has been added at index 2, so we increment all the
   // indexes greater than 2
   if (hasher.toNumber() >= 2) {
-    return StorageHasherV10.from(registry.createType('StorageHasherV10', hasher.toNumber() + 1));
+    // return StorageHasherV10.from(registry.createType('StorageHasherV10', hasher.toNumber() + 1));
+    return registry.createType('StorageHasherV10', hasher.toNumber() + 1);
   }
-
-  return StorageHasherV10.from(registry.createType('StorageHasherV10', hasher));
+  return registry.createType('StorageHasherV10', hasher);
+  // return StorageHasherV10.from(registry.createType('StorageHasherV10', hasher));
 }
 
 /** @internal */
@@ -38,10 +40,12 @@ List<dynamic> createStorageType(Registry registry, StorageEntryTypeV9 entryType)
 }
 
 // /** @internal */
-ModuleMetadataV10 convertModule(Registry registry, ModuleMetadataV9 mod) {
-  final storage = mod.storage.unwrapOr(null);
+// ModuleMetadataV10
+convertModule(Registry registry, ModuleMetadataV9 mod) {
+  final storage = mod.storage != null ? mod.storage.unwrapOr(null) : null;
 
-  return ModuleMetadataV10.from(registry.createType('ModuleMetadataV10', {
+  // return ModuleMetadataV10.from(
+  return registry.createType('ModuleMetadataV10', {
     ...mod.value,
     "storage": storage != null
         ? {
@@ -50,17 +54,17 @@ ModuleMetadataV10 convertModule(Registry registry, ModuleMetadataV9 mod) {
                 .items
                 .map((StorageEntryMetadataV9 item, [index, list]) {
               var result = createStorageType(registry, item.type);
-              var type10 =
-                  StorageEntryTypeV10.from(registry.createType('StorageEntryTypeV10', result));
+              var type10 = registry.createType('StorageEntryTypeV10', result);
               return {...item.value, "type": type10};
             })
           }
         : null
-  }));
+  });
+  //);
 }
 
 // /** @internal */
-MetadataV10 toV10(Registry registry, MetadataV9 metadataV9) {
+MetadataV10 toV10(Registry registry, MetadataV9 metadataV9, int versionNumber) {
   return MetadataV10.from(registry.createType('MetadataV10',
       {"modules": metadataV9.modules.map((mod, [index, list]) => convertModule(registry, mod))}));
 }

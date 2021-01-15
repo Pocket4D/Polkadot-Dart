@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:polkadot_dart/metadata/MagicNumber.dart';
 import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/types/extrinsic/Extrinsic.dart';
@@ -7,13 +5,12 @@ import 'package:polkadot_dart/types/extrinsic/ExtrinsicUnknown.dart';
 import 'package:polkadot_dart/types/extrinsic/index.dart';
 import 'package:polkadot_dart/types/generic/AccountId.dart';
 import 'package:polkadot_dart/types/generic/AccountIndex.dart';
-import 'package:polkadot_dart/types/generic/ConsensusEngineId.dart';
 import 'package:polkadot_dart/types/generic/Event.dart';
 import 'package:polkadot_dart/types/generic/LookupSource.dart';
 import 'package:polkadot_dart/types/generic/MultiAddress.dart';
 import 'package:polkadot_dart/types/generic/Vote.dart';
 import 'package:polkadot_dart/types/primitives/primitives.dart';
-import 'package:polkadot_dart/types/types.dart' hide Metadata;
+import 'package:polkadot_dart/types/types.dart';
 
 enum TypeDefInfo {
   BTreeMap,
@@ -60,6 +57,7 @@ class TypeDef {
   factory TypeDef.fromMap(Map<String, dynamic> map) {
     var sub;
     var mapSub = map["sub"];
+
     if (mapSub is Map<String, dynamic>) {
       sub = TypeDef.fromMap(map["sub"]);
     } else if (mapSub is List) {

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/polkadot_dart.dart';
+import 'package:polkadot_dart/types/scale_codec/scale_codec.dart';
 import 'package:polkadot_dart/types/scale_codec/scale_codec_reader.dart';
 import 'package:polkadot_dart/utils/utils.dart'; // use extendsion methods for fast data format converting
 

@@ -10,91 +10,87 @@ import 'package:polkadot_dart/utils/utils.dart';
 const MAX_LENGTH = 64 * 1024;
 
 Vec<T> Function(Registry, [dynamic]) vecWith<T extends BaseCodec>(dynamic type) {
-  return (Registry registry, [dynamic value]) => Vec<T>(registry, type, value);
+  return (Registry registry, [dynamic value]) {
+    if (value is Vec<T>) {
+      return Vec.empty()
+        ..setType(value.constructorType)
+        ..originType = value.originType
+        ..originValue = value.originValue
+        ..registry = value.registry
+        ..setValues(value.value);
+    }
+    return Vec<T>(registry, type, value);
+  };
 }
+
+typedef CodecTransformer<T> = T Function<T extends BaseCodec>(BaseCodec data);
 
 class Vec<T extends BaseCodec> extends AbstractArray<T> {
   Constructor<T> _type;
-  Constructor<T> get constructorType => _type;
+  Constructor<T> get constructorType {
+    if (_type != null) {
+      return _type;
+    }
+    _type = typeToConstructor(registry, originType);
+    return _type;
+  }
+
   dynamic originType;
   dynamic originValue;
-
-  Vec(Registry registry, dynamic type, [dynamic value])
-      : super.withReg(
-            registry,
-            Vec.decodeVec(registry, typeToConstructor<T>(registry, type),
-                value is Vec ? value.value : value ?? [])) {
-    originType = type;
-    originValue = value;
-    if (value == null) {
-      value = [];
-    }
-    final clazz = typeToConstructor<T>(registry, type);
-    this._type = clazz;
-  }
+  Vec.empty() : super.empty();
+  Vec(Registry registry, dynamic type, [dynamic thisValue])
+      : originType = type,
+        originValue = thisValue,
+        super.withReg(registry,
+            Vec.decodeVec(registry, typeToConstructor<T>(registry, type), thisValue ?? []));
 
   static constructor(Registry registry, [dynamic type, dynamic value]) =>
       Vec(registry, type, value);
 
-  /// @internal */
-  // static List<T> decodeVec<T extends BaseCodec>(
-  //     Registry registry, Constructor<T> type, dynamic value) {
-  //   if (value is Vec<T>) {
-  //     value = (value as Vec<T>).value;
-  //   }
+  static Vec<T> fromVec<T extends BaseCodec>(Vec codec, List<T> list) {
+    return Vec.empty()
+      ..setType(null)
+      ..originType = codec.originType
+      ..originValue = codec.originValue
+      ..registry = codec.registry
+      ..setValues(list);
+  }
 
-  //   if (!isU8a(value)) {
-  //     if (value is List<T>) {
-  //       return (value as List<T>).map((entry) {
-  //         final index = value.indexOf(entry);
-  //         try {
-  //           return entry is Constructor<T> ? entry : type(registry, entry);
-  //         } catch (error) {
-  //           throw "Unable to decode on index $index $error";
-  //         }
-  //       }).toList();
-  //     } else if (value is List<dynamic>) {
-  //       return (value).map<T>((entry) {
-  //         final index = value.indexOf(entry);
-  //         try {
-  //           return entry is Constructor<T> ? entry : type(registry, entry);
-  //         } catch (error) {
-  //           throw "Unable to decode on index $index $error";
-  //         }
-  //       }).toList();
-  //     }
-  //   }
+  static Vec<T> withTransformer<T extends BaseCodec, F extends BaseCodec>(
+      Vec codec, T Function(F) transformer) {
+    return Vec.empty()
+      ..setType(null)
+      ..originType = codec.originType
+      ..originValue = codec.originValue
+      ..registry = codec.registry
+      ..setValues(codec.value.map((value) => transformer(value)).toList());
+  }
 
-  //   var u8a = u8aToU8a(value is Uint8List ? List<int>.from(value) : value);
-
-  //   if (u8a.isEmpty) {
-  //     u8a = Uint8List.fromList([0]);
-  //   }
-  //   final compact = compactFromU8a(u8a);
-
-  //   final offset = compact[0] as int;
-  //   final length = compact[1] as BigInt;
-
-  //   assert(length.toInt() <= (MAX_LENGTH), "Vec length ${length.toString()} exceeds $MAX_LENGTH");
-  //   return decodeU8a(registry, u8a.sublist(offset), List.filled(length.toInt(), type));
-  // }
+  void setType(Constructor<T> toSet) {
+    this._type = toSet;
+  }
 
   static List<T> decodeVec<T extends BaseCodec>(
       Registry registry, Constructor<T> type, dynamic value) {
+    if (value is Vec<T>) {
+      return value.value;
+    }
     var theValue = value;
-    if (theValue is List && !isU8a(theValue)) {
+    if (theValue is Iterable && !isU8a(theValue) && !(theValue is List<int>)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return (theValue).map<T>((entry) {
-        final index = theValue.indexOf(entry);
+      List<T> result = List<T>.generate(theValue.length, (index) => null);
+      for (int i = 0; i < theValue.length; i += 1) {
         try {
-          return entry is Constructor<T> ? entry : type(registry, entry);
+          final index = theValue.elementAt(i);
+          result[i] = index is Constructor<T> ? index : type(registry, index);
         } catch (error) {
-          throw "Unable to decode on index $index $error";
+          throw "Unable to decode on index $i $error";
         }
-      }).toList();
+      }
+      return result;
     }
 
-    var u8a = u8aToU8a(theValue is Uint8List ? List<int>.from(theValue) : theValue);
+    var u8a = theValue is Uint8List ? theValue : u8aToU8a(theValue);
 
     final compact = compactFromU8a(u8a);
 
@@ -120,7 +116,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
   /// @description Finds the index of the value in the array
   int indexOf([dynamic _other]) {
     // convert type first, this removes overhead from the eq
-    final other = _other is BaseCodec ? _other : this._type(this.registry, _other);
+    final other = _other is BaseCodec ? _other : constructorType(this.registry, _other);
 
     for (var i = 0; i < this.length; i++) {
       if (other.eq(this.value[i])) {
@@ -133,7 +129,7 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
 
   /// @description Returns the base runtime type name for this instance
   String toRawType() {
-    return "Vec<${this.registry.getClassName(this._type) ?? this._type(this.registry).toRawType()}>";
+    return "Vec<${this.registry.getClassName(constructorType) ?? constructorType(this.registry).toRawType()}>";
   }
 
   @override

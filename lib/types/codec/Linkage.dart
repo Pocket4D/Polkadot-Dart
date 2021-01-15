@@ -4,7 +4,6 @@ import 'package:polkadot_dart/types/codec/Option.dart';
 import 'package:polkadot_dart/types/codec/Struct.dart';
 import 'package:polkadot_dart/types/codec/Tuple.dart';
 import 'package:polkadot_dart/types/codec/Vec.dart';
-import 'package:polkadot_dart/types/create/createClass.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 

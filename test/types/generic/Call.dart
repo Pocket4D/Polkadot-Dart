@@ -2,16 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:polkadot_dart/metadata/Metadata.dart';
-import 'package:polkadot_dart/types/codec/codec.dart';
 import 'package:polkadot_dart/types/create/create.dart';
-import 'package:polkadot_dart/types/create/createTypes.dart';
-import 'package:polkadot_dart/types/generic/AccountIndex.dart';
 import 'package:polkadot_dart/types/generic/Call.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
-import 'package:polkadot_dart/types/primitives/Null.dart';
-import 'package:polkadot_dart/types/primitives/Text.dart';
-import 'package:polkadot_dart/types/primitives/U32.dart';
 import '../../metadata/v12/v12.dart' as rpcMetadata;
 
 void main() {

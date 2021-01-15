@@ -14,7 +14,6 @@ import 'package:polkadot_dart/types/generic/Event.dart';
 import 'package:polkadot_dart/types/interfaces/definitions.dart';
 import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
 
-import 'package:polkadot_dart/types/primitives/primitives.dart';
 import 'package:polkadot_dart/types/types/calls.dart';
 import 'package:polkadot_dart/types/types/codec.dart';
 
@@ -25,46 +24,41 @@ import 'package:polkadot_dart/utils/u8a.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 // create error mapping from metadata
-void injectErrors(Registry _, Metadata metadata, Map<String, RegistryError> metadataErrors) {
+void injectErrors(Registry registry, Metadata metadata, Map<String, RegistryError> metadataErrors) {
   final modules = metadata.asLatest.modules;
-  final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
 
   // decorate the errors
-  modules.value.forEach((section) {
-    final sectionIndex = isIndexed ? section.index.toNumber() : modules.value.indexOf(section);
+  modules.value.asMap().forEach((index, section) {
+    final sectionIndex = metadata.version >= 12 ? section.index.toNumber() : index;
     final sectionName = stringCamelCase(section.name.toString());
 
-    section.errors.value.forEach((errorModule) {
-      final index = section.errors.value.indexOf(errorModule);
+    section.errors.value.asMap().forEach((index, errorModule) {
       final eventIndex = Uint8List.fromList([sectionIndex, index]);
 
       metadataErrors[u8aToHex(eventIndex)] = RegistryError(
-          documentation:
-              errorModule.documentation.map((d, [index, list]) => d.value.toString()).toList(),
+          documentation: errorModule.documentation.map((d, [index, list]) => d.value.toString()),
           index: index,
           name: errorModule.name.toString(),
           section: sectionName);
     });
   });
+  registry.setMetaToRegistry(metadata);
 }
 
 void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
     Map<String, Constructor<GenericEventData>> metadataEvents) {
   final modules = metadata.asLatest.modules;
-  final isIndexed = modules.value.any((module) => module.index.value != BigInt.from(255));
-
   // decorate the events
   final filtered =
       modules.value.where((module) => module.events != null && module.events.isSome).toList();
 
-  filtered.forEach((section) {
-    final _sectionIndex = filtered.indexOf(section);
-    final sectionIndex = isIndexed ? section.index.toNumber() : _sectionIndex;
+  filtered.asMap().forEach((key, section) {
+    final _sectionIndex = key;
+    final sectionIndex = metadata.version >= 12 ? section.index.toNumber() : _sectionIndex;
     final sectionName = stringCamelCase(section.name.toString());
 
     final events = section.events.unwrap().value;
-    events.forEach((meta) {
-      final methodIndex = events.indexOf(meta);
+    events.asMap().forEach((methodIndex, meta) {
       final methodName = meta.name.toString();
       final eventIndex = Uint8List.fromList([sectionIndex, methodIndex]);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -84,6 +78,7 @@ void injectEvents<T extends BaseCodec>(Registry registry, Metadata metadata,
       };
     });
   });
+  registry.setMetaToRegistry(metadata);
 }
 
 void injectExtrinsics(
@@ -94,6 +89,7 @@ void injectExtrinsics(
   (extrinsics.values).forEach((methods) => (methods.values).forEach((method) {
         metadataCalls[u8aToHex(method.callIndex)] = method;
       }));
+  registry.setMetaToRegistry(metadata);
 }
 
 class TypeRegistry implements Registry {
@@ -104,6 +100,8 @@ class TypeRegistry implements Registry {
   RegisteredTypes _knownTypes;
   RegisteredTypes _registeredTypes;
   List<String> _signedExtensions = defaultExtensions;
+  Metadata get metadataRegistry => _metadata;
+  Metadata _metadata;
 
   Map<String, Constructor> _classes = new Map<String, Constructor>();
   Map<String, Constructor> get cls => _classes;
@@ -277,7 +275,6 @@ class TypeRegistry implements Registry {
     this._definitions = new Map<String, String>();
     this._unknownTypes = new Map<String, bool>();
     this._knownTypes = RegisteredTypes.fromMap({});
-    // this._knownTypes = {};
 
     this.register(this._knownDefaults);
     this._knownDefinitions.values.forEach((defs) {
@@ -337,7 +334,9 @@ class TypeRegistry implements Registry {
   @override
   void setMetadata(Metadata metadata, [List<String> signedExtensions]) {
     injectExtrinsics(this, metadata, this._metadataCalls);
+
     injectErrors(this, metadata, this._metadataErrors);
+
     injectEvents(this, metadata, this._metadataEvents);
 
     this.setSignedExtensions(signedExtensions ??
@@ -346,6 +345,10 @@ class TypeRegistry implements Registry {
                 .map((key) => key.toString())
                 .toList()
             : defaultExtensions));
+  }
+
+  void setMetaToRegistry(Metadata _meta) {
+    this._metadata = _meta;
   }
 
   @override

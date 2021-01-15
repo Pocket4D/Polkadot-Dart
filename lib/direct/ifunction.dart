@@ -1,1 +1,0 @@
-abstract class IFunction<R> {}

@@ -90,7 +90,9 @@ DecodedEnum decodeFromString(Registry registry, Map<String, Constructor> def, St
 
 DecodedEnum decodeFromValue(Registry registry, Map<String, Constructor> def, [dynamic value]) {
   if (value is Uint8List) {
-    if (value.isEmpty) value = Uint8List.fromList([0]);
+    if (value.isEmpty) {
+      value = Uint8List.fromList([0]);
+    }
     return createFromValue(registry, def, value[0], value.sublist(1));
   } else if (isNumber(value)) {
     return createFromValue(registry, def, value);
@@ -142,15 +144,19 @@ class Enum<T extends BaseCodec> extends BaseCodec {
 
   List<String> iskeys = [];
   List<String> askeys = [];
-
+  Uint8List u8aValue;
   dynamic originDef;
   dynamic originValue;
   dynamic originIndex;
-  Enum(Registry registry, dynamic def, [dynamic thisValue, int index]) {
-    originDef = def;
+  Enum.empty();
+  Enum(Registry registry, dynamic thisDef, [dynamic thisValue, int index]) {
+    originDef = thisDef;
     originValue = thisValue;
     originIndex = index;
-    final defInfo = extractDef(registry, def);
+    if (thisValue is Uint8List) {
+      u8aValue = thisValue;
+    }
+    final defInfo = extractDef(registry, thisDef);
     final decoded = decodeEnum(registry, defInfo.def, thisValue, index);
     final defList = defInfo.def.keys.toList();
     this.registry = registry;
@@ -160,6 +166,21 @@ class Enum<T extends BaseCodec> extends BaseCodec {
     this._index = this._indexes.indexOf(decoded.index) ?? 0;
     this._raw = decoded.value;
     this.genKeys();
+  }
+  void setBasic(bool toSet) {
+    this._isBasic = toSet;
+  }
+
+  void setIndexes(List<int> toSet) {
+    this._indexes = toSet;
+  }
+
+  void setDef(Map<String, Constructor> toSet) {
+    this.def = toSet;
+  }
+
+  void setIndex(int toSet) {
+    this._index = toSet;
   }
 
   static Enum constructor(Registry registry, [dynamic def, dynamic thisValue, int index]) =>
@@ -186,6 +207,10 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   /// @description The index of the metadata value
   int get index {
     return this._index;
+  }
+
+  List<int> get indexes {
+    return this._indexes;
   }
 
   /// @description true if this is a basic enum (no values)
@@ -226,6 +251,10 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   /// @description The value of the enum
   BaseCodec get value {
     return this._raw;
+  }
+
+  void setRaw(T val) {
+    this._raw = val;
   }
 
   /// @description Compares the value of the input to see if there is a match
@@ -292,10 +321,11 @@ class Enum<T extends BaseCodec> extends BaseCodec {
   /// @description Encodes the value as a Uint8Array as per the SCALE specifications
   /// @param isBare true when the value has none of the type-specific prefixes (internal)
   Uint8List toU8a([dynamic isBare]) {
-    return u8aConcat([
-      Uint8List.fromList(isBare is bool && isBare ? [] : [this._indexes[this._index]]),
-      this._raw.toU8a(isBare)
-    ]);
+    return u8aValue ??
+        u8aConcat([
+          Uint8List.fromList(isBare is bool && isBare ? [] : [this._indexes[this._index]]),
+          this._raw.toU8a(isBare)
+        ]);
   }
 
   bool isKey(String name) {
@@ -313,8 +343,12 @@ class Enum<T extends BaseCodec> extends BaseCodec {
       final name = stringUpperFirst(stringCamelCase(_key.replaceAll(' ', '_')));
       final iskey = "is$name";
       final askey = "as$name";
-      iskeys.add(iskey);
-      askeys.add(askey);
+      if (!iskeys.contains(iskey)) {
+        iskeys.add(iskey);
+      }
+      if (!askeys.contains(askey)) {
+        askeys.add(askey);
+      }
     });
   }
 }

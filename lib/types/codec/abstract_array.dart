@@ -12,13 +12,15 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   List<T> get value => _values;
 
   AbstractArray.withReg(Registry registry, List<T> values) {
-    _values = List.from(values);
+    _values = values;
     this.registry = registry;
   }
   AbstractArray.fromList(List<T> values) {
-    _values = List.from(values);
+    _values = values;
   }
   AbstractArray();
+
+  AbstractArray.empty();
 
   void setValues(List<T> values) {
     this._values = values;
@@ -118,7 +120,16 @@ abstract class AbstractArray<T extends BaseCodec> implements BaseCodec {
   //  */
   List<U> map<U>(U Function(T value, [int index, List<T> array]) callbackfn, [dynamic thisArg]) {
     var newArr = this.toArray();
-    return newArr.map((val) => callbackfn(val, newArr.indexOf(val), newArr)).toList();
+
+    // var newMap=Map.fromIterable(newArr);
+
+    return newArr.asMap().entries.map((entry) {
+      int index = entry.key;
+      T val = entry.value;
+      return callbackfn(val, index, newArr);
+    }).toList();
+
+    // return newArr.map((val) => callbackfn(val, newArr.indexOf(val), newArr)).toList();
   }
 
   // /**

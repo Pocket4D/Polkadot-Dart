@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:polkadot_dart/metadata/Metadata.dart';
 import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
-
-import 'package:polkadot_dart/types/types.dart' hide Metadata;
+import 'package:polkadot_dart/types/types.dart';
 
 import './v12.dart' as substrateData;
 
@@ -21,9 +19,9 @@ void metadataV12() {
   Map<String, dynamic> substrateJson;
   final registry = new TypeRegistry();
   Metadata metadata;
-  setUp(() async {
+  setUpAll(() async {
     substrateJson = Map<String, dynamic>.from(jsonDecode(await file.readAsString()));
-    metadata = Metadata(registry, substrateData.v12);
+    metadata = await Metadata.asyncMetadata(registry, substrateData.v12);
     registry.setMetadata(metadata);
   });
   group('MetadataV12 (substrate)', () {
@@ -32,24 +30,26 @@ void metadataV12() {
       // new File(filename).writeAsString(jsonEncode(metadata.toJSON())).then((File file) {
       //   // Do something with the file.
       // });
-      // try {
-      //  expect(metadata.version, version);
-      // expect(jsonEncode(metadata.toJSON()), jsonEncode(substrateJson));
-
-      //   // expect((metadata["asV${version}" as keyof Metadata] as unknown as MetadataInterface<Modules>).modules.length).not.toBe(0);
-      expect(metadata.toJSON(), substrateJson);
-      // } catch (error) {
-      //   // print(jsonEncode(metadata.toJSON()));
-      //   throw error;
-      // }
+      try {
+        expect(metadata.version, 12);
+        expect(metadata.toJSON(), substrateJson);
+      } catch (error) {
+        // print(jsonEncode(metadata.toJSON()));
+        throw error;
+      }
     });
     test("converts v12 to latest", () async {
-      ExtractionMetadata metadataInit = metadata.asV12;
-
+      final metadataInit = metadata.asV12;
       final metadataLatest = metadata.asLatest;
-
       expect(getUniqTypes(registry, metadataInit, false),
           getUniqTypes(registry, metadataLatest, false));
+    }, skip: "should always use ```asLatest```");
+
+    test("use json data to initialize instance", () async {
+      final newR = new TypeRegistry();
+      var newMeta = Metadata(newR, substrateJson);
+      newR.setMetadata(newMeta);
+      expect(newMeta.toJSON(), substrateJson);
     });
 
     test('storage with default values', () async {

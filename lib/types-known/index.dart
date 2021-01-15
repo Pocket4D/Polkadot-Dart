@@ -19,7 +19,11 @@ Map<String, dynamic> filterVersions(List<OverrideVersionedType> versions, int sp
 }
 
 Map<String, String> getModuleTypes(Registry registry, String section) {
-  return {...(typesModules[section] ?? {}), ...(registry.knownTypes.typesAlias[section] ?? {})};
+  final result = {
+    ...(typesModules[section] ?? {}),
+    ...(registry.knownTypes.typesAlias[section] ?? {})
+  };
+  return result;
 }
 
 Map<String, dynamic> getSpecTypes(

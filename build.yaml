@@ -21,7 +21,7 @@ targets:
           # - lib/types/interfaces/consensus/builder.dart
           # - lib/types/interfaces/contracts/builder.dart
           # - lib/types/interfaces/contractsAbi/builder.dart
-          - lib/types/interfaces/democracy/builder.dart
+          # - lib/types/interfaces/democracy/builder.dart
           # # - lib/types/interfaces/elections/builder.dart
           # - lib/types/interfaces/engine/builder.dart
           # # - lib/types/interfaces/ethereum/builder.dart
@@ -40,10 +40,10 @@ targets:
           # - lib/types/interfaces/proxy/builder.dart
           # - lib/types/interfaces/purchase/builder.dart
           # - lib/types/interfaces/recovery/builder.dart
-          # - lib/types/interfaces/rpc/builder.dart
+          - lib/types/interfaces/rpc/builder.dart
           # # - lib/types/interfaces/runtime/builder.dart
           # - lib/types/interfaces/scaleInfo/builder.dart
-          # # - lib/types/interfaces/scheduler/builder.dart
+          - lib/types/interfaces/scheduler/builder.dart
           # # - lib/types/interfaces/session/builder.dart
           # # - lib/types/interfaces/society/builder.dart
           # # - lib/types/interfaces/staking/builder.dart

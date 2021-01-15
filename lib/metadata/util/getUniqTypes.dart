@@ -1,9 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:polkadot_dart/metadata/util/fluttenUniq.dart';
 import 'package:polkadot_dart/metadata/util/validateTypes.dart';
-import 'package:polkadot_dart/types/interfaces/runtime/types.dart';
-import 'package:polkadot_dart/types/types.dart' hide Call;
+import 'package:polkadot_dart/types/types.dart';
 
 abstract class Arg extends BaseCodec {
   CodecType get type;
@@ -107,18 +104,18 @@ List<Call> unwrapCalls(Module mod) {
 
 // /** @internal */
 List<List<List<String>>> getCallNames(ExtractionMetadata extractionMetadata) {
-  return extractionMetadata.modules
-      .map((mod, [index, list]) => unwrapCalls(mod)
-          .map((call) => call.args.map((arg, [index, list]) => arg.type.toString()).toList())
+  return extractionMetadata.modules.value
+      .map((mod) => unwrapCalls(mod)
+          .map((call) => call.args.value.map((arg) => arg.type.toString()).toList())
           .toList())
       .toList();
 }
 
 // /** @internal */
 List<List<String>> getConstantNames(ExtractionMetadata extractionMetadata) {
-  var result = extractionMetadata.modules
-      .map((mod, [index, list]) => mod.constants != null
-          ? mod.constants.map((constant, [index, list]) => constant.type.toString()).toList()
+  var result = extractionMetadata.modules.value
+      .map((mod) => mod.constants != null
+          ? mod.constants.value.map((constant) => constant.type.toString()).toList()
           : List<String>.from([]))
       .toList();
 
@@ -168,8 +165,8 @@ List<Item> unwrapStorage(dynamic storage) {
 
 // /** @internal */
 List<List<List<String>>> getStorageNames(ExtractionMetadata extractionMetadata) {
-  return extractionMetadata.modules
-      .map((module, [index, list]) => unwrapStorage(module.storage).map((item) {
+  return extractionMetadata.modules.value
+      .map((module) => unwrapStorage(module.storage).map((item) {
             if (item.type.isDoubleMap == true && item.type.asDoubleMap != null) {
               return [
                 item.type.asDoubleMap.key1.toString(),
@@ -189,7 +186,6 @@ List<List<List<String>>> getStorageNames(ExtractionMetadata extractionMetadata) 
 List<String> getUniqTypes(Registry registry, ExtractionMetadata meta, bool throwError) {
   final types = flattenUniq(
       [getCallNames(meta), getConstantNames(meta), getEventNames(meta), getStorageNames(meta)]);
-
   validateTypes(registry, types, throwError);
 
   return types;
