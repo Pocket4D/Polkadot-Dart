@@ -221,13 +221,8 @@ void createTypeTest() {
 
         print(sk4);
 
-        var a = [
-          [1, 2],
-          [3, 4],
-          [5]
-        ];
-
-        print(a.expand<int>((element) => element).toList());
+        var kkk = registry.createType("NetworkState");
+        // print(((kkk as Struct).getCodec("connectedPeers") as CodecMap).valClass);
       });
     });
   });

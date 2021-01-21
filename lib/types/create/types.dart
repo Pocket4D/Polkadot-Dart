@@ -250,3 +250,7 @@ Map<String, Constructor> baseTypes = {
   'Metadata': Metadata.constructor,
   'MagicNumber': MagicNumber.constructor
 };
+
+Map<String, CodecTransformer> codecTransformer = {
+  'BitVec': BitVec.transformer,
+};

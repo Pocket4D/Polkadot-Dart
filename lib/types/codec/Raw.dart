@@ -31,6 +31,10 @@ class Raw extends BaseCodec implements IU8a {
 
   static Raw constructor(Registry registry, [dynamic value]) => Raw(registry, value);
 
+  setValue(Uint8List toSet) {
+    this._value = toSet;
+  }
+
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
     return this._value.length;

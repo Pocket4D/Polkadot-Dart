@@ -74,7 +74,8 @@ class Vec<T extends BaseCodec> extends AbstractArray<T> {
       return value.value;
     }
     var theValue = value;
-    if (theValue is Iterable && !isU8a(theValue) && !(theValue is List<int>)) {
+
+    if (theValue is Iterable && !isU8a(theValue)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       List<T> result = List<T>.generate(theValue.length, (index) => null);
       for (int i = 0; i < theValue.length; i += 1) {

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:polkadot_dart/types/codec/Raw.dart';
+import 'package:polkadot_dart/types/types/codec.dart';
 import 'package:polkadot_dart/types/types/registry.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
@@ -35,6 +36,12 @@ class BitVec extends Raw {
   BitVec(Registry registry, [dynamic value]) : super(registry, decodeBitVec(value));
 
   static BitVec constructor(Registry registry, [dynamic value]) => BitVec(registry, value);
+
+  static BitVec transformer(BaseCodec origin) {
+    return BitVec.empty()
+      ..registry = origin.registry
+      ..setValue(origin.value);
+  }
 
   /// @description The length of the value when encoded as a Uint8Array
   int get encodedLength {
