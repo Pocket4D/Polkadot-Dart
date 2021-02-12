@@ -8,6 +8,8 @@
 
 // export type DefinitionType = string | DefinitionTypeEnum | DefinitionTypeSet | DefinitionTypeStruct;
 
+import 'dart:convert';
+
 class DefinitionRpcParam {
   bool isCached;
   bool isHistoric;
@@ -23,7 +25,7 @@ class DefinitionRpcParam {
         name: map["name"] as String ?? null,
         type: map["type"] as String ?? null);
   }
-  toMap() {
+  Map<String, dynamic> toMap() {
     var resultMap = {
       "isCached": this.isCached,
       "isHistoric": this.isHistoric,
@@ -31,7 +33,7 @@ class DefinitionRpcParam {
       "name": this.name,
       "type": this.type,
     };
-    var newMap = {};
+    Map<String, dynamic> newMap = Map<String, dynamic>.from({});
     resultMap.forEach((key, value) {
       if (value != null) {
         newMap[key] = value;
@@ -43,15 +45,18 @@ class DefinitionRpcParam {
 
 class DefinitionRpc {
   List<String> alias;
+  String aliasSection;
   String description;
   String endpoint;
   List<DefinitionRpcParam> params;
   String type;
-  DefinitionRpc({this.alias, this.description, this.endpoint, this.params, this.type});
+  DefinitionRpc(
+      {this.alias, this.description, this.endpoint, this.params, this.type, this.aliasSection});
   factory DefinitionRpc.fromMap(Map<String, dynamic> map) {
     var alias = (map["alias"] is Iterable<String>)
         ? (map["alias"] as Iterable<String>).map((e) => e).toList()
         : null;
+    var aliasSection = map["aliasSection"] as String ?? null;
     var description = map["description"] as String ?? null;
     var endpoint = map["endpoint"] as String ?? null;
     var params = (map["params"] is Iterable)
@@ -59,17 +64,23 @@ class DefinitionRpc {
         : null;
     var type = map["type"] as String ?? null;
     return DefinitionRpc(
-        alias: alias, description: description, endpoint: endpoint, params: params, type: type);
+        alias: alias,
+        aliasSection: aliasSection,
+        description: description,
+        endpoint: endpoint,
+        params: params,
+        type: type);
   }
-  toMap() {
+  Map<String, dynamic> toMap() {
     var resultMap = {
       "alias": this.alias,
+      "aliasSection": this.aliasSection,
       "description": this.description,
       "endpoint": this.endpoint,
       "params": this.params?.map((e) => e.toMap())?.toList() ?? null,
       "type": this.type,
     };
-    var newMap = {};
+    Map<String, dynamic> newMap = Map<String, dynamic>.from({});
     resultMap.forEach((key, value) {
       if (value != null) {
         newMap[key] = value;
@@ -87,6 +98,7 @@ class DefinitionRpcExt extends DefinitionRpc {
   String section;
   DefinitionRpcExt(
       {List<String> alias,
+      String aliasSection,
       String description,
       String endpoint,
       List<DefinitionRpcParam> params,
@@ -97,19 +109,56 @@ class DefinitionRpcExt extends DefinitionRpc {
       this.pubsub,
       this.section})
       : super(
-            alias: alias, description: description, endpoint: endpoint, params: params, type: type);
+            alias: alias,
+            aliasSection: aliasSection,
+            description: description,
+            endpoint: endpoint,
+            params: params,
+            type: type);
+  factory DefinitionRpcExt.fromMap(Map<String, dynamic> map) {
+    final parent = DefinitionRpc.fromMap(map);
+    return DefinitionRpcExt(
+        alias: parent.alias,
+        aliasSection: parent.aliasSection,
+        description: parent.description,
+        endpoint: parent.endpoint,
+        params: parent.params,
+        type: parent.type,
+        isSubscription: map["isSubscription"] ?? false,
+        jsonrpc: map["jsonrpc"],
+        method: map["method"],
+        pubsub: map["pubsub"],
+        section: map["section"]);
+  }
 }
 
 class DefinitionRpcSub extends DefinitionRpc {
   List<String> pubsub;
+  DefinitionRpcSub() : super();
+  factory DefinitionRpcSub.fromMap(Map<String, dynamic> map) {
+    var parent = DefinitionRpc.fromMap(map);
+    return DefinitionRpcSub()
+      ..alias = parent.alias
+      ..aliasSection = parent.aliasSection
+      ..description = parent.description
+      ..endpoint = parent.description
+      ..params = parent.params
+      ..type = parent.type
+      ..pubsub = map["pubsub"] ?? [];
+  }
 }
 
 class Definitions {
   Map<String, DefinitionRpc> rpc;
-  Map<String, String> types;
+  Map<String, dynamic> types;
   Definitions({this.rpc, this.types});
   factory Definitions.fromMap(Map<String, dynamic> map) {
-    return Definitions(rpc: map["rpc"] ?? {}, types: map["types"] ?? {});
+    Map<String, DefinitionRpc> newRpc = Map<String, DefinitionRpc>.from({});
+    (map["rpc"] as Map<String, Object>).forEach((key, value) {
+      newRpc.putIfAbsent(key, () => DefinitionRpc.fromMap(value));
+    });
+    return Definitions(
+        rpc: newRpc, types: Map<String, dynamic>.from(jsonDecode(jsonEncode(map['types']))));
   }
   toMap() => {"rpc": this.rpc, "types": this.types};
 }

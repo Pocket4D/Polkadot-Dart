@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:polkadot_dart/metadata/decorate/storage/getStorage.dart';
 
-import 'package:polkadot_dart/types/types.dart' hide Metadata;
+import 'package:polkadot_dart/types/types.dart';
 
 void main() {
   getStorageTest(); // rename this test name

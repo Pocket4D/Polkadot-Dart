@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:polkadot_dart/metadata/Metadata.dart';
+import 'package:polkadot_dart/metadata/decorate/storage/index.dart';
 import 'package:polkadot_dart/metadata/util/getUniqTypes.dart';
 import 'package:polkadot_dart/types/interfaces/metadata/types.dart';
 import 'package:polkadot_dart/types/types.dart';
