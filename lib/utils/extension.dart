@@ -17,11 +17,11 @@ extension StringExtension on String {
   String hexStripPrefix() => stringUtil.strip0xHex(this);
   String plainToHex() => u8aUtil.u8aToHex(stringUtil.stringToU8a(this));
   Uint8List toU8a({int bitLength = -1}) => hexUtil.hexToU8a(this, bitLength);
-  Uint8List plainToU8a({String enc, bool useDartEncode = false}) =>
+  Uint8List plainToU8a({String? enc, bool useDartEncode = false}) =>
       stringUtil.stringToU8a(this, enc: enc, useDartEncode: useDartEncode);
   BigInt hexToBn({Endian endian = Endian.big, bool isNegative = false}) =>
       hexUtil.hexToBn(this, endian: endian, isNegative: isNegative);
-  Pointer<Utf8> toUtf8() => Utf8.toUtf8(this);
+  Pointer<Utf8> toUtf8() => this.toNativeUtf8();
   String camelCase() => stringUtil.stringCamelCase(this);
 }
 
@@ -40,7 +40,7 @@ extension BnExtension on BigInt {
       bnUtil.bnToHex(this, bitLength: bitLength, endian: endian, isNegative: isNegative);
   Uint8List toU8a({int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) =>
       bnUtil.bnToU8a(this, bitLength: bitLength, endian: endian, isNegative: isNegative);
-  BigInt bitNot({int bitLength}) => bnUtil.bitnot(this, bitLength: bitLength);
+  BigInt bitNot({int? bitLength}) => bnUtil.bitnot(this, bitLength: bitLength);
 }
 
 extension IntExtension on int {
@@ -49,6 +49,6 @@ extension IntExtension on int {
       bnUtil.bnToHex(this.toBn(), bitLength: bitLength, endian: endian, isNegative: isNegative);
   Uint8List toU8a({int bitLength = -1, Endian endian = Endian.big, bool isNegative = false}) =>
       bnUtil.bnToU8a(this.toBn(), bitLength: bitLength, endian: endian, isNegative: isNegative);
-  BigInt bitNot({int bitLength}) => bnUtil.bitnot(this.toBn(), bitLength: bitLength);
+  BigInt bitNot({int? bitLength}) => bnUtil.bitnot(this.toBn(), bitLength: bitLength);
   static get max => 4294967296;
 }

@@ -20,7 +20,7 @@ const SI = [
   {"power": 24, "text": 'Yotta', "value": 'Y'}
 ];
 
-Map<String, Object> findSi(String type) {
+Map<String, dynamic> findSi(String type) {
   // use a loop here, better RN support (which doesn't have [].find)
   for (var i = 0; i < SI.length; i++) {
     if (SI[i]["value"] == type) {
@@ -30,7 +30,7 @@ Map<String, Object> findSi(String type) {
   return SI[SI_MID];
 }
 
-Map<String, Object> calcSi(String text, num decimals, [String forceUnit]) {
+Map<String, dynamic> calcSi(String text, num decimals, [String? forceUnit]) {
   if (forceUnit != null) {
     return findSi(forceUnit);
   }

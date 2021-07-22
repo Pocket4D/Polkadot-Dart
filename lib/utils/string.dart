@@ -24,11 +24,11 @@ String zero2(word) {
     return word;
 }
 
-Uint8List stringToU8a(String msg, {String enc, bool useDartEncode = true}) {
+Uint8List stringToU8a(String msg, {String? enc, bool useDartEncode = true}) {
   if (useDartEncode == false) {
     if (enc == 'hex') {
       msg = strip0xHex(msg);
-      List<int> hexRes = new List();
+      var hexRes = <int>[];
       msg = msg.replaceAll(new RegExp("[^a-z0-9]"), '');
       if (msg.length % 2 != 0) msg = '0' + msg;
       for (var i = 0; i < msg.length; i += 2) {
@@ -38,7 +38,7 @@ Uint8List stringToU8a(String msg, {String enc, bool useDartEncode = true}) {
       }
       return Uint8List.fromList(hexRes);
     } else {
-      List<int> noHexRes = new List();
+      var noHexRes = <int>[];
       for (var i = 0; i < msg.length; i++) {
         var c = msg.codeUnitAt(i);
         var hi = c >> 8;

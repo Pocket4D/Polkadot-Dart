@@ -81,7 +81,7 @@ BigInt hexToBn(dynamic value, {Endian endian = Endian.big, bool isNegative = fal
   }
 }
 
-int hexToNumber(dynamic value) {
+int? hexToNumber(dynamic value) {
   try {
     return value != null ? hexToBn(value).toInt() : null;
   } catch (e) {
@@ -106,7 +106,7 @@ Uint8List hexToU8a(String value, [int bitLength = -1]) {
       var subStart = index * 2;
       var subEnd = subStart + 2 <= _value.length ? subStart + 2 : _value.length;
       var arrIndex = index + offset;
-      result[arrIndex] = int.tryParse(_value.substring(subStart, subEnd), radix: 16);
+      result[arrIndex] = int.tryParse(_value.substring(subStart, subEnd), radix: 16)!;
     }
     return result;
   } catch (e) {

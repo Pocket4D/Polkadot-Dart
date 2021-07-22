@@ -8,7 +8,7 @@ BigInt bnToBn(dynamic value) {
     if (value == null) {
       return BigInt.zero;
     }
-    BigInt result;
+    BigInt? result;
     if (value is BigInt) {
       return value;
     } else if (value is int) {
@@ -42,7 +42,7 @@ BigInt compactToBn(Map<String, dynamic> value) {
   throw "toBn or toBigInt function not found";
 }
 
-BigInt bitnot(BigInt bn, {int bitLength}) {
+BigInt bitnot(BigInt bn, {int? bitLength}) {
   // JavaScript's bitwise not doesn't work on negative BigInts (bn = ~bn; // WRONG!)
   // so we manually implement our own two's compliment (flip bits, add one)
   bn = -bn;
@@ -75,12 +75,12 @@ String bnToHex(BigInt bn,
 }
 
 class Options {
-  int bitLength;
-  Endian endian;
-  bool isNegative;
+  int? bitLength;
+  Endian? endian;
+  bool? isNegative;
 }
 
-Uint8List bnToU8a(BigInt value,
+Uint8List bnToU8a(BigInt? value,
     {int bitLength = -1, Endian endian = Endian.little, bool isNegative = false}) {
   BigInt valueBn = bnToBn(value);
   int byteLength;

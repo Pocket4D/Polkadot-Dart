@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 class Time {
-  const Time({
-    this.days,
-    this.hours,
-    this.milliseconds,
-    this.minutes,
-    this.seconds,
+  Time({
+    required this.days,
+    required this.hours,
+    required this.milliseconds,
+    required this.minutes,
+    required this.seconds,
   });
 
   final int days;
@@ -16,11 +16,11 @@ class Time {
   final int seconds;
 
   Time copyWith({
-    int days,
-    int hours,
-    int milliseconds,
-    int minutes,
-    int seconds,
+    int? days,
+    int? hours,
+    int? milliseconds,
+    int? minutes,
+    int? seconds,
   }) =>
       Time(
         days: days ?? this.days,

@@ -46,7 +46,7 @@ String formatValue(double elapsed) {
   return "${(elapsed / 3600).floor()}h";
 }
 
-String formatElapsed([DateTime now, dynamic value]) {
+String formatElapsed([DateTime? now, dynamic value]) {
   if (now != null && value != null) {
     var valueTime = DateTime.fromMillisecondsSinceEpoch(
         value is BigInt ? value.toInt() : BigInt.from(value).toInt());
@@ -62,39 +62,39 @@ String formatNumber(dynamic value) {
 }
 
 class Defaults {
-  final num decimals;
+  final int decimals;
   final String unit;
-  final List<Map<String, Object>> si;
-  const Defaults({this.decimals, this.unit, this.si});
+  List<Map<String, dynamic>>? si;
+  Defaults({required this.decimals, required this.unit, this.si});
 }
 
 class BalanceFormatterOptions {
-  num decimals;
-  String forceUnit;
-  bool withSi;
-  bool withSiFull;
-  dynamic withUnit;
+  int? decimals;
+  String? forceUnit;
+  bool? withSi;
+  bool? withSiFull;
+  dynamic? withUnit;
   BalanceFormatterOptions(
       {this.decimals, this.forceUnit, this.withSi, this.withSiFull, this.withUnit});
 }
 
 abstract class Formatter {
-  Map<String, Object> calcSi(String text, num decimals, [String forceUnit]);
-  Map<String, Object> findSi(String type);
+  Map<String, dynamic> calcSi(String text, num decimals, [String forceUnit]);
+  Map<String, dynamic> findSi(String type);
   Defaults getDefaults();
-  List<Map<String, Object>> getOptions();
+  List<Map<String, dynamic>> getOptions();
   void setDefaults(Defaults defaults);
 }
 
 class BalanceFormatter implements Formatter {
-  num defaultDecimals;
-  dynamic defaultUnit;
-  List<Map<String, Object>> si;
-  static BalanceFormatter _instance;
-  static BalanceFormatter get instance => _instance;
-  factory BalanceFormatter({Defaults defaults}) =>
+  late int defaultDecimals;
+  late dynamic defaultUnit;
+  late List<Map<String, dynamic>> si;
+  static BalanceFormatter? _instance;
+  static BalanceFormatter? get instance => _instance;
+  factory BalanceFormatter({Defaults? defaults}) =>
       _getInstance(defaults: defaults ?? Defaults(decimals: 0, unit: SI[SI_MID]["text"] as String));
-  static _getInstance({Defaults defaults}) {
+  static _getInstance({Defaults? defaults}) {
     // 只能有一个实例
     if (_instance == null) {
       _instance = BalanceFormatter._internal(defaults: defaults);
@@ -102,10 +102,10 @@ class BalanceFormatter implements Formatter {
     return _instance;
   }
 
-  BalanceFormatter._internal({Defaults defaults}) {
+  BalanceFormatter._internal({Defaults? defaults}) {
     setDefaults(defaults);
   }
-  String formatBalance(dynamic input, BalanceFormatterOptions options, [num optDecimals]) {
+  String formatBalance(dynamic input, BalanceFormatterOptions options, [int? optDecimals]) {
     optDecimals = optDecimals ?? defaultDecimals;
     var bnValue;
     if (input is String) {
@@ -134,13 +134,14 @@ class BalanceFormatter implements Formatter {
 
     var _si = calcSi(text, decimals, forceUnit);
 
-    var mid = text.length - (decimals + _si["power"]);
+    var mid = text.length - (decimals + _si["power"] as int);
 
     var prefix = text.substring(0, mid);
 
     var padding = mid < 0 ? 0 - mid : 0;
 
-    var padString = "${List(padding + 1).join('0').replaceAll("null", "")}$text";
+    var padString =
+        "${List.generate(padding + 1, (index) => null).join('0').replaceAll("null", "")}$text";
 
     var postfix = "${padString.substring(mid < 0 ? 0 : mid)}0000".substring(0, 4);
     var withU = (withUnit is bool) ? _si["text"] : withUnit;
@@ -158,7 +159,7 @@ class BalanceFormatter implements Formatter {
     return "${isNegative ? '-' : ''}${formatDecimal(prefix == "" ? '0' : prefix)}.$postfix$units";
   }
 
-  Map<String, Object> calcSi(String text, num decimals, [String forceUnit]) {
+  Map<String, dynamic> calcSi(String text, num decimals, [String? forceUnit]) {
     if (forceUnit != null) {
       return findSi(forceUnit);
     }
@@ -167,7 +168,7 @@ class BalanceFormatter implements Formatter {
     return siDefIndex >= 0 ? si[siDefIndex] : si[siDefIndex < 0 ? 0 : si.length - 1];
   }
 
-  Map<String, Object> findSi(String type) {
+  Map<String, dynamic> findSi(String type) {
     for (var i = 0; i < si.length; i++) {
       if (si[i]["value"] == type) {
         return si[i];
@@ -177,9 +178,9 @@ class BalanceFormatter implements Formatter {
   }
 
   Defaults getDefaults() {
-    var newList = List<Map<String, Object>>(SI.length);
+    var newList = List.generate(SI.length, (index) => Map<String, dynamic>());
     for (var i = 0; i < SI.length; i += 1) {
-      newList[i] = Map<String, Object>();
+      newList[i] = Map<String, dynamic>();
       SI[i].forEach((key, value) {
         newList[i].addEntries([MapEntry(key, value)]);
       });
@@ -187,24 +188,24 @@ class BalanceFormatter implements Formatter {
     return Defaults(decimals: defaultDecimals, unit: defaultUnit, si: newList);
   }
 
-  List<Map<String, Object>> getOptions([int decimals]) {
+  List<Map<String, dynamic>> getOptions([int? decimals]) {
     decimals = decimals ?? defaultDecimals;
     return si.where((e) {
-      return e["power"] as int < 0 ? (decimals + e["power"]) >= 0 : true;
+      return e["power"] as int < 0 ? (decimals! + (e["power"] as int)) >= 0 : true;
     }).toList();
   }
 
-  void setDefaults(Defaults defaults) {
-    var newList = List<Map<String, Object>>(SI.length);
+  void setDefaults(Defaults? defaults) {
+    var newList = List.generate(SI.length, (index) => Map<String, dynamic>());
     for (var i = 0; i < SI.length; i += 1) {
-      newList[i] = Map<String, Object>();
+      newList[i] = Map<String, dynamic>();
       SI[i].forEach((key, value) {
         newList[i].addEntries([MapEntry(key, value)]);
       });
     }
-    defaultDecimals = defaults.decimals ?? defaultDecimals;
-    defaultUnit = defaults.unit ?? defaultUnit;
-    si = defaults.si ?? newList;
+    defaultDecimals = defaults?.decimals ?? defaultDecimals;
+    defaultUnit = defaults?.unit ?? defaultUnit;
+    si = defaults?.si ?? newList;
     si[SI_MID]["text"] = defaultUnit;
   }
 }

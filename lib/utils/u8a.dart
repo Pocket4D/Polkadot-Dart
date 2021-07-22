@@ -34,7 +34,7 @@ Uint8List u8aToU8a(dynamic value, {bool useDartEncode = true}) {
 }
 
 Uint8List u8aConcat(List<dynamic> list) {
-  var u8as = List<Uint8List>(list.length);
+  var u8as = List.generate(list.length, (index) => Uint8List.fromList([]));
 
   for (var i = 0; i < list.length; i += 1) {
     u8as[i] = u8aToU8a(list[i]);
