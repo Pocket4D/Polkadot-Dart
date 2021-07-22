@@ -9,9 +9,9 @@ const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvw
 final bs58 = BaseXCodec(BASE58_ALPHABET);
 
 class CheckConfig {
-  String alphabet;
-  String ipfsChar;
-  String type;
+  late final String alphabet;
+  late final String ipfsChar;
+  late final String type;
 }
 
 class Base58Config extends CheckConfig {
@@ -21,7 +21,7 @@ class Base58Config extends CheckConfig {
   Base58Config();
 }
 
-bool validateChars(CheckConfig config, {String value, bool ipfsCompat = false}) {
+bool validateChars(CheckConfig config, {required String value, bool ipfsCompat = false}) {
   assert(value != null, "Expected non-null, non-empty ${config.type} input");
   assert(!ipfsCompat || value[0] == config.ipfsChar,
       "Expected ${config.type} to start with '${config.ipfsChar}'");
@@ -47,6 +47,6 @@ String base58Encode(dynamic value, {bool ipfsCompat = false}) {
   return ipfsCompat ? "z$out" : out;
 }
 
-bool isBase58({String value, bool ipfsCompat = false}) {
+bool isBase58({required String value, bool ipfsCompat = false}) {
   return testValidator(base58Validate, value, ipfsCompat: ipfsCompat);
 }

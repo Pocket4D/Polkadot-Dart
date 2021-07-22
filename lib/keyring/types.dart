@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 class KeyringOptions {
-  int ss58Format;
-  String type;
+  int? ss58Format;
+  String? type;
   KeyringOptions({this.ss58Format, this.type});
 }
 
@@ -14,9 +14,9 @@ class KeyringOptions {
 // export type KeyringPair$JsonEncodingTypes = 'none' | 'scrypt' | 'xsalsa20-poly1305';
 
 class KeyringPair$JsonEncoding {
-  List<String> content;
+  List<String>? content;
   dynamic type; // String or List<String>
-  String version;
+  String? version;
   KeyringPair$JsonEncoding({this.content, this.type, this.version});
   factory KeyringPair$JsonEncoding.fromMap(Map<String, dynamic> map) => KeyringPair$JsonEncoding(
       content: map['content'] as List<String>,
@@ -31,10 +31,10 @@ class KeyringPair$JsonEncoding {
 }
 
 class KeyringPair$Json {
-  String address;
-  String encoded;
-  KeyringPair$JsonEncoding encoding;
-  Map<String, dynamic> meta;
+  String? address;
+  String? encoded;
+  KeyringPair$JsonEncoding? encoding;
+  Map<String, dynamic>? meta;
   KeyringPair$Json({this.address, this.encoded, this.encoding, this.meta});
   factory KeyringPair$Json.fromMap(Map<String, dynamic> map) => KeyringPair$Json(
       address: map["address"] as String,
@@ -44,14 +44,14 @@ class KeyringPair$Json {
   toMap() => {
         "address": address,
         "encoded": encoded,
-        "encoding": encoding.toMap(),
+        "encoding": encoding?.toMap(),
         "meta": meta,
       };
   toJson() => jsonEncode(toMap());
 }
 
 class SignOptions {
-  bool withType;
+  bool? withType;
   SignOptions({this.withType});
 }
 
@@ -72,14 +72,14 @@ abstract class KeyringPair {
   Uint8List get publicKey;
   String get type;
 
-  KDecodePkcs8 decodePkcs8;
-  KDerive derive;
-  KEncodePkcs8 encodePkcs8;
-  KLock lock;
-  KSetMeta setMeta;
-  KSign sign;
-  KToJson toJson;
-  KVerify verify;
+  KDecodePkcs8? decodePkcs8;
+  KDerive? derive;
+  KEncodePkcs8? encodePkcs8;
+  KLock? lock;
+  KSetMeta? setMeta;
+  KSign? sign;
+  KToJson? toJson;
+  KVerify? verify;
 }
 
 abstract class KeyringPairs {

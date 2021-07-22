@@ -24,11 +24,11 @@ class Keyring implements KeyringInstance {
   @override
   String get type => this._type;
 
-  Pairs _pairs;
+  late final Pairs _pairs;
 
-  String _type;
+  late final String _type;
 
-  int _ss58;
+  late final int? _ss58;
 
   Keyring(KeyringOptions options) {
     options.type = options.type ?? 'ed25519';
@@ -38,16 +38,16 @@ class Keyring implements KeyringInstance {
         "Expected a keyring type of either 'ed25519', 'sr25519' or 'ecdsa', found '${options.type}");
     this._pairs = Pairs();
     this._ss58 = options.ss58Format;
-    this._type = options.type;
+    this._type = options.type!;
   }
 
   @override
   KeyringPair addFromAddress(address,
-      [Map<String, dynamic> meta,
-      Uint8List encoded,
-      String type,
-      bool ignoreChecksum,
-      List<String> encType]) {
+      [Map<String, dynamic>? meta,
+      Uint8List? encoded,
+      String? type,
+      bool? ignoreChecksum,
+      List<String>? encType]) {
     final publicKey = this.decodeAddress(address, ignoreChecksum);
 
     return this.addPair(createPair(Setup(toSS58: this.encodeAddress, type: type),
@@ -134,7 +134,7 @@ class Keyring implements KeyringInstance {
   }
 
   @override
-  Uint8List decodeAddress(encoded, [bool ignoreChecksum, int ss58Format]) {
+  Uint8List decodeAddress(encoded, [bool? ignoreChecksum, int? ss58Format]) {
     return utilCrypto.decodeAddress(encoded,
         ignoreChecksum: ignoreChecksum, ss58Format: ss58Format);
   }

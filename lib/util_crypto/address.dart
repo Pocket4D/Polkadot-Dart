@@ -40,7 +40,7 @@ dynamic checkAddressChecksum(Uint8List decoded) {
   return [isValid, length];
 }
 
-String encodeAddress(dynamic _key, [int ss58Format = SS58Defaults.prefix]) {
+String encodeAddress(dynamic _key, [int? ss58Format = SS58Defaults.prefix]) {
   // decode it, this means we can re-encode an address
   final Uint8List key = decodeAddress(_key);
 
@@ -58,7 +58,7 @@ String encodeAddress(dynamic _key, [int ss58Format = SS58Defaults.prefix]) {
   return base58Encode(u8aConcat([input, hash.sublist(0, isPublicKey ? 2 : 1)]));
 }
 
-Uint8List decodeAddress(dynamic encoded, {bool ignoreChecksum, int ss58Format = -1}) {
+Uint8List decodeAddress(dynamic encoded, {bool? ignoreChecksum, int ss58Format = -1}) {
   if (isU8a(encoded) || isHex(encoded)) {
     return u8aToU8a(encoded);
   }
@@ -89,7 +89,7 @@ Uint8List decodeAddress(dynamic encoded, {bool ignoreChecksum, int ss58Format = 
   return decoded.sublist(1, endPos);
 }
 
-List<String> sortAddresses(List<dynamic> addresses, [int ss58Format]) {
+List<String> sortAddresses(List<dynamic> addresses, [int? ss58Format]) {
   return u8aSorted(addresses.map((who) => decodeAddress(who)).toList())
       .map((u8a) => encodeAddress(u8a, ss58Format))
       .toList();
@@ -100,7 +100,7 @@ Uint8List createKeyMulti(List<dynamic> who, num threshold) {
     keyMultiPrefix,
     compactToU8a(who.length),
     ...u8aSorted(who.map((who) => decodeAddress(who)).toList()),
-    bnToU8a(isBn(threshold) ? threshold : BigInt.from(threshold),
+    bnToU8a(isBn(threshold) ? (threshold as BigInt) : BigInt.from(threshold),
         bitLength: 16, endian: Endian.little)
   ]));
 }
@@ -109,7 +109,8 @@ Uint8List createKeyDerived(List<dynamic> who, num index) {
   return blake2AsU8a(u8aConcat([
     keyDerivedPrefix,
     decodeAddress(who),
-    bnToU8a(isBn(index) ? index : BigInt.from(index), bitLength: 16, endian: Endian.little)
+    bnToU8a(isBn(index) ? (index as BigInt) : BigInt.from(index),
+        bitLength: 16, endian: Endian.little)
   ]));
 }
 
@@ -129,15 +130,15 @@ bool addressEq(dynamic a, dynamic b) {
   return u8aEq(decodeAddress(a), decodeAddress(b));
 }
 
-String encodeMultiAddress(List<dynamic> who, num threshold, [int ss58Format]) {
+String encodeMultiAddress(List<dynamic> who, num threshold, [int? ss58Format]) {
   return encodeAddress(createKeyMulti(who, threshold), ss58Format);
 }
 
-String encodeDerivedAddress(dynamic who, num index, [int ss58Format]) {
+String encodeDerivedAddress(dynamic who, num index, [int? ss58Format]) {
   return encodeAddress(createKeyDerived(decodeAddress(who), index), ss58Format);
 }
 
-String deriveAddress(dynamic who, String suri, [int ss58Format]) {
+String deriveAddress(dynamic who, String suri, [int? ss58Format]) {
   final path = keyExtractPath(suri).path;
   assert(path.length != 0 && path.where((element) => element.isHard).isEmpty,
       'Expected suri to contain a combination of non-hard paths');
@@ -171,7 +172,7 @@ List<dynamic> checkAddress(String address, int prefix) {
   return [isValid, isValid ? null : 'Invalid decoded address checksum'];
 }
 
-Uint8List addressToEvm(dynamic address, [bool ignoreChecksum]) {
+Uint8List addressToEvm(dynamic address, [bool? ignoreChecksum]) {
   final decoded = decodeAddress(address, ignoreChecksum: ignoreChecksum);
   return decoded.sublist(0, 20);
 }
