@@ -7,9 +7,9 @@ const int ED25519_SIGNATURE_LENGTH = 128;
 const int ED25519_KEYPAIR_LENGTH = 128;
 
 class ED25519 {
-  String _keypair;
-  String _privateKey;
-  String _publicKey;
+  late final String _keypair;
+  late final String _privateKey;
+  late final String _publicKey;
 
   String get keyPair => _keypair;
   String get private => _privateKey;
