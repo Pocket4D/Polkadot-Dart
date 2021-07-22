@@ -1,4 +1,4 @@
-class RPCInterface {
+abstract class RPCInterface {
   static const author = "author";
   static const babe = "babe";
   static const chain = "chain";
