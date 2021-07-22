@@ -4,13 +4,13 @@ import 'dart:typed_data';
 import 'package:polkadot_dart/utils/utils.dart';
 
 abstract class AbstractKeyPair {
-  Uint8List publicKey;
-  Uint8List secretKey;
+  late final Uint8List publicKey;
+  late final Uint8List secretKey;
 }
 
 abstract class Seedpair {
-  Uint8List publicKey;
-  Uint8List seed;
+  late final Uint8List publicKey;
+  late final Uint8List seed;
 }
 
 class KeyPair implements AbstractKeyPair {
@@ -20,7 +20,7 @@ class KeyPair implements AbstractKeyPair {
   @override
   Uint8List secretKey;
 
-  KeyPair({this.publicKey, this.secretKey});
+  KeyPair({required this.publicKey, required this.secretKey});
 
   Map<String, Uint8List> toMap() => {"publicKey": publicKey, "secretKey": secretKey};
 
@@ -30,8 +30,8 @@ class KeyPair implements AbstractKeyPair {
   String toJson() => json.encode(toMap());
 
   factory KeyPair.fromMap(Map<String, Uint8List> json) => KeyPair(
-        publicKey: json["publicKey"],
-        secretKey: json["secretKey"],
+        publicKey: json["publicKey"]!,
+        secretKey: json["secretKey"]!,
       );
 
   factory KeyPair.fromJson(String str) => KeyPair.fromMap(json.decode(str));
@@ -55,7 +55,7 @@ class KeypairType {
 class VerifyResult {
   String crypto;
   bool isValid;
-  VerifyResult({this.crypto, this.isValid});
+  VerifyResult({required this.crypto, required this.isValid});
   factory VerifyResult.fromMap(Map<String, dynamic> map) =>
       VerifyResult(crypto: map['crypto'] as String, isValid: map["isValid"] as bool);
   toMap() => {"crypto": this.crypto, "isValid": this.isValid};

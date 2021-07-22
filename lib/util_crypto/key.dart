@@ -16,16 +16,16 @@ class BNOPTIONS {
 }
 
 class ExtractResultPath {
-  List<String> parts;
-  List<DeriveJunction> path;
-  ExtractResultPath({this.parts, this.path});
+  final List<String?> parts;
+  final List<DeriveJunction> path;
+  ExtractResultPath({required this.parts, required this.path});
 }
 
 class ExtractResultSuri {
-  String password;
-  List<DeriveJunction> path;
-  String phrase;
-  ExtractResultSuri({this.password, this.path, this.phrase});
+  final String password;
+  final List<DeriveJunction> path;
+  final String phrase;
+  ExtractResultSuri({required this.password, required this.path, required this.phrase});
 }
 
 class DeriveJunction {
@@ -95,13 +95,13 @@ class DeriveJunction {
 }
 
 ExtractResultPath keyExtractPath(String derivePath) {
-  final parts = regJunction.allMatches(derivePath)?.map((m) => m.group(0))?.toList();
+  final parts = regJunction.allMatches(derivePath).map((m) => m.group(0)).toList();
   final List<DeriveJunction> path = [];
   var constructed = '';
   if (parts != null) {
     constructed = parts.join('');
     parts.forEach((value) {
-      path.add(DeriveJunction.from(value.substring(1)));
+      path.add(DeriveJunction.from(value!.substring(1)));
     });
   }
 
@@ -112,7 +112,7 @@ ExtractResultPath keyExtractPath(String derivePath) {
 ExtractResultSuri keyExtractSuri(String suri) {
   final match = regCapture.firstMatch(suri);
   assert(!isNull(match), 'Unable to match provided value to a secret URI');
-  final phrase = match.group(1) ?? "";
+  final phrase = match!.group(1) ?? "";
   final derivePath = match.group(3) ?? "";
   final password = match.group(6) ?? "";
 
@@ -148,5 +148,5 @@ const generators = {
 
 KeyPair keyFromPath(KeyPair keypair, List<DeriveJunction> path, String type) {
   final keyHdkd = generators[type];
-  return path.fold(keypair, (pair, junction) => keyHdkd(pair, junction));
+  return path.fold(keypair, (pair, junction) => keyHdkd!(pair, junction));
 }

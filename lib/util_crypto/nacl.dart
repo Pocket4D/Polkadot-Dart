@@ -4,20 +4,20 @@ import 'package:polkadot_dart/crypto/common.dart';
 import 'package:polkadot_dart/polkadot_dart.dart';
 import 'package:polkadot_dart/util_crypto/blake2.dart';
 import 'package:polkadot_dart/util_crypto/types.dart';
-import 'package:tweetnacl/tweetnacl.dart' as nacl;
+import 'package:pinenacl/tweetnacl.dart' as nacl;
 
 class NaclEncrypted {
-  Uint8List encrypted;
-  Uint8List nonce;
-  NaclEncrypted({this.encrypted, this.nonce});
+  final Uint8List encrypted;
+  final Uint8List nonce;
+  NaclEncrypted({required this.encrypted, required this.nonce});
   toMap() => {"encrypted": encrypted, "nonce": nonce};
   toJson() => json.encode(toMap());
 }
 
 class NaclSealed {
-  Uint8List sealed;
-  Uint8List nonce;
-  NaclSealed({this.sealed, this.nonce});
+  final Uint8List sealed;
+  final Uint8List nonce;
+  NaclSealed({required this.sealed, required this.nonce});
   toMap() => {"sealed": sealed, "nonce": nonce};
   toJson() => json.encode(toMap());
 }
@@ -78,6 +78,7 @@ NaclSealed naclSeal(
   if (nonce == null) {
     nonce = randomAsU8a(24);
   }
+
   return NaclSealed(
       sealed: nacl.Box.nonce(receiverBoxPublic, senderBoxSecret, nonce.toBn().toInt()).box(message),
       nonce: nonce);

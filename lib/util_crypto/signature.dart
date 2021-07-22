@@ -11,7 +11,7 @@ class VerifyInput {
   dynamic message;
   Uint8List publicKey;
   Uint8List signature;
-  VerifyInput({this.message, this.publicKey, this.signature});
+  VerifyInput({this.message, required this.publicKey, required this.signature});
   factory VerifyInput.fromMap(Map m) =>
       VerifyInput(message: m["message"], publicKey: m["publicKey"], signature: m["signature"]);
 }
@@ -21,7 +21,7 @@ typedef VerifyFunction = bool Function(dynamic message, Uint8List signature, Uin
 class Verifier {
   String keypairType;
   VerifyFunction verifyFunction;
-  Verifier({this.keypairType, this.verifyFunction});
+  Verifier({required this.keypairType, required this.verifyFunction});
   factory Verifier.fromList(List<dynamic> list) =>
       Verifier(keypairType: list[0] as String, verifyFunction: list[1] as VerifyFunction);
   toList() => [keypairType, verifyFunction];
@@ -47,7 +47,7 @@ final defaultVerifiers = [
 
 const CRYPTO_TYPES = ['ed25519', 'sr25519', 'ecdsa'];
 
-VerifyResult verifyDetect(VerifyResult result, VerifyInput input, List<Verifier> verifiers) {
+VerifyResult verifyDetect(VerifyResult result, VerifyInput input, List<Verifier>? verifiers) {
   if (verifiers == null) {
     verifiers = defaultVerifiers;
   }
@@ -88,7 +88,7 @@ VerifyResult verifyMultisig(VerifyResult result, VerifyInput input) {
       "ed25519": () => naclVerify(input.message, input.signature.sublist(1), input.publicKey),
       "none": () => throw "no verify for `none` crypto type",
       "sr25519": () => schnorrkelVerify(input.message, input.signature.sublist(1), input.publicKey)
-    }[type]();
+    }[type]!();
   } catch (error) {
     // ignore, result.isValid still set to false
   }

@@ -4,10 +4,10 @@ import 'package:polkadot_dart/crypto/crypto.dart';
 import 'package:polkadot_dart/utils/utils.dart';
 
 class Pbkdf2Result {
-  Uint8List password;
-  int rounds;
-  Uint8List salt;
-  Pbkdf2Result({this.password, this.rounds, this.salt});
+  final Uint8List password;
+  final int rounds;
+  final Uint8List salt;
+  Pbkdf2Result({required this.password, required this.rounds, required this.salt});
 }
 
 Future<Pbkdf2Result> pbkdf2Encode(dynamic passphrase, Uint8List salt, [int rounds = 2048]) async {

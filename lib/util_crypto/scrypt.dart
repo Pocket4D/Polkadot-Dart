@@ -10,9 +10,9 @@ const DEFAULT_PARAMS = {"N": 1 << 15, "p": 1, "r": 8};
 
 class ScryptParams {
   const ScryptParams({
-    this.n,
-    this.p,
-    this.r,
+    required this.n,
+    required this.p,
+    required this.r,
   });
 
   final int n;
@@ -20,9 +20,9 @@ class ScryptParams {
   final int r;
 
   ScryptParams copyWith({
-    int n,
-    int p,
-    int r,
+    int? n,
+    int? p,
+    int? r,
   }) =>
       ScryptParams(
         n: n ?? this.n,
@@ -48,10 +48,10 @@ class ScryptParams {
 }
 
 class ScryptResult {
-  ScryptParams params;
-  Uint8List password;
-  Uint8List salt;
-  ScryptResult({this.params, this.password, this.salt});
+  final ScryptParams params;
+  final Uint8List password;
+  final Uint8List salt;
+  ScryptResult({required this.params, required this.password, required this.salt});
 
   factory ScryptResult.fromMap(Map<String, dynamic> json) => ScryptResult(
         params: ScryptParams.fromMap(json["params"] as Map<String, dynamic>),
@@ -67,7 +67,7 @@ class ScryptResult {
 }
 
 Future<ScryptResult> scryptEncode(dynamic passphrase,
-    {Uint8List salt, Map<String, int> params = DEFAULT_PARAMS}) async {
+    {Uint8List? salt, Map<String, int> params = DEFAULT_PARAMS}) async {
   if (salt == null) {
     salt = randomAsU8a();
   }

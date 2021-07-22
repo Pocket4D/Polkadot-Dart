@@ -27,7 +27,8 @@ class DartRandom {
 
     /// forcing remainingBits to be calculate with bitLength
     int remainingBits = (bitLength - main.bitLength);
-    int additional = remainingBits < 4 ? dartRandom.nextInt(pow(2, remainingBits)) : remainingBits;
+    int additional =
+        remainingBits < 4 ? dartRandom.nextInt(pow(2, remainingBits) as int) : remainingBits;
     BigInt additionalBit = (new BigInt.from(additional) << (fullBytes * 8));
     BigInt result = main + additionalBit;
     return result;
@@ -42,11 +43,11 @@ class DartRandom {
     return list;
   }
 
-  int nextUint16() => dartRandom.nextInt(pow(2, 32));
+  int nextUint16() => dartRandom.nextInt(pow(2, 32) as int);
 
-  int nextUint32() => dartRandom.nextInt(pow(2, 32));
+  int nextUint32() => dartRandom.nextInt(pow(2, 32) as int);
 
-  int nextUint8() => dartRandom.nextInt(pow(2, 8));
+  int nextUint8() => dartRandom.nextInt(pow(2, 8) as int);
 }
 
 Uint8List getRandomValues([int length = DEFAULT_LENGTH]) {
