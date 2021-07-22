@@ -183,7 +183,7 @@ List<BigInt> addDiffPoint(BigInt x1, BigInt y1, BigInt x2, BigInt y2, BigInt mod
 
 List<BigInt> getPointByBig(BigInt n, BigInt p, BigInt a, List<BigInt> pointG) {
   var bin = n.toRadixString(2);
-  List<BigInt> nowPoint;
+  var nowPoint = <BigInt>[];
   var nextPoint = pointG;
   for (var i = bin.length - 1; i >= 0; i--) {
     if (bin[i] == '1') {
@@ -271,7 +271,7 @@ bool curveVerify(BigInt n, BigInt p, BigInt a, List<BigInt> pointG, List<BigInt>
 }
 
 class CurvePrivateKey {
-  BigInt D;
+  late final BigInt D;
 
   /// get the unique public key of the private key on secp256k1 curve
   CurvePublicKey get publicKey {
@@ -316,8 +316,8 @@ class CurvePrivateKey {
 }
 
 class CurvePublicKey {
-  BigInt X;
-  BigInt Y;
+  late final BigInt X;
+  late final BigInt Y;
 
   CurvePublicKey(this.X, this.Y);
 
@@ -360,11 +360,11 @@ class CurvePublicKey {
 }
 
 class CurveSignature {
-  BigInt R;
-  BigInt S;
-  int V;
-  int recoveryId;
-  Uint8List bytes;
+  late final BigInt R;
+  late final BigInt S;
+  late final int V;
+  late final int recoveryId;
+  late final Uint8List bytes;
 
   CurveSignature(this.R, this.S, [this.recoveryId = 0]) {
     var rArr = bnToU8a(this.R, bitLength: 256, endian: Endian.big);
