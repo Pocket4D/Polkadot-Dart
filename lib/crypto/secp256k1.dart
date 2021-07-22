@@ -4,9 +4,9 @@ import 'package:polkadot_dart/utils/utils.dart';
 import 'package:polkadot_dart/util_crypto/util_crypto.dart';
 
 class Secp256k1 {
-  String _keypair;
-  String _privateKey;
-  String _publicKey;
+  late final String _keypair;
+  late final String _privateKey;
+  late final String _publicKey;
 
   String get keyPair => _keypair;
   String get private => _privateKey;
