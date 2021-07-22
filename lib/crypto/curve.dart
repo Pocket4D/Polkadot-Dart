@@ -14,8 +14,8 @@ const secp256k1Params = {
 };
 
 class Curve {
-  BigInt p, a, b, n, h;
-  List<BigInt> G;
+  late final BigInt p, a, b, n, h;
+  late final List<BigInt> G;
   Curve(Map params) {
     p = BigInt.parse(params['p'], radix: 16);
     a = BigInt.parse(params['a'], radix: 16);
@@ -23,8 +23,8 @@ class Curve {
     n = BigInt.parse(params['n'], radix: 16);
     h = BigInt.parse(params['h'], radix: 16);
     G = [
-      BigInt.parse(secp256k1Params['Gx'], radix: 16),
-      BigInt.parse(secp256k1Params['Gy'], radix: 16)
+      BigInt.parse(secp256k1Params['Gx']!, radix: 16),
+      BigInt.parse(secp256k1Params['Gy']!, radix: 16)
     ];
   }
 }
