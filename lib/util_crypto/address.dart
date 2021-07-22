@@ -58,7 +58,7 @@ String encodeAddress(dynamic _key, [int? ss58Format = SS58Defaults.prefix]) {
   return base58Encode(u8aConcat([input, hash.sublist(0, isPublicKey ? 2 : 1)]));
 }
 
-Uint8List decodeAddress(dynamic encoded, {bool? ignoreChecksum, int ss58Format = -1}) {
+Uint8List decodeAddress(dynamic encoded, {bool? ignoreChecksum, int? ss58Format = -1}) {
   if (isU8a(encoded) || isHex(encoded)) {
     return u8aToU8a(encoded);
   }

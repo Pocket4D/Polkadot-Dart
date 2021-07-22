@@ -7,19 +7,19 @@ import 'package:polkadot_dart/utils/utils.dart';
 
 class PairInfo {
   PairInfo({
-    this.publicKey,
-    this.secretKey,
+    required this.publicKey,
+    required this.secretKey,
     this.seed,
   });
 
   Uint8List publicKey;
   Uint8List secretKey;
-  Uint8List seed;
+  Uint8List? seed;
 
   PairInfo copyWith({
-    Uint8List publicKey,
-    Uint8List secretKey,
-    Uint8List seed,
+    Uint8List? publicKey,
+    Uint8List? secretKey,
+    Uint8List? seed,
   }) =>
       PairInfo(
         publicKey: publicKey ?? this.publicKey,
@@ -38,9 +38,11 @@ class PairInfo {
       );
 
   Map<String, Uint8List> toMap() => {
-        "publicKey": Uint8List.fromList(publicKey.map((x) => x)),
-        "secretKey": Uint8List.fromList(secretKey.map((x) => x)),
-        "seed": Uint8List.fromList(seed.map((x) => x)),
+        "publicKey": Uint8List.fromList(publicKey.map((x) => x).toList()),
+        "secretKey": Uint8List.fromList(secretKey.map((x) => x).toList()),
+        "seed": seed != null
+            ? Uint8List.fromList(seed!.map((x) => x).toList())
+            : Uint8List.fromList([]),
       };
 }
 
@@ -83,8 +85,8 @@ PairInfo decodePkcs8(Uint8List encoded) {
   return PairInfo(publicKey: publicKey, secretKey: secretKey);
 }
 
-Future<PairInfo> decodePair(String passphrase,
-    [Uint8List encrypted, List<String> encType = ENCODING]) async {
+Future<PairInfo> decodePair(
+    [String? passphrase, Uint8List? encrypted, List<String>? encType = ENCODING]) async {
   assert(encrypted != null, 'No encrypted data available to decode');
   assert(passphrase != null || (encType != null && !encType.contains('xsalsa20-poly1305')),
       'Password required to decode encypted data');
@@ -94,8 +96,8 @@ Future<PairInfo> decodePair(String passphrase,
   if (passphrase != null) {
     Uint8List password;
 
-    if (encType != null && encType.contains('scrypt')) {
-      final scryptResult = scryptFromU8a(encrypted);
+    if (encType.contains('scrypt')) {
+      final scryptResult = scryptFromU8a(encrypted!);
       var params = scryptResult["params"] as Map<String, int>;
       var salt = scryptResult["salt"] as Uint8List;
 
@@ -104,16 +106,16 @@ Future<PairInfo> decodePair(String passphrase,
     } else {
       password = stringToU8a(passphrase);
     }
-    encoded = naclDecrypt(encrypted.sublist(NONCE_LENGTH), encrypted.sublist(0, NONCE_LENGTH),
+    encoded = naclDecrypt(encrypted!.sublist(NONCE_LENGTH), encrypted.sublist(0, NONCE_LENGTH),
         u8aFixLength(password, bitLength: 256, atStart: true));
   }
 
   assert(encoded != null, 'Unable to decode using the supplied passphrase');
 
-  return decodePkcs8(encoded);
+  return decodePkcs8(encoded!);
 }
 
-Future<Uint8List> encodePair(PairInfo pair, String passphrase) async {
+Future<Uint8List> encodePair(PairInfo pair, String? passphrase) async {
   assert(pair.secretKey != null, 'Expected a valid secretKey to be passed to encode');
 
   var encoded = u8aConcat([PKCS8_HEADER, pair.secretKey, PKCS8_DIVIDER, pair.publicKey]);

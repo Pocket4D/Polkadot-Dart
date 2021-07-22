@@ -30,7 +30,8 @@ class Keyring implements KeyringInstance {
 
   late final int? _ss58;
 
-  Keyring(KeyringOptions options) {
+  Keyring(KeyringOptions? options) {
+    options = options ?? KeyringOptions();
     options.type = options.type ?? 'ed25519';
     assert(
         options != null &&
@@ -83,7 +84,7 @@ class Keyring implements KeyringInstance {
   }
 
   @override
-  KeyringPair createFromJson(KeyringPair$Json json, [bool ignoreChecksum]) {
+  KeyringPair createFromJson(KeyringPair$Json json, [bool? ignoreChecksum]) {
     final cryptoType = json.encoding.version == '0' || !(json.encoding.content is List)
         ? this.type
         : json.encoding.content[1];
@@ -140,7 +141,7 @@ class Keyring implements KeyringInstance {
   }
 
   @override
-  String encodeAddress(key, [int ss58Format]) {
+  String encodeAddress(key, [int? ss58Format]) {
     return utilCrypto.encodeAddress(key, isNull(ss58Format) ? this._ss58 : ss58Format);
   }
 
@@ -156,7 +157,7 @@ class Keyring implements KeyringInstance {
 
   @override
   List<Uint8List> getPublicKeys() {
-    return this._pairs.all().map((kp) => kp.publicKey);
+    return this._pairs.all().map((kp) => kp.publicKey).toList();
   }
 
   @override
@@ -170,19 +171,19 @@ class Keyring implements KeyringInstance {
   }
 
   @override
-  Future<KeyringPair$Json> toJson(address, [String passphrase]) async {
-    return await this._pairs.get(address).toJson(passphrase);
+  Future<KeyringPair$Json> toJson(address, [String? passphrase]) async {
+    return await this._pairs.get(address).toJson!(passphrase ?? "");
   }
 }
 
 class KeyringSingleton extends Keyring {
-  static KeyringSingleton _instance;
-  KeyringSingleton._internal({KeyringOptions options}) : super(options);
-  factory KeyringSingleton({KeyringOptions options}) => _getInstance(options: options);
-  static KeyringSingleton get instance => _instance;
+  static KeyringSingleton? _instance;
+  KeyringSingleton._internal({KeyringOptions? options}) : super(options);
+  factory KeyringSingleton({KeyringOptions? options}) => _getInstance(options: options);
+  static KeyringSingleton? get instance => _instance;
 
   /// get internal instance
-  static _getInstance({KeyringOptions options}) {
+  static _getInstance({KeyringOptions? options}) {
     // only one instance live
     if (_instance == null) {
       _instance = KeyringSingleton._internal(options: options);
