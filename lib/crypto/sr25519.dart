@@ -9,9 +9,9 @@ const int SR25519_KEYPAIR_LENGTH = SR25519_SECRET_LENGTH + SR25519_PUBLIC_LENGTH
 const int SR25519_SIGNATURE_LENGTH = 128;
 
 class SR25519 {
-  String _keypair;
-  String _secretKey;
-  String _publicKey;
+  late final String _keypair;
+  late final String _secretKey;
+  late final String _publicKey;
 
   String get keyPair => _keypair;
   String get secret => _secretKey;
